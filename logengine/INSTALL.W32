@@ -1,0 +1,6 @@
+
+Use MSVC projects from prj/msvcX/LogEngine/ to compile LogEngine.lib. 
+(for Builder 6 use prj/Builder6/LogEngine)
+
+See prj/msvcX/testLogEngine (or prj/Builder6/testLogEngine) for examples 
+of use LogEngine.

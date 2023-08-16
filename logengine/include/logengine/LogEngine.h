@@ -1,0 +1,223 @@
+/*
+ * LogEngine.h
+ *
+ * Copyright 2003, LogEngine Project. All rights reserved.
+ *
+ * See the COPYING file for the terms of usage and distribution.
+ */
+
+#ifndef _LOG_ENGINE_H_
+#define _LOG_ENGINE_H_
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef WIN32
+#include  <windows.h>
+#pragma warning( disable : 4786 )
+#endif
+
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#endif
+
+#include <exception>
+#include <string>
+#include <vector>
+#include "FileStream.h"
+#include "Properties.h"
+#include "LogEvent.h"
+#include "Line.h"
+#include "threads.h"
+#include "SynchronizedQueue.h"
+
+#define DefaultMaxLogSize  100 // in kilobytes
+#define DefaultDetailLevel 5
+
+enum TLogBackupType  {lbNone, lbTimeStamp, lbSingle};
+//enum TLogMessageType {lmError, lmWarning, lmInfo};
+
+typedef SynchronizedQueue<LogEvent*> LogEventQueue;
+
+class LogException : public std::exception
+{
+public:
+	//LogException(const char * Message);
+    LogException(const char* formatstr, ...);
+	LogException(const std::string& Message);
+	LogException(const LogException& ex);
+	virtual ~LogException() throw();
+	LogException& operator=(const LogException& rhs);
+	virtual const char *what() const throw();
+	//std::string GetError(void);
+private:
+	std::string Text;
+};
+
+	
+class TLogEngine  
+{
+
+friend class Line;
+
+private:
+	class LogEngineProperties
+	{
+	public:
+		LogEngineProperties();
+		LogEngineProperties(const Properties& Props);
+		//TLogEngineProperties& operator=(const TLogEngineProperties& rhs);
+		void Fill(const Properties& Props);
+		TLogBackupType GetBackupType(const Properties& Props, const TLogBackupType defaultValue);
+		
+		TLogBackupType BackupType;
+		std::string FileName;
+		std::string ApplicationName;
+		std::string Version;
+		int MaxLogSize;
+		int DetailLevel;
+		bool Threaded;
+		
+		//templates
+		Line SeparatorLine;
+		Line ErrorLine;
+		Line WarningLine;
+		Line InfoLine;
+		//Line LongExceptionLine;   //for future use
+		//Line ShortExceptionLine;  //for future use
+		Line StartAppLine;
+		Line StopAppLine;
+	};
+
+	LogEngineProperties FProperties;
+	
+	TFileStream* FLogStream; 
+	bool FStarted;
+	unsigned int FBytesWritten;
+	unsigned int FMessageCount[4];
+	//FMessageTime[3];
+	//FStartupTime;
+	
+	THREAD_TYPE hThread;
+	MUTEX_TYPE CriticalSection;
+
+protected:
+	LogEventQueue  LogQueue;
+	static TLogEngine* loginstance;
+
+	TLogEngine();
+	TLogEngine(const Properties& Props);
+	TLogEngine(const std::string& ConfigFileName);
+	virtual ~TLogEngine();
+	
+
+	void InitThread();
+	void TruncLogFile(void);
+	void InternalWrite(const std::string& msg);
+	void WriteStart(void);
+	void WriteStop(void);
+	void WriteEvent(LogEvent* event);
+
+	std::string GenerateBackupName(void);
+
+	static THREAD_OUT_TYPE THREAD_CALL_CONVENTION ThreadProc(void* parameter);
+public:
+	//int FLogDetailLevel;
+	void Start(void);
+	void Stop(void);
+	bool IsStarted(){ return FStarted; }
+	void Flush(); // forces save data to the disk
+
+	//log format functions
+	std::string FormatStr		(const std::string& str, int DetailLevel = 0);
+	std::string FormatInfo		(const std::string& str, int DetailLevel = 0);
+	std::string FormatWarning	(const std::string& str, int DetailLevel = 0);
+	std::string FormatError		(const std::string& str, int DetailLevel = 0);
+
+	//write functions
+	void WriteStr		(const std::string& str, int DetailLevel = 0);
+	void WriteInfo		(const std::string& str, int DetailLevel = 0);
+	void WriteWarning	(const std::string& str, int DetailLevel = 0);
+	void WriteError		(const std::string& str, int DetailLevel = 0);
+
+	// formatted write functions
+	void WriteStrFmt	(int DetailLevel, const char* formatstr,...);
+	void WriteInfoFmt	(int DetailLevel, const char* formatstr,...);
+	void WriteWarningFmt(int DetailLevel, const char* formatstr,...);
+	void WriteErrorFmt	(int DetailLevel, const char* formatstr,...);
+
+	void SetVersionInfo(const std::string& VerInfo);
+	void SetAppName(const std::string& AppName);
+	void SetMaxLogSize(const int MaxLogSize);
+	void SetBackupType(const TLogBackupType BackupType);
+	void SetLogDetailLevel(const int DetailLevel); 
+
+	TLogBackupType	GetBackupType(void)		const { return FProperties.BackupType; }
+	int				GetMaxLogSize(void)		const { return FProperties.MaxLogSize; }
+	std::string		GetLogFileName(void)	const { return FProperties.FileName; }
+	std::string		GetAppName(void)		const { return FProperties.ApplicationName; }
+	std::string		GetVersionInfo(void)	const { return FProperties.Version; }
+	int				GetLogDetailLevel(void) const { return FProperties.DetailLevel; } 
+	unsigned int	GetBytesWritten(void)   const { return FBytesWritten; } 
+	
+
+	static TLogEngine* getInstance();
+	static TLogEngine* getInstance(const Properties& Props);
+	static void InitLogEngine();
+	static void InitLogEngine(const std::string& ConfigFileName);
+	static void InitLogEngine(const Properties& Props);
+	static void CloseLogEngine();	
+
+};
+
+struct LogEngineThreadInfo
+{
+    LogEventQueue	*LogQueue;
+    TLogEngine		*LogEngine;
+};
+
+
+TLogEngine* getLogEngine();
+TLogEngine* getLogEngine(const Properties& Props);
+void InitLogEngine(const Properties& Props);
+void InitLogEngine(const std::string& ConfigFileName);
+void InitLogEngine();
+void CloseLogEngine();
+
+inline void LOG_ERROR(const std::string& mess, int DetailLevel = 0) 
+{
+	TLogEngine* log = getLogEngine(); 
+    if(log)
+		log->WriteError(mess, DetailLevel);
+}
+
+	
+inline void LOG_INFO(const std::string& mess, int DetailLevel = 0) 
+{
+	TLogEngine* log = getLogEngine();
+	if(log)
+		log->WriteInfo(mess, DetailLevel);
+}
+
+
+inline void LOG_WARN(const std::string& mess, int DetailLevel = 0) 
+{
+	TLogEngine* log = getLogEngine();
+	if(log)
+		log->WriteWarning(mess, DetailLevel);
+}
+
+inline void LOG_STR(const std::string& mess, int DetailLevel = 0) 
+{
+	TLogEngine* log = getLogEngine();
+	if(log)
+		log->WriteStr(mess, DetailLevel);
+}
+
+	
+#endif // !defined _LOG_ENGINE_H_

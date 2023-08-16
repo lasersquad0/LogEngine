@@ -1,0 +1,26 @@
+TODO
+----
+This file contains an imcomplete list of things to be done, not necessarily
+ordered by importance or urgence.
+
+
+* Add possibility to write logs into multiple files (multiple LogFileName 
+  directives in .lfg file)
+
+* Get the version number from current module (for Windows only)
+
+* Find out why automake-1.7 is required in make, it's dumb and silly
+
+* Add a set of help functions FormatError, FormatInfo which returns formatted 
+  string for InternalWrite. They helps us to write tests more comfortable. - DONE
+
+* Add separator line
+
+* Add support to different log destinations: file, OutputDebugString, probably pipes.
+
+* Synchronization logs in separate thread. - DONE
+
+* Add log file rotation. 1->2, 2->3 ....
+
+* DateTimeMacro works wrong (as TimeMacro) - DONE
+

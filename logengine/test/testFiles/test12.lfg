@@ -1,0 +1,8 @@
+detaillevel=11
+MaxLogSize=101
+BACKUPTYPE=TimeStamp
+APPlicationName=ExampleApp11
+Version=1.1.1.1
+LogFileName=c:\temp\ExampleApp11.log
+
+ 

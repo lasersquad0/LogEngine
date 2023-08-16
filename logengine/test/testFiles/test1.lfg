@@ -1,0 +1,5 @@
+DetailLevel = 4
+
+MaxLogSize = 1
+
+BackupType = None

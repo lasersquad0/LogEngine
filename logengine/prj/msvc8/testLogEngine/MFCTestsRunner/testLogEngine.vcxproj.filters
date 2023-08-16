@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{d3869957-683a-4fe2-bee9-876b19adc522}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\LogEngineSources">
+      <UniqueIdentifier>{f3a19198-dd1a-4325-a9d2-82521e979c03}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{5f3dcac0-2fe7-4263-a8c0-169cfae7213f}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Header Files\LogEngineHeaders">
+      <UniqueIdentifier>{65e127a8-e90c-44a9-a445-57c93addcf3c}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{878b0bad-9037-45ba-bc7d-24d3645604e2}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="DLL Dependencies">
+      <UniqueIdentifier>{4e725696-639f-4c37-bab6-b6dde38cbf17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{38226099-e7c6-4352-85a0-18cc4459610b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testLogEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Compare.cpp">
+      <Filter>Source Files\LogEngineSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\DynamicArrays.cpp">
+      <Filter>Source Files\LogEngineSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\FileStream.cpp">
+      <Filter>Source Files\LogEngineSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\functions.cpp">
+      <Filter>Source Files\LogEngineSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Line.cpp">
+      <Filter>Source Files\LogEngineSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\LogEngine.cpp">
+      <Filter>Source Files\LogEngineSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\LogEvent.cpp">
+      <Filter>Source Files\LogEngineSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\Properties.cpp">
+      <Filter>Source Files\LogEngineSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\SynchronizedQueue.cpp">
+      <Filter>Source Files\LogEngineSources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\test\testLine.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\test\testLog.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\test\testProperties.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\test\testThreadLog.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\test\testUtils.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="testLogEngine.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="testLogEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\Compare.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\DynamicArrays.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\FileStream.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\functions.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\Line.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\LogEngine.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\LogEvent.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\Properties.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\SynchronizedQueue.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\threads.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\test\testLine.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\test\testLog.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\test\testProperties.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\test\testThreadLog.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\test\testUtils.h">
+      <Filter>Tests</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\testLogEngine.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\testLogEngine.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\..\..\external\cppunit\lib\testrunner.dll">
+      <Filter>DLL Dependencies</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\external\cppunit\lib\testrunnerd.dll">
+      <Filter>DLL Dependencies</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\external\cppunit\lib\testrunneru.dll">
+      <Filter>DLL Dependencies</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\..\..\external\cppunit\lib\testrunnerud.dll">
+      <Filter>DLL Dependencies</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

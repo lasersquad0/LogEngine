@@ -1,0 +1,72 @@
+# This is sample configuration file for LogEngine. Adjust it to suit your needs.
+
+
+# Detail level for log messages.
+# Possible values: any positive integer value (0,1,2...)
+# By default DetailLevel=0 - only serious error messages 
+# will be logged.
+DetailLevel = 0
+
+# The maximum size of log file in kilobytes.
+# LogEngine will not create log files with size more than the specified.
+# When log file reaches MaxLogSize a backup file will be created. 
+# The names and number of backup files depends on BackupType parameter.
+# By default MaxLogSize = 100 (100 kilobytes).
+# MaxLogSize = 0 means no limit on log file size.
+MaxLogSize = 100
+
+# The BackupType parameter controls the creation of backup files.
+# Possible values : None, Single, Timestamp.
+# None      - when log file reaches MaxLogFile size no new file is created and 
+#             current file is rewritten from the beginning.
+# Single    - when log file reaches MaxLogFile size it is renamed to the .bak 
+#             file. If file with .bak extention is already exists it will be 
+#             rewritten.
+# TimeStamp - when log file reaches MaxLogFile size it is renamed using the 
+#             following template: logfilename(yyyy-mm-dd hh.mm.ss).log
+#
+BackupType = None
+
+ApplicationName = ExampleApp
+
+Version = 1.1.1.1
+
+LogFileName = ExampleApp.log
+
+# Log Templates. 
+# Each template allows to set the format in which log information will be saved to 
+# the log file. 
+# Format macros are as follows:
+#  %APPNAME% - the name of application
+#  %APPVERSION% - the version of application. Can have x.x.x.x format or other.
+#  %TIME% - current time
+#  %DATE% - current date
+#  %DATETIME% - the current date and time in 
+#  %THREAD% - current thread ID
+#  %MSG% - log message
+#  %OS% - OS name (for example Microsoft Windows 98)
+#  %OSVERSION% - OS version number (for example "5.1.0.2666")
+#  %DETAILLEVEL% - Detail level for log messages.
+#
+# Log line can be any combination of format macros and letters. 
+# Letters that is not macros will be copied to the output stream without changing.
+# The example of template line : '%TIME% #%THREAD% : %MSG%'
+# NOTE! MACROS ARE CASE SENSITIVE AND MUST BE IN UPEER CASE.
+
+# This text is written to the file when LogEngine is initializing. 
+StartAppLine  = \n%APPNAME% %APPVERSION% startup.\nLog is started at %DATETIME%.
+
+# This text is written to the file when LogEngine is stopping. 
+StopAppLine   = %APPNAME% %APPVERSION% normal shutdown.\nLog is stopped at %DATETIME%.
+
+SeparatorLine = ---------------------------------------------------------------------
+
+# Template for error line.
+ErrorLine     = %TIME% #%THREAD% : %MSG%
+
+# Template for warning line.
+WarningLine   = %TIME% #%THREAD% : %MSG%
+
+# Template for information line.
+InfoLine      = %TIME% #%THREAD% : %MSG%
+ 
