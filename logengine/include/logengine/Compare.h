@@ -26,6 +26,7 @@ public:
 	virtual bool eq(const C& a, const C& b) const { return a == b; };
 	virtual bool lt(const C& a, const C& b) const { return a < b;  }; 
 	virtual bool mt(const C& a, const C& b) const { return a > b;  }; 
+	virtual ~Compare() {};
 };
 
 /// Class to compare std::string WITHOUT CASE sensitivity
@@ -40,6 +41,7 @@ public:
 	virtual bool lt(const std::string& a, const std::string& b) const { throw std::exception();/*"string comparing don't process operator '<'");*/ };
 	virtual bool mt(const std::string& a, const std::string& b) const { throw std::exception();/*"string comparing don't process operator '>'");*/ };
 #pragma warning(pop)
+	virtual ~Compare() {};
 };
 
 

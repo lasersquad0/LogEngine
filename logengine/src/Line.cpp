@@ -38,10 +38,10 @@ Line::Line(const Line& line)
    ((Line&)(line)).holders.Clear();
 }
 
-//Line::Line(std::string pattern)
-//{
-//	parsePattern(pattern);
-//}
+Line::Line(std::string pattern)
+{
+	parsePattern(pattern);
+}
 
 Line& Line::operator=(const Line& line)
 {
@@ -182,7 +182,7 @@ void Line::parsePattern(const std::string pattern)
 
 Line::~Line()
 {
-	for(int i = 0; i < holders.Count(); i++)
+	for(uint i = 0; i < holders.Count(); i++)
 	{
 		Holder* h = holders[i];
 		delete h;
@@ -195,7 +195,7 @@ std::string Line::format(LogEvent& event)
 {
 	std::string result;
 	
-	for(int i = 0; i < holders.Count(); i++)
+	for(uint i = 0; i < holders.Count(); i++)
 	{
 		result.append(holders[i]->format(event));
 	}

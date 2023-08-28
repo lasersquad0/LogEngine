@@ -147,9 +147,13 @@ public:
 		OSVERSIONINFO ver;
 		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 		
-		GetVersionEx(&ver);
+		DWORD OSMajorVer = 0, OSMinorVer = 0, SPMajorVer = 0, SPMinorVer = 0;
+		DWORD result;
+		GetProductInfo(OSMajorVer, OSMinorVer, SPMajorVer, SPMinorVer, &result);
+
+		//GetVersionEx(&ver);
 		
-		return IntToStr(ver.dwMajorVersion) + "." + IntToStr(ver.dwMinorVersion) + " build "+IntToStr(ver.dwBuildNumber); 
+		return "<need to be implemented>";//IntToStr(ver.dwMajorVersion) + "." + IntToStr(ver.dwMinorVersion) + " build " + IntToStr(ver.dwBuildNumber);
 #else
 		return "<OSVERSION>";
 #endif
@@ -173,7 +177,7 @@ public:
 	Line(){}
     Line(const Line& line); 
     Line& operator=(const Line& line);
-	//Line(std::string pattern);
+	Line(std::string pattern);
 	//Line& operator=(const std::string pattern);
 	virtual ~Line();
 	//void setLogEngine(TLogEngine* log){ logParent = log; }

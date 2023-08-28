@@ -36,7 +36,7 @@
 #include "threads.h"
 #include "SynchronizedQueue.h"
 
-#define DefaultMaxLogSize  100 // in kilobytes
+#define DefaultMaxLogSize  1000 // in kilobytes
 #define DefaultDetailLevel 5
 
 enum TLogBackupType  {lbNone, lbTimeStamp, lbSingle};

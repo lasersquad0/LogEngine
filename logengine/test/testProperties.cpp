@@ -26,7 +26,7 @@ void LogEnginePropertiesTest::testProperties1()
 	Properties props;
 	props.load(fin);
 	
-	CPPUNIT_ASSERT_EQUAL(3, props.Count());
+	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
 	CPPUNIT_ASSERT_EQUAL(4, props.getInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT(props.getString("BackupType") == "None");
@@ -39,6 +39,13 @@ void LogEnginePropertiesTest::testProperties2()
 	printf("testProperties2 ... ");
 
 	Properties props;
+
+	std::string s = "  123 ";
+	std::string ss = s;
+	std::string sss = props.trim(s);
+
+	CPPUNIT_ASSERT_EQUAL(s, ss); // check that trim does not change string s
+	CPPUNIT_ASSERT_EQUAL(sss, std::string("123"));
 
 	CPPUNIT_ASSERT(props.trim("").empty());
 	CPPUNIT_ASSERT(props.trim(" ") == "");
@@ -70,7 +77,7 @@ void LogEnginePropertiesTest::testProperties3()
 	Properties props;
 	props.load(fin);
 	
-	CPPUNIT_ASSERT_EQUAL(3, props.Count());
+	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
 	CPPUNIT_ASSERT_EQUAL(0, props.getInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(0, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT(props.getString("BackupType").empty());
@@ -85,12 +92,12 @@ void LogEnginePropertiesTest::testProperties4()
 	std::ifstream fin(TEST_FILES_FOLDER "test3.lfg"/*, std::ios::in*/);
 
     if(std::ios_base::failbit == (fin.rdstate() & std::ios_base::failbit))
-        CPPUNIT_ASSERT("fail to open file " TEST_FILES_FOLDER "test3.lfg", false);
+        CPPUNIT_ASSERT_MESSAGE("fail to open file " TEST_FILES_FOLDER "test3.lfg", false);
 	
 	Properties props;
 	props.load(fin);
 	
-	CPPUNIT_ASSERT_EQUAL(1, props.Count());
+	CPPUNIT_ASSERT_EQUAL(1u, props.Count());
 	CPPUNIT_ASSERT_EQUAL(0, props.getInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(0, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT(props.getString("BackupType").empty());
@@ -107,7 +114,7 @@ void LogEnginePropertiesTest::testProperties5()
 	Properties props;
 	props.load(fin);
 	
-	CPPUNIT_ASSERT_EQUAL(3, props.Count());
+	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
 	CPPUNIT_ASSERT_EQUAL(4, props.getInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT_EQUAL(std::string("Single"), props.getString("BackupType"));
@@ -124,7 +131,7 @@ void LogEnginePropertiesTest::testProperties6()
 	Properties props;
 	props.load(fin);
 	
-	CPPUNIT_ASSERT_EQUAL(3, props.Count());
+	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
 	CPPUNIT_ASSERT_EQUAL(4, props.getInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT_EQUAL(std::string("Timestamp"), props.getString("BackupType"));
@@ -141,7 +148,7 @@ void LogEnginePropertiesTest::testProperties7()
 	Properties props;
 	props.load(fin);
 	
-	CPPUNIT_ASSERT_EQUAL(3, props.Count());
+	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
 	CPPUNIT_ASSERT_EQUAL(4, props.getInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT_EQUAL(std::string("None"), props.getString("BackupType"));
@@ -158,7 +165,7 @@ void LogEnginePropertiesTest::testProperties8()
 	Properties props;
 	props.load(fin);
 	
-	CPPUNIT_ASSERT_EQUAL(3, props.Count());
+	CPPUNIT_ASSERT_EQUAL(3u, props.Count());
 	CPPUNIT_ASSERT_EQUAL(4, props.getInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT(props.getString("BackupType").empty());
@@ -175,7 +182,7 @@ void LogEnginePropertiesTest::testProperties9()
 	Properties props;
 	props.load(fin);
 				
-	CPPUNIT_ASSERT_EQUAL(12, props.Count());
+	CPPUNIT_ASSERT_EQUAL(12u, props.Count());
 	CPPUNIT_ASSERT_EQUAL(0, props.getInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(100, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT_EQUAL(std::string("None"), props.getString("BackupType"));
@@ -203,7 +210,7 @@ void LogEnginePropertiesTest::testProperties10()
 	Properties props;
 	props.load(fin);
 	
-	CPPUNIT_ASSERT_EQUAL(6, props.Count());
+	CPPUNIT_ASSERT_EQUAL(6u, props.Count());
 	CPPUNIT_ASSERT_EQUAL(11, props.getInt("DetailLevel"));
 	CPPUNIT_ASSERT_EQUAL(std::string("TimeStamp"), props.getString("BackupType"));
 	CPPUNIT_ASSERT_EQUAL(101, props.getInt("MaxLogSize"));
@@ -223,16 +230,16 @@ void LogEnginePropertiesTest::testProperties11()
 
     try
     {
-    std::string s = props.GetValue("BackupType");
+		std::string s = props.GetValue("BackupType");
     }
     catch(THArrayException & ex)
     {
-        char* str = "THArrayException : " "THash<I,V>::GetValue(Key) : Key not found !";
-        CPPUNIT_ASSERT_EQUAL(str, (char*)ex.what());        
+        char* str = "THArrayException : THash<I,V>::GetValue(Key) : Key not found !";
+        CPPUNIT_ASSERT_EQUAL(str, (char*)ex.what());       
     }
     catch(...)
     {
-        CPPUNIT_ASSERT(false, "Incorrect exception is thrown");
+        CPPUNIT_ASSERT_MESSAGE("Incorrect exception is thrown", false);
     }
 }
 

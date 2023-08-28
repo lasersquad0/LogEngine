@@ -7,7 +7,7 @@
 */
 
 #include "Properties.h"
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <istream>
 
 //namespace logengine {
@@ -23,34 +23,13 @@ Properties::~Properties()
 
 std::string Properties::trim(std::string str)
 {
-    if(0 == str.length())
-        return str;
+		// remove any leading and traling spaces, just in case.
+	size_t strBegin = str.find_first_not_of(' ');
+	size_t strEnd = str.find_last_not_of(' ');
+	str.erase(strEnd + 1, str.size() - strEnd);
+	str.erase(0, strBegin);
 
-    int beg = 0; 
-	int end = str.length() - 1;
-	int i;
-
-	for(i = 0; i < (int)str.length(); i++)
-	{
-		if(str[i] == ' ')
-			beg = i + 1;
-		else
-			break;
-	}
-	
-	for(i = str.length() - 1; i >= 0 ; --i)
-	{
-		if(str[i] == ' ')
-			end = i - 1;
-		else
-			break;
-	}
-	
-    if(beg >= (int)str.length()) // string contains only spaces
-        return "";
-
-	std::string s = str.substr(beg, end - beg + 1);
-	return s;
+	return str;
 }
 
 void Properties::load(std::istream& in) 
@@ -123,7 +102,7 @@ void Properties::load(std::istream& in)
 
 void Properties::save(std::ostream& out) 
 {
-	for(int i = 0; i < Count(); i++) 
+	for(uint i = 0; i < Count(); i++) 
 	{
 		std::string key = GetKey(i);
 		out << key << "=" << GetValue(key) << std::endl;

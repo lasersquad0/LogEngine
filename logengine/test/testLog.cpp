@@ -5,6 +5,7 @@
 
 #include "LogEngine.h"
 #include "testLog.h"
+#include <cppunit/portability/Stream.h>
 //#include "debug_support.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION( LogEngineLogTest );
@@ -20,6 +21,43 @@ void LogEngineLogTest::tearDown ()
 {
     // free memory allocated in setUp, do other things
 }
+
+CPPUNIT_NS_BEGIN
+/*template<>
+struct assertion_traits<std::string>   // specialization for the std::string type
+{
+	static bool equal(const std::string& x, const std::string& y)
+	{
+		return x == y;
+	}
+
+	static std::string toString(const std::string& x)
+	{
+		std::string text = '"' + x + '"';    // adds quote around the string to see whitespace
+		CppUnit::OStringStream ost;
+		ost << text;
+		return ost.str();
+	}
+};*/
+
+template<>
+struct assertion_traits<char*>   // specialization for the std::string type
+{
+	static bool equal(const char* x, const char* y)
+	{
+		return strcmp(x, y) == 0;
+	}
+
+	static std::string toString(const char* x)
+	{
+		std::string text = '"' + x + '"';    // adds quote around the string to see whitespace
+		CppUnit::OStringStream ost;
+		ost << text;
+		return ost.str();
+	}
+};
+
+CPPUNIT_NS_END
 
 void LogEngineLogTest::testLog1()
 {

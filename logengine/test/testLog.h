@@ -57,7 +57,8 @@ public:
 
 inline std::string cutLog(std::string str)
 {
-    return str.replace(1, 17, "").c_str(); // cut off time and thread information (which is not same time from time)
+    //return str.replace(1, 17, "").c_str(); // cut off time and thread information (which is not same time from time)
+    return str.erase(1, 18).c_str();
 }
 
 #endif // _LOG_TESTS_HEADER_
