@@ -1,52 +1,28 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include "DynamicArrays.h"
 
 //using namespace std;
-
-// splits string to array of strings using Delim as delimiter
-void StringToArray(const std::string& str, THArray<std::string>& arr, const char Delim /*='\n'*/)
-{
-	std::string s;
-	unsigned int i = 0;
-	
-	while(i < str.length())
-	{
-		s = "";
-		while(i < str.length())
-		{
-			if(str[i] == Delim)
-			{
-				i++;
-				break;
-			}
-			s += str[i++];
-		}
-		
-		if(s.length() > 0)
-			arr.AddValue(s);
-		
-	}
-}
 
 
 //////////////////////////////////////////////////////////////////////
 //  THArrayException Class Implementation
 //////////////////////////////////////////////////////////////////////
+//const char* THArrayException::what() const noexcept //throw()
+//{
+	//std::string s = getErrorMessage();
+	//char * err = (char*)malloc(s.size() + 1); //on extra byte for
+	//if(err) // don't want to include <string.h>
+	//{
+	//	for(unsigned int i = 0; i < s.size(); i++)
+	//		err[i] = s[i];
+	//	err[s.size()] = '\0';
+	//}
+	//	
+	//return err;
 
-const char* THArrayException::what() const throw()
-{
-	std::string s = getErrorMessage();
-	char * err = (char*)malloc(s.size() + 1); //on extra byte for
-	if(err) // don't want to include <string.h>
-	{
-		for(unsigned int i = 0; i < s.size(); i++)
-			err[i] = s[i];
-		err[s.size()] = '\0';
-	}
-		
-	return err;
-};
+	//return whatText.c_str();
+//};
+
+
 
 //////////////////////////////////////////////////////////////////////
 //  THArrayRaw Class Implementation
@@ -61,19 +37,14 @@ THArrayRaw::THArrayRaw()
     FMemory   = NULL;
 }
 
-THArrayRaw::THArrayRaw(int ItemSize)
+THArrayRaw::THArrayRaw(uint ItemSize):THArrayRaw()
 {
-    Sorted    = false;
-    FCount    = 0;
-    FCapacity = 0;
-    FMemory   = NULL;
 	if(ItemSize > 0)
 		FItemSize = ItemSize;
 	else
 	{
 		throw THArrayException("Error in THArrayRaw: Cannot put zero (0) item size into constructor!");
 	}
-
 }
 
 /*void THArrayRaw::operator=(const THArrayRaw& a) {
@@ -84,9 +55,9 @@ THArrayRaw::THArrayRaw(int ItemSize)
 	Sorted=a.Sorted;
 }*/
 
-void THArrayRaw::Error(const int Value, const int vmin, const int vmax) const
+void THArrayRaw::Error(const uint Value, /*const uint vmin,*/ const int vmax) const
 {
-	if((vmin > Value) || (vmax < Value)) 
+	if(/*(vmin > Value) ||*/ (vmax < (int)Value))
 	{
 		char str[512];
 #if __STDC_SECURE_LIB__ //_MSC_VER < 1400
@@ -98,23 +69,23 @@ void THArrayRaw::Error(const int Value, const int vmin, const int vmax) const
 	}
 }
 
-inline void* THArrayRaw::CalcAddr(const int num) const 
+inline void* THArrayRaw::CalcAddr(const uint num) const 
 {
 	return (unsigned char *)FMemory + num * FItemSize;
 }
 
-void THArrayRaw::SetItemSize(const int Size)
+void THArrayRaw::SetItemSize(const uint Size)
 {
     ClearMem();
     if(Size > 0/*1*/)
 		FItemSize = Size;
 }
 
-void THArrayRaw::Delete(const int num)
+void THArrayRaw::Delete(const uint num)
 {
-	Error(num, 0, FCount - 1);
-	if (num < (FCount - 1))
-		memmove(GetAddr(num), GetAddr(num + 1), (FCount - num - 1) * FItemSize);
+	Error(num, FCount - 1);
+//	if (num < (FCount - 1))
+		memmove(GetAddr(num), GetAddr(num + 1), (FCount - (num + 1)) * FItemSize);
 	FCount--;
 }
 
@@ -126,24 +97,24 @@ void THArrayRaw::ClearMem()
 	FMemory = NULL;
 }
 
-void THArrayRaw::Get(const int num, void *pValue) const
+void THArrayRaw::Get(const uint num, void *pValue) const
 {
-	Error(num, 0, FCount - 1);
+	Error(num, FCount - 1);
 	if (pValue != NULL) 
 		memmove(pValue, CalcAddr(num), FItemSize);
 	return;
 }
 
-int  THArrayRaw::Add(const void *pValue)
+uint THArrayRaw::Add(const void *pValue)
 {
     Sorted = false;
 	return Insert(FCount, pValue);
 }
 
-void THArrayRaw::AddMany(const void *pValue, const int Count)
+void THArrayRaw::AddMany(const void *pValue, const uint Count)
 {
     Sorted = false;
-	if (Count <= 0) 
+	if (Count == 0) 
 	{ 
 		char str[512];
 #if __STDC_SECURE_LIB__//_MSC_VER < 1400
@@ -156,21 +127,21 @@ void THArrayRaw::AddMany(const void *pValue, const int Count)
     InsertMany(FCount, pValue, Count);
 }
 
-int	 THArrayRaw::Insert(const int num, const void *pValue)
+uint THArrayRaw::Insert(const uint Index, const void *pValue)
 {
-	Error(num, 0, FCount);
+	Error(Index, FCount);
 	if (FCount >= FCapacity) 
 		Grow();
 	FCount++;
-	memmove(CalcAddr(num + 1), CalcAddr(num), (FCount - num - 1) * FItemSize);
-	Update(num, pValue);
+	memmove(CalcAddr(Index + 1), CalcAddr(Index), (FCount - Index - 1) * FItemSize);
+	Update(Index, pValue);
     Sorted = false;
-	return num;
+	return Index;
 }
 
-void THArrayRaw::InsertMany(const int num,const void *pValue,const int Count)
+void THArrayRaw::InsertMany(const uint num, const void *pValue, const uint Count)
 {
-	Error(num, 0, FCount);
+	Error(num, FCount);
 	if ((FCount + Count) > FCapacity) 
 		GrowTo(FCount + Count);
 
@@ -180,9 +151,9 @@ void THArrayRaw::InsertMany(const int num,const void *pValue,const int Count)
 	UpdateMany(num, pValue, Count);
 }
 
-void THArrayRaw::Update(const int num, const void *pValue)
+void THArrayRaw::Update(const uint num, const void *pValue)
 {
-	Error(num, 0, FCount - 1);
+	Error(num, FCount - 1);
 	if (pValue != NULL) 
 		memmove(CalcAddr(num), pValue, FItemSize);
 	else
@@ -190,16 +161,16 @@ void THArrayRaw::Update(const int num, const void *pValue)
     Sorted = false;
 }
 
-void THArrayRaw::UpdateMany(const int num, const void *pValue, const int Count)
+void THArrayRaw::UpdateMany(const uint num, const void *pValue, const uint Count)
 {
-	Error(num + Count, 0, FCount);
+	Error(num + Count, FCount);
 	memmove(GetAddr(num), pValue, FItemSize * Count);
     Sorted = false;
 }
 
 void THArrayRaw::Grow()
 {
-	int Delta;
+	uint Delta;
 
 	if(FCapacity > 64)
 	{
@@ -216,9 +187,9 @@ void THArrayRaw::Grow()
 	SetCapacity(FCapacity + Delta);
 }
 
-void THArrayRaw::GrowTo(const int Count)
+void THArrayRaw::GrowTo(const uint Count)
 {
-	int Delta;
+	uint Delta;
 
 	if(Count <= FCapacity)
 		return;
@@ -239,14 +210,14 @@ void THArrayRaw::GrowTo(const int Count)
 	SetCapacity(FCapacity + Delta);
 }
 
-void THArrayRaw::SetCapacity(const int Value)
+void THArrayRaw::SetCapacity(const uint Value)
 {
 	if(Value > 0)
 	{
 		FMemory = realloc(FMemory, Value * FItemSize);
 		FCapacity = Value;
 	} 
-	else 
+	else  // Value == 0
 	{
 		free(FMemory);
 		FMemory = NULL;
@@ -256,7 +227,7 @@ void THArrayRaw::SetCapacity(const int Value)
 	  FCount = FCapacity;
 }
 
-void THArrayRaw::AddFillValues(const int Count)
+void THArrayRaw::AddFillValues(const uint Count)
 {
     if ((FCount + Count) > FCapacity)
 		GrowTo(FCount + Count);
@@ -276,10 +247,10 @@ void THArrayRaw::Hold()
     SetCapacity(FCount);
 }
 
-void THArrayRaw::Swap(const int Index1, const int Index2)
+void THArrayRaw::Swap(const uint Index1, const uint Index2)
 {
-	Error(Index1, 0, FCount - 1);
-	Error(Index2, 0, FCount - 1);
+	Error(Index1, FCount - 1);
+	Error(Index2, FCount - 1);
 
 	if(Index1 == Index2)
 		return;
@@ -304,7 +275,7 @@ void THArrayStringFix::Reverse()
 	std::string temp;
 	if (data.Count() <= 1)
 		return;
-	for (int i = 0; i < data.Count()/2; i++)
+	for (uint i = 0; i < data.Count()/2; i++)
 	{
 		temp = GetValue(i);
 		data.Update(i, (void*)GetValue(data.Count() - 1 - i).data());
@@ -312,39 +283,39 @@ void THArrayStringFix::Reverse()
 	}
 }
 
-char* THArrayStringFix::GetAddr(const int Index) const
+char* THArrayStringFix::GetAddr(const uint Index) const
 {
 	return (char *)(data.GetAddr(Index));
 }
 
-std::string THArrayStringFix::operator [](const int Index) const
+std::string THArrayStringFix::operator [](const uint Index) const
 {
 	return GetValue(Index);
 }
 
-void THArrayStringFix::SetValue(const int Index, const std::string& Value)
+void THArrayStringFix::SetValue(const uint Index, const std::string& Value)
 {
 	data.Update(Index, Value.c_str());
 }
 
-std::string THArrayStringFix::GetValue(const int Index) const 
+std::string THArrayStringFix::GetValue(const uint Index) const 
 {
 	std::string s(GetAddr(Index), data.GetItemSize());
 	return s;
 }
 
-int THArrayStringFix::AddChars(const void *pValue, const int len) 
+uint THArrayStringFix::AddChars(const void *pValue, const uint len) 
 {
-	int i;
-	char *b;
+	uint i;
+	char* b;
 
-	b = (char *)malloc(data.GetItemSize());
+	b = (char*)malloc(data.GetItemSize());
 	memset(b, 0, data.GetItemSize());
 
 	i = valuemin(len, data.GetItemSize());
 
 #if __STDC_SECURE_LIB__ //_MSC_VER < 1400  // less than VS2005
-    strncpy_s(b, i, (char *)pValue, i);
+    strncpy_s(b, i, (char*)pValue, i);
 #else
     strncpy(b, (char *)pValue, i);    
 #endif
@@ -462,4 +433,28 @@ bool AVariant::HaveData()
 }
 
 #endif //_USE_AVARIANT_
+
+// splits string to array of strings using Delim as delimiter
+void StringToArray(const std::string& str, THArrayString& arr, const char Delim /*= '\n'*/)
+{
+	std::string s;
+	uint i = 0;
+
+	while (i < str.length())
+	{
+		s = "";
+		while (i < str.length())
+		{
+			if (str[i] == Delim)
+			{
+				i++;
+				break;
+			}
+			s += str[i++];
+		}
+
+		if (s.length() > 0)
+			arr.AddValue(s);
+	}
+}
 
