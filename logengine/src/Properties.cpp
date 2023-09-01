@@ -12,18 +12,9 @@
 
 //namespace logengine {
 
-Properties::Properties() 
-{
-}
-
-Properties::~Properties() 
-{
-}
-
-
 std::string Properties::trim(std::string str)
 {
-		// remove any leading and traling spaces, just in case.
+	// remove any leading and traling spaces, just in case.
 	size_t strBegin = str.find_first_not_of(' ');
 	size_t strEnd = str.find_last_not_of(' ');
 	str.erase(strEnd + 1, str.size() - strEnd);
@@ -94,9 +85,8 @@ void Properties::load(std::istream& in)
 			continue;
 		}
 		
-		
 		// add to the map of properties
-		SetValue(trim(leftSide), trim(rightSide));
+		SetValue(trim(trimCRLF(leftSide)), trim(trimCRLF(rightSide))); // DelCRLF is required here for Linux since its \n and \r differ from Windows.
 	}    
 }
 

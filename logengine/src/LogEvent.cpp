@@ -12,12 +12,12 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-LogEvent::LogEvent()
-{
-	logEngine = NULL;
-}
-
-LogEvent::~LogEvent()
-{
-
-}
+//LogEvent::LogEvent()
+//{
+//	logEngine = NULL;
+//}
+//
+//LogEvent::~LogEvent()
+//{
+//
+//}

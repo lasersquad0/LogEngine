@@ -11,46 +11,55 @@
 #include <LogEvent.h>
 #include <fstream>
 #include <string>
+#include <chrono>
 
-#ifdef HAVE_STDARG_H
+#ifndef WIN32 //HAVE_STDARG_H assume we have Linux here
 #include <stdarg.h>
-#endif
-
-#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #endif
+
+//#ifdef HAVE_PTHREAD_H
+//#include <pthread.h>
+//#endif
+#include <iostream>
  
 
-const
- char* LogExt              = ".log";
- char* BackupExt           = ".bak";
+#define LogExt              ".log"
+#define BackupExt           ".bak"
 
- char* SecondMacro         = "%SEC%";
- char* MinuteMacro         = "%MIN%";
- char* HourMacro           = "%HOUR%";
+#define SecondMacro       "%SEC%"
+#define MinuteMacro       "%MIN%"
+#define HourMacro         "%HOUR%"
 
- char* DayMacro            = "%DAY%";
- char* MonthMacro          = "%MONTH%";
- char* YearMacro           = "%YEAR%";
+#define DayMacro          "%DAY%"
+#define MonthMacro        "%MONTH%"
+#define YearMacro         "%YEAR%"
 
- char* AppNameMacro        = "%APPNAME%";
+#define AppNameMacro      "%APPNAME%"
  //char* AppTitleMacro       = "%APPTITLE%";
- char* AppVersionMacro     = "%APPVERSION%";
+#define AppVersionMacro   "%APPVERSION%"
 
- char* DateTimeMacro       = "%DATETIME%";
- char* TimeMacro           = "%TIME%";
- char* DateMacro           = "%DATE%";
- char* ThreadMacro		   = "%THREAD%";
- char* MessageMacro        = "%MSG%";
+#define DateTimeMacro     "%DATETIME%"
+#define TimeMacro         "%TIME%"
+#define DateMacro         "%DATE%"
+#define ThreadMacro		  "%THREAD%"
+#define MessageMacro      "%MSG%"
 
- char* ExceptionMacro      = "%E%";
- char* ClassNameMacro	   = "%NAME%";
- char* ClassClassMacro	   = "%CLASS%";
+#define ExceptionMacro    "%E%"
+#define ClassNameMacro	  "%NAME%"
+#define ClassClassMacro	  "%CLASS%"
 
- char LogTypeChars[5] = " #! ";
+const char LogTypeChars[5] = " #! ";
 
-// 50K should be enough for one format line
-#define VARIABLE_LIST_BUFFER_SIZE 50*1024
+#define DefaultLinePattern TimeMacro "#" ThreadMacro " : " MessageMacro
+
+#define DefaultStartAppLine   "\n%APPNAME% %APPVERSION% startup\nLog is started at %DATETIME%."
+#define DefaultStopAppLine    "%APPNAME% %APPVERSION% normal shutdown \nLog stopped at %DATETIME%.\n"
+#define DefaultSeparatorLine  "----------------------------------------------------------------"
+
+
+// 10K should be enough for one format line
+#define VARIABLE_LIST_BUFFER_SIZE 10*1024
 
 //////////////////////////////////////////////////////////////////////
 // LogException
@@ -75,22 +84,6 @@ LogException::LogException(const char* formatstr, ...)
 
     Text = res;
 }
-
-LogException::LogException(const std::string& Message)
-{
-	Text = Message;
-}
-
-LogException::LogException(const LogException& ex)
-{
-	Text = ex.Text;
-}
-
-LogException::~LogException() throw()
-{
-	// nothing done
-}
-
 
 LogException& LogException::operator=(const LogException& ex)
 {
@@ -150,26 +143,25 @@ void TLogEngine::LogEngineProperties::Fill(const Properties& Props)
 	// if FileName is not specified then construct from ApplicationName
 	FileName		= Props.getString("LogFileName");
 	if (0 == FileName.length())  
-		FileName = Props.getString("ApplicationName", "noname.log") + LogExt;
+		FileName = Props.getString("ApplicationName", "noname") + LogExt;
 
 	ApplicationName = Props.getString("ApplicationName", "NONAME");
 	Version			= Props.getString("Version", "0.0.0.0");
 	MaxLogSize		= Props.getInt("MaxLogSize", DefaultMaxLogSize);
-	if(MaxLogSize == 0)
-		MaxLogSize	= DefaultMaxLogSize;
+	MaxLogSize == 0 ? MaxLogSize = DefaultMaxLogSize : MaxLogSize = MaxLogSize;
 
 	DetailLevel		= Props.getInt("DebugLevel", DefaultDetailLevel);
 	DetailLevel		= Props.getInt("DetailLevel", DetailLevel);
 	Threaded		= Props.getBool("Threaded", false);
 
-	SeparatorLine.ProcessPattern(Props.getString("SeparatorLine", "----------------------------------------------------------------"));
-	ErrorLine.ProcessPattern(Props.getString("ErrorLine", "%TIME% #%THREAD% : %MSG%"));
-	WarningLine.ProcessPattern(Props.getString("WarningLine", "%TIME% #%THREAD% : %MSG%"));
-	InfoLine.ProcessPattern(Props.getString("InfoLine", "%TIME% #%THREAD% : %MSG%"));
+	SeparatorLine.ProcessPattern(Props.getString("SeparatorLine", DefaultSeparatorLine));
+	ErrorLine.ProcessPattern(Props.getString("ErrorLine", DefaultLinePattern));
+	WarningLine.ProcessPattern(Props.getString("WarningLine", DefaultLinePattern));
+	InfoLine.ProcessPattern(Props.getString("InfoLine", DefaultLinePattern));
 	//LongExceptionLine  = "Exception '%E%' in %CLASSNAME% [ %CLASS% ].";
 	//ShortExceptionLine = "Exception '%E%'";
-	StartAppLine.ProcessPattern(Props.getString("StartAppLine", "\n %APPNAME% %APPVERSION% startup\nLog is started at %DATETIME%."));
-	StopAppLine.ProcessPattern(Props.getString("StopAppLine", "%APPNAME% %APPVERSION% normal shutdown \nLog stopped at %DATETIME%.\n"));
+	StartAppLine.ProcessPattern(Props.getString("StartAppLine", DefaultStartAppLine));
+	StopAppLine.ProcessPattern(Props.getString("StopAppLine", DefaultStopAppLine));
 }
 
 
@@ -177,25 +169,24 @@ void TLogEngine::LogEngineProperties::Fill(const Properties& Props)
 // TLogEngine
 //////////////////////////////////////////////////////////////////////
 
-TLogEngine::TLogEngine(void)
-  : LogQueue()
+TLogEngine::TLogEngine(void): LogQueue()
 { 
+	FLogStream    = nullptr;
 	FStarted	  = false;
 	FBytesWritten = 0;
-	FMessageCount[lmError] = 0;
+	FMessageCount[lmError]   = 0;
 	FMessageCount[lmWarning] = 0;
-	FMessageCount[lmInfo] = 0;
+	FMessageCount[lmInfo]    = 0;
 
 	hThread = THREAD_TYPE_INITIALIZER;
 
 	INIT_CRITICAL_SECTION(CriticalSection);
 }
 
-TLogEngine::TLogEngine(const Properties& Props)
-  : LogQueue()
+TLogEngine::TLogEngine(const Properties& Props): TLogEngine()//, LogQueue()
 {
 	FProperties.Fill(Props);
-	FLogStream = NULL;
+	/*FLogStream = NULL;
 	FStarted = false;
 	FBytesWritten = 0;
 	FMessageCount[lmError] = 0;
@@ -204,11 +195,10 @@ TLogEngine::TLogEngine(const Properties& Props)
 
 	hThread = THREAD_TYPE_INITIALIZER;
 
-	INIT_CRITICAL_SECTION(CriticalSection);
+	INIT_CRITICAL_SECTION(CriticalSection);*/
 }
 
-TLogEngine::TLogEngine(const std::string& ConfigFileName)
-  : LogQueue()
+TLogEngine::TLogEngine(const std::string& ConfigFileName): TLogEngine() // : LogQueue()
 {
 	Properties Props;
 	std::ifstream fin(ConfigFileName.c_str());
@@ -231,7 +221,7 @@ TLogEngine::TLogEngine(const std::string& ConfigFileName)
 	else 
 		params.MaxLogSize = DefaultMaxLogSize;
 */
-	FLogStream = NULL;
+	/*FLogStream = NULL;
 	FStarted = false;
 	FBytesWritten = 0;
 	FMessageCount[lmError] = 0;
@@ -240,7 +230,7 @@ TLogEngine::TLogEngine(const std::string& ConfigFileName)
 	
 	hThread = THREAD_TYPE_INITIALIZER;
 
-	INIT_CRITICAL_SECTION(CriticalSection);
+	INIT_CRITICAL_SECTION(CriticalSection);*/
 }
 
 TLogEngine::~TLogEngine()
@@ -254,9 +244,8 @@ TLogEngine::~TLogEngine()
 		DWORD exitCode;
 		if(GetExitCodeThread(hThread, &exitCode) == STILL_ACTIVE) // wait only when thread is running
 			WaitForSingleObject(hThread, INFINITE);
-#endif
-
-#ifdef HAVE_PTHREAD_H
+#else
+//#ifdef HAVE_PTHREAD_H
 		pthread_join(hThread, NULL);
 #endif
 	}
@@ -274,17 +263,16 @@ void TLogEngine::InitThread(void)
 	info->LogQueue = &LogQueue;
 	info->LogEngine = this; // <<<< TODO: is this correct?
 
-#ifdef HAVE_PTHREAD_H
+#ifdef WIN32
+	unsigned long threadID;
+	hThread = CreateThread(NULL, 0, ThreadProc, info, 0, &threadID); // <<<< TODO: right param?
+#else 
+//#ifdef HAVE_PTHREAD_H
 	if (pthread_create(&hThread, NULL, ThreadProc, info) != 0)
 	{
 		// TODO: exception on failure?
 	}
 #endif
-
-#ifdef WIN32
-	unsigned long threadID;
-	hThread = CreateThread(NULL, 0, ThreadProc, info, 0, &threadID); // <<<< TODO: right param?
-#endif /* HAVE_PTHREAD_H */
 }
 
 THREAD_OUT_TYPE THREAD_CALL_CONVENTION TLogEngine::ThreadProc(void *parameter)
@@ -338,13 +326,12 @@ void TLogEngine::Stop(void)
 
 	if(FProperties.Threaded) 
 	{
-		LogQueue.PushElement(NULL);
+		LogQueue.PushElement(nullptr);
 #ifdef WIN32
 		WaitForSingleObject(hThread, INFINITE);
 		CloseHandle(hThread);
-#endif
-
-#ifdef HAVE_PTHREAD_H
+#else
+//#ifdef HAVE_PTHREAD_H
 		if (pthread_join(hThread, NULL))
 		{
 			// TODO: exception on error?
@@ -355,7 +342,7 @@ void TLogEngine::Stop(void)
 	WriteStop();
 
 	delete FLogStream;
-	FLogStream = NULL;
+	FLogStream = nullptr;
 	FStarted = false;
 
 //	LEAVE_CRITICAL_SECTION(CriticalSection);
@@ -382,13 +369,13 @@ void TLogEngine::InternalWrite(const std::string& msg)
 
 void TLogEngine::WriteEvent(LogEvent* event)
 {
-	if(event->detailLevel > FProperties.DetailLevel)
+	if(event->m_detailLevel > FProperties.DetailLevel)
 		return;
 	
-	switch(event->msgType)
+	switch(event->m_msgType)
 	{
 		case lmNone:
-			InternalWrite(event->message);
+			InternalWrite(event->m_message);
 			FMessageCount[lmNone]++;
 			break;
 		case lmInfo:
@@ -404,54 +391,55 @@ void TLogEngine::WriteEvent(LogEvent* event)
 			FMessageCount[lmError]++;
 			break;
 		default:
-			InternalWrite("UNRECOGNIZED MESSAGE TYPE " + event->message);
+			InternalWrite("UNRECOGNIZED MESSAGE TYPE " + event->m_message);
 			FMessageCount[lmNone]++;
 			break;
 	}	
 }
 
-std::string TLogEngine::FormatStr(const std::string& str, int /*DetailLevel = 0*/)
+std::string TLogEngine::FormatStr(const std::string& str, uint /*DetailLevel = 0*/)
 {
 	return str;
 }
 
-std::string TLogEngine::FormatInfo(const std::string& str, int DetailLevel /*= 0*/)
+std::string TLogEngine::FormatInfo(const std::string& str, uint DetailLevel /*= 0*/)
 {
-	timeb tm;
-	ftime(&tm);
-	LogEvent event(str, lmInfo, GET_THREAD_ID(), tm, DetailLevel, this);
+	//timeb tm;
+	//ftime(&tm);
+	
+	LogEvent event(str, lmInfo, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
 	
 	return LogTypeChars[lmInfo] + FProperties.InfoLine.format(event);
 }
 
-std::string TLogEngine::FormatWarning(const std::string& str, int DetailLevel /*= 0*/)
+std::string TLogEngine::FormatWarning(const std::string& str, uint DetailLevel /*= 0*/)
 {
-	timeb tm;
-	ftime(&tm);
-	LogEvent event(str, lmWarning, GET_THREAD_ID(), tm, DetailLevel, this);
+	//timeb tm;
+	//ftime(&tm);
+	LogEvent event(str, lmWarning, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
 	
 	return LogTypeChars[lmWarning] + FProperties.WarningLine.format(event);
 }
 
-std::string TLogEngine::FormatError(const std::string& str, int DetailLevel /*= 0*/)
+std::string TLogEngine::FormatError(const std::string& str, uint DetailLevel /*= 0*/)
 {
-	timeb tm;
-	ftime(&tm);
-	LogEvent event(str, lmError, GET_THREAD_ID(), tm, DetailLevel, this);
+	//timeb tm;
+	//ftime(&tm);
+	LogEvent event(str, lmError, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
 	
 	return LogTypeChars[lmError] + FProperties.ErrorLine.format(event);
 }
 
-void TLogEngine::WriteStr(const std::string& str, int DetailLevel /*=0*/)
+void TLogEngine::WriteStr(const std::string& str, uint DetailLevel /*=0*/)
 {
 	if(DetailLevel > FProperties.DetailLevel)
 		return;
 
 	if(FProperties.Threaded) 
 	{	
-		timeb tm;
-		ftime(&tm);
-		LogEvent* event = new LogEvent(str, lmNone, GET_THREAD_ID(), tm, DetailLevel, this);
+		//timeb tm;
+		//ftime(&tm);
+		LogEvent* event = new LogEvent(str, lmNone, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
 		
 		LogQueue.PushElement(event);
 	}
@@ -462,16 +450,16 @@ void TLogEngine::WriteStr(const std::string& str, int DetailLevel /*=0*/)
 	}
 }
 
-void TLogEngine::WriteInfo(const std::string& str, int DetailLevel /*=0*/)
+void TLogEngine::WriteInfo(const std::string& str, uint DetailLevel /*=0*/)
 {
 	if(DetailLevel > FProperties.DetailLevel)
 		return;
 
 	if(FProperties.Threaded) 
 	{	
-		timeb tm;
-		ftime(&tm);
-		LogEvent* event = new LogEvent(str, lmInfo, GET_THREAD_ID(), tm, DetailLevel, this);
+		//timeb tm;
+		//ftime(&tm);
+		LogEvent* event = new LogEvent(str, lmInfo, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
 		
 		LogQueue.PushElement(event);
 	}
@@ -486,16 +474,16 @@ void TLogEngine::WriteInfo(const std::string& str, int DetailLevel /*=0*/)
 	}
 }
 
-void TLogEngine::WriteWarning(const std::string& str, int DetailLevel /*=0*/)
+void TLogEngine::WriteWarning(const std::string& str, uint DetailLevel /*=0*/)
 {
 	if(DetailLevel > FProperties.DetailLevel)
 		return;
 
 	if(FProperties.Threaded) 
 	{	
-		timeb tm;
-		ftime(&tm);
-		LogEvent* event = new LogEvent(str, lmWarning, GET_THREAD_ID(), tm, DetailLevel, this);
+		//timeb tm;
+		//ftime(&tm);
+		LogEvent* event = new LogEvent(str, lmWarning, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
 		
 		LogQueue.PushElement(event);
 	}
@@ -510,16 +498,16 @@ void TLogEngine::WriteWarning(const std::string& str, int DetailLevel /*=0*/)
 	}
 }
 
-void TLogEngine::WriteError(const std::string& str, int DetailLevel /*=0*/)
+void TLogEngine::WriteError(const std::string& str, uint DetailLevel /*=0*/)
 {
 	if(DetailLevel > FProperties.DetailLevel)
 		return;
 
 	if(FProperties.Threaded) 
 	{	
-		timeb tm;
-		ftime(&tm);
-		LogEvent* event = new LogEvent(str, lmError, GET_THREAD_ID(), tm, DetailLevel, this);
+		//timeb tm;
+		//ftime(&tm);
+		LogEvent* event = new LogEvent(str, lmError, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
 		
 		LogQueue.PushElement(event);
 	}
@@ -534,7 +522,7 @@ void TLogEngine::WriteError(const std::string& str, int DetailLevel /*=0*/)
 	}
 }
 
-void TLogEngine::WriteStrFmt(int DetailLevel, const char* formatstr, ...)
+void TLogEngine::WriteStrFmt(uint DetailLevel, const char* formatstr, ...)
 {
 	if(DetailLevel > FProperties.DetailLevel)
 		return;
@@ -553,7 +541,7 @@ void TLogEngine::WriteStrFmt(int DetailLevel, const char* formatstr, ...)
 	WriteStr(res, DetailLevel);
 }
 
-void TLogEngine::WriteInfoFmt(int DetailLevel, const char* formatstr, ...)
+void TLogEngine::WriteInfoFmt(uint DetailLevel, const char* formatstr, ...)
 {
 	if(DetailLevel > FProperties.DetailLevel)
 		return;
@@ -573,7 +561,7 @@ void TLogEngine::WriteInfoFmt(int DetailLevel, const char* formatstr, ...)
 	WriteInfo(res, DetailLevel);
 }
 
-void TLogEngine::WriteWarningFmt(int DetailLevel, const char* formatstr, ...)
+void TLogEngine::WriteWarningFmt(uint DetailLevel, const char* formatstr, ...)
 {
 	if(DetailLevel > FProperties.DetailLevel)
 		return;
@@ -593,7 +581,7 @@ void TLogEngine::WriteWarningFmt(int DetailLevel, const char* formatstr, ...)
 	WriteWarning(res, DetailLevel);
 }
 
-void TLogEngine::WriteErrorFmt(int DetailLevel, const char* formatstr, ...)
+void TLogEngine::WriteErrorFmt(uint DetailLevel, const char* formatstr, ...)
 {
 	if(DetailLevel > FProperties.DetailLevel)
 		return;
@@ -615,22 +603,22 @@ void TLogEngine::WriteErrorFmt(int DetailLevel, const char* formatstr, ...)
 
 void TLogEngine::WriteStart()
 {
-	std::string tmp,s;
+	//std::string tmp,s;
 
-	timeb tm;
-	ftime(&tm);
-	LogEvent event("", lmNone, GET_THREAD_ID(), tm, 0, this);
+	//timeb tm;
+	//ftime(&tm);
+	LogEvent event("", lmNone, GET_THREAD_ID(), GetCurrTime(), 0, this);
 	
 	InternalWrite(FProperties.StartAppLine.format(event));
 }
 
 void TLogEngine::WriteStop()
 {
-	std::string tmp,s;
+	//std::string tmp,s;
 
-	timeb tm;
-	ftime(&tm);
-	LogEvent event("", lmNone, GET_THREAD_ID(), tm, 0, this);
+	//timeb tm;
+	//ftime(&tm);
+	LogEvent event("", lmNone, GET_THREAD_ID(), GetCurrTime(), 0, this);
 	
 	InternalWrite(FProperties.StopAppLine.format(event));
 }
@@ -686,7 +674,7 @@ void TLogEngine::TruncLogFile(void)
 	ENTER_CRITICAL_SECTION(CriticalSection);
 
 	delete FLogStream;
-	FLogStream = NULL;
+	FLogStream = nullptr;
 
 	std::string newName = GenerateBackupName();
 	remove(newName.c_str());
@@ -703,7 +691,7 @@ void TLogEngine::Flush()
 }
 
 // Default value of instance of LogEngine
-TLogEngine* TLogEngine::loginstance = NULL;
+TLogEngine* TLogEngine::loginstance = nullptr;
 
 void TLogEngine::InitLogEngine(const std::string& ConfigFileName)
 {
@@ -743,13 +731,13 @@ void TLogEngine::CloseLogEngine()
 	if(loginstance)
 	{
 		delete loginstance;	
-		loginstance = NULL;
+		loginstance = nullptr;
 	}
 }
 
 TLogEngine* TLogEngine::getInstance(const Properties& Props)
 {
-	if(loginstance == NULL)
+	if(loginstance == nullptr)
 	{
 		loginstance = new TLogEngine(Props);
 		loginstance->Start();
@@ -761,7 +749,7 @@ TLogEngine* TLogEngine::getInstance(const Properties& Props)
 
 TLogEngine* TLogEngine::getInstance()
 {
-	if(NULL == loginstance)
+	if(nullptr == loginstance)
 	{
 		loginstance = new TLogEngine();
 		loginstance->Start();

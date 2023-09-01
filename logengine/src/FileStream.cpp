@@ -24,25 +24,25 @@
 //////////////////////////////////////////////////////////////////////
 
 
-IOException::IOException(const char * Message)
-{
-	Text = Message; 
-}
-
-IOException::IOException(const std::string& Message)
-{
-	Text = Message;
-}
-
-IOException::IOException(const IOException& ex)
-{
-	Text = ex.Text;
-}
-
-IOException::~IOException() throw()
-{
-	// nothing done
-}
+//IOException::IOException(const char * Message)
+//{
+//	Text = Message; 
+//}
+//
+//IOException::IOException(const std::string& Message)
+//{
+//	Text = Message;
+//}
+//
+//IOException::IOException(const IOException& ex)
+//{
+//	Text = ex.Text;
+//}
+//
+//IOException::~IOException() throw()
+//{
+//	// nothing done
+//}
 
 const char* IOException::what() const throw()
 {
@@ -89,15 +89,15 @@ void TStream::operator <<(double Value)
 	Write(&Value,sizeof(Value));
 }
 
-void TStream::operator <<(char *Value) 
+void TStream::operator <<(const char *Value) 
 {
-	Write(Value,strlen(Value));
-	Write((void*)"\r\n",2);
+	Write(Value, strlen(Value));
+	Write((void*)"\r\n", 2u);
 }
 void TStream::operator <<(std::string& Value) 
 {
 	Write((void*)Value.data(),Value.length());
-	Write((void*)"\r\n",2);
+	Write((void*)"\r\n", 2u);
 }
 char TStream::ReadChar() 
 {
@@ -171,9 +171,9 @@ TFileStream::TFileStream(const std::string& FileName, const TFileMode fMode)
 #ifdef WIN32
 	switch (fMode)
 	{ 
-	case fmRead:     hf = open(FFileName.c_str(), O_RDONLY | O_BINARY);break; 
-	case fmWrite:    hf = open(FFileName.c_str(), O_WRONLY | O_CREAT|O_BINARY, S_IREAD | S_IWRITE);break;
-	case fmReadWrite:hf = open(FFileName.c_str(), O_RDWR | O_CREAT | O_BINARY, S_IREAD | S_IWRITE);break;
+	case fmRead:     hf = _open(FFileName.c_str(), O_RDONLY | O_BINARY);break; 
+	case fmWrite:    hf = _open(FFileName.c_str(), O_WRONLY | O_CREAT|O_BINARY, S_IREAD | S_IWRITE);break;
+	case fmReadWrite:hf = _open(FFileName.c_str(), O_RDWR | O_CREAT | O_BINARY, S_IREAD | S_IWRITE);break;
 	}
 #else
 	switch (fMode)
@@ -200,7 +200,7 @@ TFileStream::~TFileStream()
 	hf = 0;
 }
 
-int TFileStream::Read(void *Buffer, int Size)
+int TFileStream::Read(void *Buffer, size_t Size)
 {
 	if(FFileMode == fmWrite)
 		throw IOException("File opened in write-only mode. Can't read!");
@@ -218,11 +218,11 @@ int TFileStream::Read(void *Buffer, int Size)
 
 int TFileStream::WriteCRLF(void)
 {
-	char *temp = "\n";
+	const char *temp = "\n";
 	return Write(temp, strlen(temp));
 }
 
-int TFileStream::Write(const void *Buffer, const int Size)
+int TFileStream::Write(const void *Buffer, const size_t Size)
 {
 	if(FFileMode == fmRead)
 		throw IOException("File opened in read-only mode. Can't write!");
@@ -238,7 +238,7 @@ int TFileStream::Write(const void *Buffer, const int Size)
 	return c;
 }
 
-int TFileStream::WriteLn(const void *Buffer, const int Size)
+int TFileStream::WriteLn(const void *Buffer, const size_t Size)
 {
 	int c = Write(Buffer, Size);
 	return WriteCRLF() + c;

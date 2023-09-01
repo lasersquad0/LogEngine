@@ -14,6 +14,8 @@
 #endif // _MSC_VER > 1000
 
 #include <vector>
+#include <chrono>
+#include <iomanip>
 #include "functions.h"
 #include "DynamicArrays.h"
 #include "LogEvent.h"
@@ -27,18 +29,7 @@ class Holder
 {
 public:
 	virtual std::string format(LogEvent& event) = 0;
-};
-
-class LiteralHolder: public Holder
-{
-private:
-	std::string value;
-public:
-	LiteralHolder(std::string value){ this->value = value; }
-#pragma warning(push)
-#pragma warning(disable: 4100)
-	std::string format(LogEvent& event){ return value; }
-#pragma warning(pop)
+	virtual ~Holder() {};
 };
 
 class DateHolder: public Holder
@@ -46,12 +37,13 @@ class DateHolder: public Holder
 public:
 	std::string format(LogEvent& event)
 	{ 
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+#if 1 //__STDC_SECURE_LIB__ //_MSC_VER < 1400
         // TODO: check for return value
-        tm tp;
-        localtime_s(&tp, &(event.time.time));
+		//const std::time_t tt = std::chrono::system_clock::to_time_t(event.time);
+        //tm tp;
+        //localtime_s(&tp, &(event.time.time));
         char ss[100];
-        strftime(ss, 100, "%d-%b-%Y", &tp);
+        std::strftime(ss, 100, "%d-%b-%Y", &event.m_time);
         return ss;
 #else
         struct tm *tp = localtime(&(event.time.time));
@@ -67,12 +59,17 @@ class TimeHolder: public Holder
 public:
 	std::string format(LogEvent& event)
 	{ 
-#if __STDC_SECURE_LIB__ // _MSC_VER < 1400
+#if 1//__STDC_SECURE_LIB__ // _MSC_VER < 1400
         //TODO: check return value here
-        tm tp;
-        localtime_s(&tp, &(event.time.time));
-        char ss[100];
-        strftime(ss, 100, "%X", &tp);
+
+		//const std::time_t tt = std::chrono::system_clock::to_time_t(event.time);
+		//std::string = std::put_time(std::localtime(&tt), "%F %T");
+		
+        //tm tp;
+        //localtime_s(&tp, &(event.time.time));
+        
+		char ss[100];
+        std::strftime(ss, 100, "%X", &event.m_time);
         return ss;
 #else        
         struct tm *tp = localtime(&(event.time.time));
@@ -89,12 +86,14 @@ class DateTimeHolder: public Holder
 public:
 	std::string format(LogEvent& event)
 	{ 
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+#if 1//__STDC_SECURE_LIB__ //_MSC_VER < 1400
         // TODO: check return value here
-        tm tp;
-        localtime_s(&tp, &(event.time.time));
+		//const std::time_t tt = std::chrono::system_clock::to_time_t(event.time);
+
+        //tm tp;
+        //localtime_s(&tp, &(event.time.time));
         char ss[100];
-        strftime(ss, 100, "%d-%b-%Y %X", &tp);
+        std::strftime(ss, 100, "%d-%b-%Y %X", &event.m_time);
         return ss;
 #else        
         struct tm *tp = localtime(&(event.time.time));
@@ -108,13 +107,13 @@ public:
 class MessageHolder: public Holder
 {
 public:
-	std::string format(LogEvent& event){ return event.message; }
+	std::string format(LogEvent& event){ return event.m_message; }
 };
 
 class ThreadHolder: public Holder
 {
 public:
-	std::string format(LogEvent& event){ return IntToStr(event.threadID, 4); }
+	std::string format(LogEvent& event){ return IntToStr(event.m_threadID, 4); }
 };
 
 class AppNameHolder: public Holder
@@ -129,12 +128,27 @@ public:
 	std::string format(LogEvent& event);
 };
 
+#pragma warning(push)
+#pragma warning(disable : 4100)
+
+class LiteralHolder : public Holder
+{
+private:
+	std::string value;
+public:
+	LiteralHolder(std::string value) { this->value = value; }
+	std::string format(LogEvent& event) { return value; }
+};
+
 class OSHolder: public Holder
 {
 public:
+
 	std::string format(LogEvent& event)
 	{
+
 		return "<OS>"; 
+
 	}
 };
 
@@ -160,10 +174,13 @@ public:
 	}
 };
 
+#pragma warning(pop)
+
+
 class DetailLevelHolder: public Holder
 {
 public:
-	std::string format(LogEvent& event){ return IntToStr(event.detailLevel); }
+	std::string format(LogEvent& event){ return IntToStr(event.m_detailLevel); }
 };
 
 class Line

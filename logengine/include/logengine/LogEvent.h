@@ -11,6 +11,7 @@
 
 #include <string>
 #include <sys/timeb.h>
+#include "functions.h"
 
 //#include <sys/types.h>
 
@@ -27,25 +28,26 @@ class LogEvent
 {
 protected:
 public:
-	TLogEngine* logEngine;
-	std::string message;
-	TLogMessageType msgType;
-	int threadID;
-	timeb time;
-	int detailLevel;
-	              
-	LogEvent();
+	TLogEngine* m_logEngine;
+	TLogMessageType m_msgType;
+	unsigned int m_threadID;
+	struct tm m_time;
+	unsigned int m_detailLevel;
+	std::string m_message;  
+
+	LogEvent() :  m_logEngine(nullptr) , m_msgType(lmNone), m_threadID(0), m_time{0}, m_detailLevel(0), m_message() {}
 	LogEvent(
 		std::string message, 
 		TLogMessageType msgType, 
-		int threadID, 
-		timeb time, 
-		int detailLevel,
+		unsigned int threadID, 
+		struct tm time, 
+		unsigned int detailLevel,
 		TLogEngine* log
 		)
-		:message(message), msgType(msgType), threadID(threadID), time(time), 
-		detailLevel(detailLevel), logEngine(log){}
-	virtual ~LogEvent();
+		:m_message(message), m_msgType(msgType), m_threadID(threadID), m_time(time), 
+		m_detailLevel(detailLevel), m_logEngine(log) {}
+
+	virtual ~LogEvent() {};
 	
 };
 

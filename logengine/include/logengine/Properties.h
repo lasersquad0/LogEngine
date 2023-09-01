@@ -18,8 +18,8 @@
 class Properties : public THash<std::string, std::string> 
 {
 public:
-	Properties();
-	virtual ~Properties();
+	Properties() {}
+	virtual ~Properties() {}
 
 	virtual void load(std::istream& in);
 	virtual void save(std::ostream& out);

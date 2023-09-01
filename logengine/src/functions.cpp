@@ -1,7 +1,11 @@
-#include <stdio.h>
+#ifndef WIN32
+#include <string.h>
+//#include <stdio.h>
+//#include <ctype.h>
+#endif
+
 #include <string>
 #include <sys/timeb.h>
-#include <ctype.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -100,7 +104,7 @@ bool StrToBool(std::string& Value)
 // extracts filename from path with filename
 std::string ExtractFileName(const std::string& FileName)
 {
-	int i = FileName.length();
+	int i = (int)FileName.length();
 	while(i >= 0)
 	{
 		if((FileName[i] == '\\')||(FileName[i] == '/'))
@@ -113,7 +117,7 @@ std::string ExtractFileName(const std::string& FileName)
 
 std::string StripFileExt(const std::string& FileName)
 {
-	int i = FileName.length(); 
+	size_t i = FileName.length(); 
 
 	if(i == 0)
 		return "";
@@ -165,29 +169,46 @@ std::string StringReplace(const std::string& S, const std::string& SearchPattern
 	return Result;
 }
 
-// retrieves current time as std::string
-std::string GetCurrTime(void)
-{ 
-    tm tp;
-    tm *ptp = &tp;
+tm_point GetCurrTimePoint()
+{
+	return std::chrono::system_clock::now();
+}
 
-	timeb t;
-	ftime(&t);
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
-	localtime_s(ptp, &(t.time));
-#else
-    ptp = localtime(&(t.time));    
+struct tm GetCurrTime()
+{
+	const std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	return *std::localtime(&tt);	
+}
+
+
+// retrieves current time as std::string
+std::string GetCurrTimeAsString(void)
+{ 
+    //tm tp;
+    //tm *ptp = &tp;
+
+	//timeb t;
+	//ftime(&t);
+//#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+	//localtime_s(ptp, &(t.time));
+//#else
+ //   ptp = localtime(&(t.time));    
     
-#endif
+//#endif
+	std::chrono::system_clock::time_point stime = GetCurrTimePoint();
+	std::chrono::system_clock::time_point sstime = std::chrono::time_point_cast<std::chrono::seconds>(stime); // round to seconds
+	long long millis = std::chrono::duration_cast<std::chrono::milliseconds>(stime - sstime).count();
+
+	const std::time_t tt = std::chrono::system_clock::to_time_t(stime);
 
     char ss[100];
-    strftime(ss, 100, "%X", ptp); 
+    std::strftime(ss, 100, "%X", std::localtime(&tt));
 
 	char sss[20];
 #if __STDC_SECURE_LIB__ //_MSC_VER < 1400    
-	sprintf_s(sss, 20, ".%03d", t.millitm);
+	sprintf_s(sss, 20, ".%03lld", millis);
 #else
-    sprintf(sss, ".%03d", t.millitm);    
+    sprintf(sss, ".%03lld", millis);    
 #endif
 
 	std::string s = DelCRLF(ss);
@@ -195,42 +216,48 @@ std::string GetCurrTime(void)
 }
 
 // retrieves current date as std::string
-std::string GetCurrDate(void)
+std::string GetCurrDateAsString(void)
 {  	
-    tm tp;
-    tm* ptp = &tp;
+    //tm tp;
+    //tm* ptp = &tp;
 
-	time_t t = time(NULL);
+	//time_t t = time(NULL);
 
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
-    localtime_s(ptp, &t);
-#else
-    ptp = localtime(&t);    
-#endif	
-
+//#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+//    localtime_s(ptp, &t);
+//#else
+//    ptp = localtime(&t);    
+//#endif	
+	struct tm t = GetCurrTime();
     char ss[100];
-    strftime(ss, 100, "%d-%m-%Y", ptp);
+    std::strftime(ss, 100, "%d-%m-%Y", &t);
 
-	std::string s = DelCRLF(ss);
-	return s;
+	//std::string s = DelCRLF(ss);
+	return ss;
 }
 
-
-// retrieves current datetime as AString
-std::string GetCurrDateTime(void)
+// retrieves current datetime as string
+std::string GetCurrDateTimeAsString(void)
 {
-	time_t t = time(NULL);
-	std::string s = ctime(&t);
-	s = DelCRLF(s);
-	return s;
+	//time_t t = time(NULL);
+	//std::string s = ctime(&t);
+	//s = DelCRLF(s);
+	struct tm t = GetCurrTime();
+	char ss[100];
+	std::strftime(ss, 100, "%c", &t);
+
+	return ss;
 }
 
 // converts native datetime value into AString
 std::string DateTimeToStr(time_t t)
 {
-	std::string s = ctime(&t);
-	s = DelCRLF(s);
-	return s;
+	char ss[100];
+	std::strftime(ss, 100, "%c", std::localtime(&t));
+
+	//std::string s = ctime(&t);
+	//s = DelCRLF(s);
+	return ss;
 }
 
 // gets formatted current datetime
@@ -270,12 +297,23 @@ std::string DelCRLF(const std::string& S)
 	res.resize(S.length());
 	for(unsigned int i = 0; i < S.length(); i++)
 	{
-		if(S[i] != '\n')
+		if(S[i] != '\n' && S[i] != '\r')
 			res[j++] = S[i];
 		res[j] = '\0';
 	}
 	res = res.erase(strlen(res.c_str()));
 	return res;
+}
+
+std::string trimCRLF(std::string S)
+{
+	// remove any leading and traling spaces, just in case.
+	size_t strBegin = S.find_first_not_of("\0x0D\0x10");
+	size_t strEnd = S.find_last_not_of("\0x0D\0x10");
+	S.erase(strEnd + 1, S.size() - strEnd);
+	S.erase(0, strBegin);
+	
+	return S;
 }
 
 bool EqualNCase(const std::string& str1, const std::string& str2)

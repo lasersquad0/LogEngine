@@ -69,7 +69,7 @@ void THArrayRaw::Error(const uint Value, /*const uint vmin,*/ const int vmax) co
 	}
 }
 
-inline void* THArrayRaw::CalcAddr(const uint num) const 
+void* THArrayRaw::CalcAddr(const uint num) const 
 {
 	return (unsigned char *)FMemory + num * FItemSize;
 }

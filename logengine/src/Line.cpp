@@ -12,16 +12,16 @@
 
 std::string AppNameHolder::format(LogEvent& event)
 {
-	if(event.logEngine)
-		return event.logEngine->GetAppName();
+	if(event.m_logEngine)
+		return event.m_logEngine->GetAppName();
 	else
 		return "";
 }
 	
 std::string AppVersionHolder::format(LogEvent& event)
 {
-	if(event.logEngine)
-		return event.logEngine->GetVersionInfo(); 
+	if(event.m_logEngine)
+		return event.m_logEngine->GetVersionInfo(); 
 	else
 		return "";
 }

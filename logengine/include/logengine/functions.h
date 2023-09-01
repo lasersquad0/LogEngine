@@ -1,6 +1,13 @@
+
 #include <time.h>
 #include <string>
-  
+#include <chrono>
+
+typedef std::chrono::time_point<std::chrono::system_clock> tm_point;
+
+tm_point GetCurrTimePoint();
+struct tm GetCurrTime();
+
 
 // truncates Value to Precision digits after point
 double round(const double Value,const int Precision);
@@ -28,16 +35,16 @@ std::string StripFileExt(const std::string& FileName);
 std::string StringReplace(const std::string& S,const std::string& OldPattern,const std::string& NewPattern);
 
 // converts date to string representation
-std::string DateToString(int Date);
+//std::string DateToString(int Date);
 
 // retrieves current date as std::string
-std::string GetCurrDate(void);
+std::string GetCurrDateAsString(void);
 
 // retrieves current time as std::string
-std::string GetCurrTime(void);
+std::string GetCurrTimeAsString(void);
 
 // retrieves current datetime as std::string
-std::string GetCurrDateTime(void);
+std::string GetCurrDateTimeAsString(void);
 
 // gets formatted current datetime
 std::string FormatCurrDateTime(const std::string& FormatStr);
@@ -47,6 +54,9 @@ std::string DateTimeToStr(time_t t);
 
 // deletes all \n symbol from string
 std::string DelCRLF(const std::string& S);
+
+// removes leading and trailing \n and \r symbols
+std::string trimCRLF(std::string S);
 
 // compares two strings case insensitive
 bool EqualNCase(const std::string& str1,const std::string& str2);

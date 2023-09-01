@@ -16,7 +16,7 @@
 #ifdef WIN32
 #include <windows.h>
 
-#define INIT_CRITICAL_SECTION(CritSec)   InitializeCriticalSection(&CritSec);
+#define INIT_CRITICAL_SECTION(CritSec)   InitializeCriticalSection(&CritSec)
 #define ENTER_CRITICAL_SECTION(CritSec)	 EnterCriticalSection (&CritSec)
 #define LEAVE_CRITICAL_SECTION(CritSec)  LeaveCriticalSection (&CritSec)
 #define DELETE_CRITICAL_SECTION(CritSec) DeleteCriticalSection(&CritSec)
@@ -30,12 +30,12 @@
 
 #define THREAD_TYPE_INITIALIZER NULL
 
-#endif
+#else  // if WIN32 is not defined then it is Linux.
 
-#ifdef HAVE_PTHREAD_H
+//#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 
-#define INIT_CRITICAL_SECTION(CritSec)   pthread_mutex_init(&CritSec, NULL)
+#define INIT_CRITICAL_SECTION(CritSec)   CritSec = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP //pthread_mutex_init(&CritSec, NULL)
 #define ENTER_CRITICAL_SECTION(CritSec)	 pthread_mutex_lock(&CritSec)
 #define LEAVE_CRITICAL_SECTION(CritSec)  pthread_mutex_unlock(&CritSec)
 #define DELETE_CRITICAL_SECTION(CritSec) pthread_mutex_destroy(&CritSec)

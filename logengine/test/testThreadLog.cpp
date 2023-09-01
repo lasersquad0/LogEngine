@@ -1,4 +1,3 @@
-#include <string>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -8,6 +7,7 @@
 #include <unistd.h>
 #endif
 
+#include "Shared.h"
 #include "functions.h"
 #include "LogEngine.h"
 #include "testThreadLog.h"
@@ -67,7 +67,7 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
 
 void LogEngineThreadLogTest::testCallLogFromManyThreads()
 {
-	printf("testLogManyThreads ....");
+	//printf("testLogManyThreads ....");
 
 	Properties prop;
 	prop.SetValue("LogFileName", "ThreadsLog.log");
@@ -94,9 +94,8 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 
 #ifdef WIN32
 		hThread = CreateThread(NULL, 0, testThreadProc, &info, 0, &thrID);
-#endif
-
-#ifdef HAVE_PTHREAD_H
+#else
+//#ifdef HAVE_PTHREAD_H
 		pthread_create(&hThread, NULL, testThreadProc, &info);
 #endif
 		
@@ -126,9 +125,8 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 	{
 		log->WriteError("WaitForMultipleObjects FAILED!");
 	}
-#endif
-
-#ifdef HAVE_PTHREAD_H
+#else
+//#ifdef HAVE_PTHREAD_H
 	std::vector<THREAD_TYPE>::iterator j;
 	for (j = handles.begin(); j != handles.end(); j++)
 	    pthread_join(*j, NULL);
@@ -136,13 +134,13 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 	
 	CloseLogEngine();
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 
 void LogEngineThreadLogTest::testThreadLog1()
 {
-	printf("testThreadLog1 ...");
+	//printf("testThreadLog1 ...");
 
 	Properties prop;
 	prop.SetValue("LogFileName", "ThreadedLog.log");
@@ -159,5 +157,5 @@ void LogEngineThreadLogTest::testThreadLog1()
 
 	CloseLogEngine();
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }

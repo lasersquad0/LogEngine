@@ -2,7 +2,6 @@
 #define _LOG_TESTS_HEADER_
 
 #include <string>
-
 #include <cppunit/extensions/HelperMacros.h>
 
 /* 
@@ -58,7 +57,9 @@ public:
 inline std::string cutLog(std::string str)
 {
     //return str.replace(1, 17, "").c_str(); // cut off time and thread information (which is not same time from time)
-    return str.erase(1, 18).c_str();
+    size_t pos = str.find_first_of('#', 1);
+    pos = str.find_first_of(':', pos +  1);
+    return str.erase((size_t)1, pos+1).c_str();
 }
 
 #endif // _LOG_TESTS_HEADER_

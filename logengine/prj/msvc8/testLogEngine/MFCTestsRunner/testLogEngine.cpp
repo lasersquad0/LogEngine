@@ -107,8 +107,7 @@ BOOL CUnitTestsRunnerApp::InitInstance()
 }
 
 
-void 
-CUnitTestsRunnerApp::RunUnitTests()
+void CUnitTestsRunnerApp::RunUnitTests()
 {
   CPPUNIT_NS::MfcUi::TestRunner runner;
   runner.addTest( CPPUNIT_NS::TestFactoryRegistry::getRegistry().makeTest() );

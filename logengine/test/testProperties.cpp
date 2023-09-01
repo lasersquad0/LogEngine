@@ -1,11 +1,10 @@
-#include <fstream>
+
+#include "Shared.h"
 #include "testProperties.h"
 #include "Properties.h"
 //#include "debug_support.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION( LogEnginePropertiesTest );
-
-#define TEST_FILES_FOLDER "..\\..\\..\\..\\test\\testFiles\\"
 
 void LogEnginePropertiesTest::setUp ()
 {
@@ -19,9 +18,10 @@ void LogEnginePropertiesTest::tearDown ()
 
 void LogEnginePropertiesTest::testProperties1()
 {
-	printf("testProperties1 ... ");
+	//printf("testProperties1 ... ");
 
 	std::ifstream fin(TEST_FILES_FOLDER "test1.lfg"/*, std::ios::in*/);
+	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test1.lfg", !fin.fail());
 	//fin.unsetf(std::ios::skipws);
 	Properties props;
 	props.load(fin);
@@ -31,12 +31,12 @@ void LogEnginePropertiesTest::testProperties1()
 	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT(props.getString("BackupType") == "None");
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEnginePropertiesTest::testProperties2()
 {
-	printf("testProperties2 ... ");
+	//printf("testProperties2 ... ");
 
 	Properties props;
 
@@ -65,15 +65,16 @@ void LogEnginePropertiesTest::testProperties2()
 	CPPUNIT_ASSERT_EQUAL(std::string("aaa"), props.trim("  aaa   "));
 	CPPUNIT_ASSERT_EQUAL(std::string("a a a"), props.trim(" a a a  "));
 
-	printf("PASSED\n");
+//	printf("PASSED\n");
 }
 
 void LogEnginePropertiesTest::testProperties3()
 {
-	printf("testProperties3 ... ");
+	//printf("testProperties3 ... ");
 
 	std::ifstream fin(TEST_FILES_FOLDER "test2.lfg"/*, std::ios::in*/);
-	
+	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test2.lfg", !fin.fail());
+
 	Properties props;
 	props.load(fin);
 	
@@ -82,17 +83,17 @@ void LogEnginePropertiesTest::testProperties3()
 	CPPUNIT_ASSERT_EQUAL(0, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT(props.getString("BackupType").empty());
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEnginePropertiesTest::testProperties4()
 {
-	printf("testProperties4 ... ");
+	//printf("testProperties4 ... ");
 
 	std::ifstream fin(TEST_FILES_FOLDER "test3.lfg"/*, std::ios::in*/);
 
-    if(std::ios_base::failbit == (fin.rdstate() & std::ios_base::failbit))
-        CPPUNIT_ASSERT_MESSAGE("fail to open file " TEST_FILES_FOLDER "test3.lfg", false);
+    //if(std::ios_base::failbit == (fin.rdstate() & std::ios_base::failbit))
+    CPPUNIT_ASSERT_MESSAGE("Cannot open file " TEST_FILES_FOLDER "test3.lfg", !fin.fail());
 	
 	Properties props;
 	props.load(fin);
@@ -102,15 +103,16 @@ void LogEnginePropertiesTest::testProperties4()
 	CPPUNIT_ASSERT_EQUAL(0, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT(props.getString("BackupType").empty());
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEnginePropertiesTest::testProperties5()
 {
-	printf("testProperties5 ... ");
+	//printf("testProperties5 ... ");
 
 	std::ifstream fin(TEST_FILES_FOLDER "test4.lfg"/*, std::ios::in*/);
-	
+	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test4.lfg", !fin.fail());
+
 	Properties props;
 	props.load(fin);
 	
@@ -119,15 +121,16 @@ void LogEnginePropertiesTest::testProperties5()
 	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT_EQUAL(std::string("Single"), props.getString("BackupType"));
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEnginePropertiesTest::testProperties6()
 {
-	printf("testProperties6 ... ");
+	//printf("testProperties6 ... ");
 
 	std::ifstream fin(TEST_FILES_FOLDER "test5.lfg"/*, std::ios::in*/);
-	
+	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test5.lfg", !fin.fail());
+
 	Properties props;
 	props.load(fin);
 	
@@ -136,15 +139,16 @@ void LogEnginePropertiesTest::testProperties6()
 	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT_EQUAL(std::string("Timestamp"), props.getString("BackupType"));
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEnginePropertiesTest::testProperties7()
 {
-	printf("testProperties7 ... ");
+	//printf("testProperties7 ... ");
 
 	std::ifstream fin(TEST_FILES_FOLDER "test6.lfg"/*, std::ios::in*/);
-	
+	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test6.lfg", !fin.fail());
+
 	Properties props;
 	props.load(fin);
 	
@@ -153,15 +157,16 @@ void LogEnginePropertiesTest::testProperties7()
 	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT_EQUAL(std::string("None"), props.getString("BackupType"));
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEnginePropertiesTest::testProperties8()
 {
-	printf("testProperties8 ... ");
+	//printf("testProperties8 ... ");
 
 	std::ifstream fin(TEST_FILES_FOLDER "test7.lfg"/*, std::ios::in*/);
-	
+	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test7.lfg", !fin.fail());
+
 	Properties props;
 	props.load(fin);
 	
@@ -170,15 +175,16 @@ void LogEnginePropertiesTest::testProperties8()
 	CPPUNIT_ASSERT_EQUAL(1, props.getInt("MaxLogSize"));
 	CPPUNIT_ASSERT(props.getString("BackupType").empty());
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEnginePropertiesTest::testProperties9()
 {
-	printf("testProperties9 ... ");
+	//printf("testProperties9 ... ");
 
 	std::ifstream fin(TEST_FILES_FOLDER "test8.lfg"/*, std::ios::in*/);
-	
+	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test8.lfg", !fin.fail());
+
 	Properties props;
 	props.load(fin);
 				
@@ -198,15 +204,16 @@ void LogEnginePropertiesTest::testProperties9()
 	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), props.getString("WarningLine"));
 	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), props.getString("InfoLine"));
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEnginePropertiesTest::testProperties10()
 {
-	printf("testProperties10 ... ");
+	//printf("testProperties10 ... ");
 	
 	std::ifstream fin(TEST_FILES_FOLDER "test12.lfg"/*, std::ios::in*/);
-	
+	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test12.lfg", !fin.fail());
+
 	Properties props;
 	props.load(fin);
 	
@@ -218,7 +225,7 @@ void LogEnginePropertiesTest::testProperties10()
 	CPPUNIT_ASSERT_EQUAL(std::string("ExampleApp11"), props.getString("applicationname"));
 	CPPUNIT_ASSERT_EQUAL(std::string("c:\\temp\\ExampleApp11.log"), props.getString("LogFileName"));
 	
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 
@@ -234,8 +241,8 @@ void LogEnginePropertiesTest::testProperties11()
     }
     catch(THArrayException & ex)
     {
-        char* str = "THArrayException : THash<I,V>::GetValue(Key) : Key not found !";
-        CPPUNIT_ASSERT_EQUAL(str, (char*)ex.what());       
+        const char* str = "THArrayException : THash<I,V>::GetValue(Key) : Key not found !";
+        CPPUNIT_ASSERT_EQUAL(str, ex.what());       
     }
     catch(...)
     {

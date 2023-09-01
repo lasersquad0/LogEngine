@@ -1,7 +1,11 @@
 #ifndef _DYNAMIC_ARRAYS_
 #define _DYNAMIC_ARRAYS_
 
-#include <exception> //unix
+#ifndef WIN32 // assume it is Linux
+#include <string.h>
+#endif
+
+#include <exception> 
 #include <string>
 #include "functions.h"
 #include "Compare.h"
@@ -9,9 +13,9 @@
 #define valuemin(v1,v2) (((v1)<=(v2))?(v1):(v2))
 #define valuemax(v1,v2) (((v1)>=(v2))?(v1):(v2))
 
-#ifdef WIN32
-#pragma warning( disable : 4786 )
-#endif
+//#ifdef WIN32
+//#pragma warning( disable : 4786 )
+//#endif
 
 #define uint unsigned int
 #define DA_NPOS -1 // return value that usually mean "item is not found", this value returned by functions like IndexOf()
@@ -103,7 +107,7 @@ protected:
 	void		Error(const uint Value, /*const uint vmin,*/ const int vmax) const;
 	void		Grow();
 	void		GrowTo(const uint Count);
-	inline void*CalcAddr(const uint num) const;
+	void		*CalcAddr(const uint num) const;
 public:
 	THArrayRaw();
 	THArrayRaw(uint ItemSize);
@@ -676,7 +680,7 @@ int THArray<T>::IndexOfFrom(const T& Value, const uint Start) const
 {
 	for (uint i = Start; i < FCount; i++)
 	if (GetValue(i) == Value)
-		return i;
+		return (int)i;
 	return DA_NPOS;
 }
 

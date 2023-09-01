@@ -119,7 +119,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\external\cppunit\include;..\..\..\external\cppunit\include\msvc6;$(ProjectDir)..\..\..\..\include\logengine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\external\cppunit\include;$(ProjectDir)..\..\..\..\include\logengine;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -129,7 +129,7 @@
       <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
       <ObjectFileName>.\Debug/</ObjectFileName>
       <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild />
@@ -144,7 +144,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug/testLogEngine.pdb</ProgramDatabaseFile>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <Bscmake>
@@ -164,7 +164,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\external\cppunit\include;$(ProjectDir)..\..\..\..\include\logengine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\external\cppunit\include;$(ProjectDir)..\..\..\..\include\logengine;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -176,7 +176,7 @@
       <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
       <ObjectFileName>.\Release/</ObjectFileName>
       <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <MinimalRebuild />
@@ -349,6 +349,7 @@
     <ClCompile Include="..\..\..\..\test\testLine.cpp" />
     <ClCompile Include="..\..\..\..\test\testLog.cpp" />
     <ClCompile Include="..\..\..\..\test\testProperties.cpp" />
+    <ClCompile Include="..\..\..\..\test\testRunner.cpp" />
     <ClCompile Include="..\..\..\..\test\testThreadLog.cpp" />
     <ClCompile Include="..\..\..\..\test\testUtils.cpp" />
     <ClCompile Include="MainFrm.cpp" />
@@ -365,13 +366,25 @@
     <ResourceCompile Include="testLogEngine.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\include\logengine\Compare.h" />
+    <ClInclude Include="..\..\..\..\include\logengine\DynamicArrays.h" />
+    <ClInclude Include="..\..\..\..\include\logengine\FileStream.h" />
+    <ClInclude Include="..\..\..\..\include\logengine\functions.h" />
+    <ClInclude Include="..\..\..\..\include\logengine\Line.h" />
+    <ClInclude Include="..\..\..\..\include\logengine\LogEngine.h" />
+    <ClInclude Include="..\..\..\..\include\logengine\LogEvent.h" />
+    <ClInclude Include="..\..\..\..\include\logengine\Properties.h" />
+    <ClInclude Include="..\..\..\..\include\logengine\SynchronizedQueue.h" />
+    <ClInclude Include="..\..\..\..\include\logengine\threads.h" />
     <ClInclude Include="..\..\..\..\test\testLine.h" />
     <ClInclude Include="..\..\..\..\test\testLog.h" />
     <ClInclude Include="..\..\..\..\test\testProperties.h" />
     <ClInclude Include="..\..\..\..\test\testThreadLog.h" />
     <ClInclude Include="..\..\..\..\test\testUtils.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MyTestProgressListener.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Shared.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="testLogEngine.h" />
   </ItemGroup>

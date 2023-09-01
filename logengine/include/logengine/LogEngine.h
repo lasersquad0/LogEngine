@@ -19,12 +19,12 @@
 
 #ifdef WIN32
 #include  <windows.h>
-#pragma warning( disable : 4786 )
+//#pragma warning( disable : 4786 )
 #endif
 
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-#endif
+//#ifdef HAVE_PTHREAD_H
+//#include <pthread.h>
+//#endif
 
 #include <exception>
 #include <string>
@@ -49,9 +49,9 @@ class LogException : public std::exception
 public:
 	//LogException(const char * Message);
     LogException(const char* formatstr, ...);
-	LogException(const std::string& Message);
-	LogException(const LogException& ex);
-	virtual ~LogException() throw();
+	LogException(const std::string& Message) { Text = Message; }
+	LogException(const LogException& ex) { Text = ex.Text; }
+	virtual ~LogException() noexcept{ /*nothing to do */ }
 	LogException& operator=(const LogException& rhs);
 	virtual const char *what() const throw();
 	//std::string GetError(void);
@@ -80,7 +80,7 @@ private:
 		std::string ApplicationName;
 		std::string Version;
 		int MaxLogSize;
-		int DetailLevel;
+		uint DetailLevel;
 		bool Threaded;
 		
 		//templates
@@ -98,8 +98,8 @@ private:
 	
 	TFileStream* FLogStream; 
 	bool FStarted;
-	unsigned int FBytesWritten;
-	unsigned int FMessageCount[4];
+	uint FBytesWritten;
+	uint FMessageCount[4];
 	//FMessageTime[3];
 	//FStartupTime;
 	
@@ -134,22 +134,22 @@ public:
 	void Flush(); // forces save data to the disk
 
 	//log format functions
-	std::string FormatStr		(const std::string& str, int DetailLevel = 0);
-	std::string FormatInfo		(const std::string& str, int DetailLevel = 0);
-	std::string FormatWarning	(const std::string& str, int DetailLevel = 0);
-	std::string FormatError		(const std::string& str, int DetailLevel = 0);
+	std::string FormatStr		(const std::string& str, uint DetailLevel = 0);
+	std::string FormatInfo		(const std::string& str, uint DetailLevel = 0);
+	std::string FormatWarning	(const std::string& str, uint DetailLevel = 0);
+	std::string FormatError		(const std::string& str, uint DetailLevel = 0);
 
 	//write functions
-	void WriteStr		(const std::string& str, int DetailLevel = 0);
-	void WriteInfo		(const std::string& str, int DetailLevel = 0);
-	void WriteWarning	(const std::string& str, int DetailLevel = 0);
-	void WriteError		(const std::string& str, int DetailLevel = 0);
+	void WriteStr		(const std::string& str, uint DetailLevel = 0);
+	void WriteInfo		(const std::string& str, uint DetailLevel = 0);
+	void WriteWarning	(const std::string& str, uint DetailLevel = 0);
+	void WriteError		(const std::string& str, uint DetailLevel = 0);
 
 	// formatted write functions
-	void WriteStrFmt	(int DetailLevel, const char* formatstr,...);
-	void WriteInfoFmt	(int DetailLevel, const char* formatstr,...);
-	void WriteWarningFmt(int DetailLevel, const char* formatstr,...);
-	void WriteErrorFmt	(int DetailLevel, const char* formatstr,...);
+	void WriteStrFmt	(uint DetailLevel, const char* formatstr,...);
+	void WriteInfoFmt	(uint DetailLevel, const char* formatstr,...);
+	void WriteWarningFmt(uint DetailLevel, const char* formatstr,...);
+	void WriteErrorFmt	(uint DetailLevel, const char* formatstr,...);
 
 	void SetVersionInfo(const std::string& VerInfo);
 	void SetAppName(const std::string& AppName);

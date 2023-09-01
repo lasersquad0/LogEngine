@@ -1,8 +1,9 @@
-#include <string>
-#include <iostream>
-#include <sys/types.h>
-#include <sys/stat.h>
 
+#ifndef WIN32
+#include <unistd.h>
+#endif
+
+#include "Shared.h"
 #include "LogEngine.h"
 #include "testLog.h"
 #include <cppunit/portability/Stream.h>
@@ -10,7 +11,6 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION( LogEngineLogTest );
 
-#define TEST_FILES_FOLDER "..\\..\\..\\..\\test\\testFiles\\"
 
 void LogEngineLogTest::setUp ()
 {
@@ -22,46 +22,10 @@ void LogEngineLogTest::tearDown ()
     // free memory allocated in setUp, do other things
 }
 
-CPPUNIT_NS_BEGIN
-/*template<>
-struct assertion_traits<std::string>   // specialization for the std::string type
-{
-	static bool equal(const std::string& x, const std::string& y)
-	{
-		return x == y;
-	}
-
-	static std::string toString(const std::string& x)
-	{
-		std::string text = '"' + x + '"';    // adds quote around the string to see whitespace
-		CppUnit::OStringStream ost;
-		ost << text;
-		return ost.str();
-	}
-};*/
-
-template<>
-struct assertion_traits<char*>   // specialization for the std::string type
-{
-	static bool equal(const char* x, const char* y)
-	{
-		return strcmp(x, y) == 0;
-	}
-
-	static std::string toString(const char* x)
-	{
-		std::string text = '"' + x + '"';    // adds quote around the string to see whitespace
-		CppUnit::OStringStream ost;
-		ost << text;
-		return ost.str();
-	}
-};
-
-CPPUNIT_NS_END
 
 void LogEngineLogTest::testLog1()
 {
-	printf("testLog1 ... ");
+	//printf("mytestLog1 ... ");
 
 	// preparing parameters
 	Properties prop;
@@ -78,24 +42,24 @@ void LogEngineLogTest::testLog1()
 	std::string s;
 	
 	s = log->FormatError("testLog1error");
-    CPPUNIT_ASSERT_EQUAL(std::string("#testLog1error"), cutLog(s));
+    CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("#testLog1error"), cutLog(s));
 
 	s = log->FormatInfo("testLog1info");
-	CPPUNIT_ASSERT_EQUAL(std::string(" testLog1info"), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string(" testLog1info"), cutLog(s));
 
 	s = log->FormatWarning("testLog1warning");
-	CPPUNIT_ASSERT_EQUAL(std::string("!testLog1warning"), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("!testLog1warning"), cutLog(s));
 
-	CPPUNIT_ASSERT_EQUAL(std::string("testLog1string"), log->FormatStr("testLog1string"));
+	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("testLog1string"), log->FormatStr("testLog1string"));
 
 	CloseLogEngine();
 
-	printf("PASSED\n");
+	//printf("myPASSED\n");
 }
 	
 void LogEngineLogTest::testLog2()
 {
-	printf("testLog2 ... ");
+	//printf("mytestLog2 ... ");
 
 	Properties prop;
 	
@@ -117,13 +81,13 @@ void LogEngineLogTest::testLog2()
 	
 	CloseLogEngine();
 
-	printf("PASSED\n");
+	//printf("myPASSED\n");
 }
 
 
 void LogEngineLogTest::testLog3()
 {
-	printf("testLog3 ... ");
+	//printf("testLog3 ... ");
 
 	Properties prop;
 
@@ -143,13 +107,13 @@ void LogEngineLogTest::testLog3()
 
 	CloseLogEngine();
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 
 void LogEngineLogTest::testLog4()
 {
-	printf("testLog4 ... ");
+	//printf("testLog4 ... ");
 
 	InitLogEngine();
 		
@@ -161,12 +125,12 @@ void LogEngineLogTest::testLog4()
 	getLogEngine()->Stop();
 
 	CloseLogEngine();
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLog5()
 {
-	printf("testLog5 ... ");
+	//printf("testLog5 ... ");
 
 	InitLogEngine();
 	TLogEngine* log = getLogEngine();
@@ -178,12 +142,12 @@ void LogEngineLogTest::testLog5()
 
 	CloseLogEngine();
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLog6()
 {
-	printf("testLog6 ... ");
+	//printf("testLog6 ... ");
 
 	InitLogEngine();
 	TLogEngine* log = getLogEngine();
@@ -195,12 +159,12 @@ void LogEngineLogTest::testLog6()
 
 	CloseLogEngine();
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogStartStop()
 {
-	printf("testLogStartStop ... ");
+	//printf("testLogStartStop ... ");
 
 	InitLogEngine();
 	TLogEngine* log = getLogEngine();
@@ -231,12 +195,12 @@ void LogEngineLogTest::testLogStartStop()
 
 	CloseLogEngine();
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogInitClose()
 {
-	printf("testLogInitClose ... ");
+	//printf("testLogInitClose ... ");
 
 	Properties prop;
 	prop.SetValue("FileName", "testLogInitClose.log");
@@ -266,13 +230,13 @@ void LogEngineLogTest::testLogInitClose()
 	CloseLogEngine();
 	
 	
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 
 void LogEngineLogTest::testLogPlaceholders()
 {
-	printf("testLogPlaceholders ... ");
+//	printf("testLogPlaceholders ... ");
 	
 	// preparing parameters
 	Properties prop;
@@ -291,12 +255,12 @@ void LogEngineLogTest::testLogPlaceholders()
 	CPPUNIT_ASSERT_EQUAL(std::string(" <OS> aaa LogEngine_tests 5.1 build 2600 6 1.1.1"), log->FormatInfo("aaa", 6));
 	CPPUNIT_ASSERT_EQUAL(std::string("aaa"), log->FormatStr("aaa", 6));
 	
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogDebugLevel()
 {
-	printf("testLogDebugLevel ... ");
+	//printf("testLogDebugLevel ... ");
 	
 	InitLogEngine(TEST_FILES_FOLDER "test9.lfg");
 	TLogEngine* log = getLogEngine();
@@ -310,14 +274,14 @@ void LogEngineLogTest::testLogDebugLevel()
 	log = getLogEngine();
 	CPPUNIT_ASSERT_EQUAL(7, log->GetLogDetailLevel());
 	
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogBackupTypeNone()
 {
-	printf("testLogBackupTypeNone ... ");
+	//printf("testLogBackupTypeNone1 ...  ");
 	
-	char* fileName = "aaa.log";
+	const char* fileName = "aaa.log";
 
 	// preparing parameters
 	Properties prop;
@@ -327,7 +291,7 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	prop.SetValue("maxlogsize", "1");
 	prop.SetValue("logfilename", fileName);
 
-	_unlink(fileName);
+	unlink(fileName);
 
 	InitLogEngine(prop);
 	TLogEngine* log = getLogEngine();
@@ -343,19 +307,17 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	
 	log->Flush();
 	
-	struct _stat st;
-	_stat(fileName, &st);
+	struct stat st;
+	stat(fileName, &st);
 	CPPUNIT_ASSERT_EQUAL((unsigned int)st.st_size, log->GetBytesWritten());
 	
 	CloseLogEngine();
 	
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogBackupTypeSingle()
 {
-	printf("testLogBackupTypeSingle ... ");
-	
 	// preparing parameters
 	Properties prop;
 	prop.SetValue("ApplicationName", "LogEngine_tests");
@@ -375,7 +337,7 @@ void LogEngineLogTest::testLogBackupTypeSingle()
 		if(log->GetBytesWritten() > 1024)
 			break;
 	}
-
+	
 	/*struct _stat st;
 	_stat("aaa.log", &st);
 	CPPUNIT_ASSERT_EQUAL(st.st_size, log->GetBytesWritten());
@@ -383,12 +345,12 @@ void LogEngineLogTest::testLogBackupTypeSingle()
 	
 	CloseLogEngine();
 	
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogFullPath()
 {
-	printf("testLogFullPath ... ");
+	//printf("testLogFullPath ... ");
 
 	InitLogEngine(TEST_FILES_FOLDER "test12.lfg");
 	TLogEngine* log = getLogEngine();
@@ -402,12 +364,12 @@ void LogEngineLogTest::testLogFullPath()
 
 	CloseLogEngine();
 	
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogMacro()
 {
-	printf("testLogMacro ... ");
+	//printf("testLogMacro ... ");
 
 	InitLogEngine();
 
@@ -416,12 +378,12 @@ void LogEngineLogTest::testLogMacro()
 
 	CloseLogEngine();
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogEmptyFileName()
 {
-	printf("testLogEmptyFileName ... ");
+	//printf("testLogEmptyFileName ... ");
 
 	// preparing parameters
 	Properties prop;
@@ -440,12 +402,12 @@ void LogEngineLogTest::testLogEmptyFileName()
 
 	CloseLogEngine();
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogAppName()
 {
-	printf("testLogAppName ... ");
+	//printf("testLogAppName ... ");
 
 	// preparing parameters
 	Properties prop;
@@ -465,7 +427,7 @@ void LogEngineLogTest::testLogAppName()
 	log->Start();
 	CloseLogEngine();
 
-	printf("PASSED\n");
+	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testWrong_LFG_File()

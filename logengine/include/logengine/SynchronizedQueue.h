@@ -19,9 +19,9 @@ class SynchronizedQueue : private THArray<T>
 
 #ifdef WIN32
 	HANDLE ListSemaphore;
-#endif
-
-#ifdef HAVE_PTHREAD_H
+//#endif
+#else
+//#ifdef HAVE_PTHREAD_H
 	int            ListSemaphoreValue;
 	pthread_cond_t ListSemaphore;
 #endif
@@ -37,9 +37,9 @@ public:
 #ifdef WIN32
         WaitForSingleObject(ListSemaphore, INFINITE);
         ENTER_CRITICAL_SECTION(ListMutex);
-#endif
-
-#ifdef HAVE_PTHREAD_H
+//#endif
+#else
+//#ifdef HAVE_PTHREAD_H
         ENTER_CRITICAL_SECTION(ListMutex);
         while (ListSemaphoreValue == 0)
             pthread_cond_wait(&ListSemaphore, &ListMutex);
@@ -64,12 +64,12 @@ SynchronizedQueue<T>::SynchronizedQueue()
     INIT_CRITICAL_SECTION(ListMutex);
 #ifdef WIN32
     ListSemaphore = CreateSemaphore(NULL, 0, MAXLONG, NULL);
-#endif
-
-#ifdef HAVE_PTHREAD_H
+//#endif
+#else
+//#ifdef HAVE_PTHREAD_H
     pthread_cond_init(&ListSemaphore, NULL);
     ListSemaphoreValue = 0;
-    SetCapacity(100);
+    this->SetCapacity(100);
 #endif
 }
 
@@ -78,9 +78,9 @@ SynchronizedQueue<T>::~SynchronizedQueue()
 {
 #ifdef WIN32
     CloseHandle(ListSemaphore);
-#endif
-
-#ifdef HAVE_PTHREAD_H
+//#endif
+#else
+//#ifdef HAVE_PTHREAD_H
     pthread_cond_destroy(&ListSemaphore);
 #endif
 
@@ -88,18 +88,17 @@ SynchronizedQueue<T>::~SynchronizedQueue()
 }
 
 
-
 template<class T>
 void SynchronizedQueue<T>::PushElement(T in_element)
 {
     ENTER_CRITICAL_SECTION(ListMutex);
-    AddValue(in_element);//push_back(in_element);
+    this->AddValue(in_element);//push_back(in_element);
 
 #ifdef WIN32
     ReleaseSemaphore(ListSemaphore, 1, NULL);
-#endif 
-
-#ifdef HAVE_PTHREAD_H
+//#endif 
+#else
+//#ifdef HAVE_PTHREAD_H
     ListSemaphoreValue++;
     pthread_cond_signal(&ListSemaphore);
 #endif
@@ -107,3 +106,4 @@ void SynchronizedQueue<T>::PushElement(T in_element)
 }
 
 #endif /* SYNCHRONIZED_QUEUE_H */
+

@@ -23,6 +23,9 @@
     <Filter Include="Tests">
       <UniqueIdentifier>{38226099-e7c6-4352-85a0-18cc4459610b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\LogEngineHeaders">
+      <UniqueIdentifier>{3c60046e-e5ae-43e0-bf72-b9e1e0ac9aa1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -76,6 +79,9 @@
     <ClCompile Include="..\..\..\..\src\DynamicArrays.cpp">
       <Filter>Source Files\LogEngineSources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\test\testRunner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="testLogEngine.rc">
@@ -109,6 +115,42 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\test\testUtils.h">
       <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="MyTestProgressListener.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\Compare.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\DynamicArrays.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\FileStream.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\functions.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\Line.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\LogEngine.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\LogEvent.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\Properties.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\SynchronizedQueue.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\include\logengine\threads.h">
+      <Filter>Header Files\LogEngineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
