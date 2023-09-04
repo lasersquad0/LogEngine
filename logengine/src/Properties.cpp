@@ -7,7 +7,7 @@
 */
 
 #include "Properties.h"
-//#include <stdlib.h>
+#include <limits.h>
 #include <istream>
 
 //namespace logengine {
@@ -86,7 +86,7 @@ void Properties::load(std::istream& in)
 		}
 		
 		// add to the map of properties
-		SetValue(trim(trimCRLF(leftSide)), trim(trimCRLF(rightSide))); // DelCRLF is required here for Linux since its \n and \r differ from Windows.
+		SetValue(trimSPCRLF(leftSide), trimSPCRLF(rightSide)); // DelCRLF is required here for Linux since its \n and \r differ from Windows.
 	}    
 }
 
@@ -111,6 +111,22 @@ int Properties::getInt(const std::string& property, int defaultValue /*=0*/) con
 		return defaultValue;
 	
 	return atoi(value.c_str());
+}
+
+ulong Properties::getUInt(const std::string& property, ulong defaultValue /*=0*/) const
+{
+	Compare<std::string> cmp;
+
+	if (!IfExists(property, cmp))
+		return defaultValue;
+
+	std::string value = trim(GetValue(property, cmp));
+
+	if (!isUInt(value)) return defaultValue; // return defaultValue if string is NOT an integer
+
+	ulong res = strtoul(value.c_str(), nullptr, 0);
+	res = res > LONG_MAX ? defaultValue : res;
+	return res;
 }
 
 bool Properties::getBool(const std::string& property, bool defaultValue /*=false*/) const

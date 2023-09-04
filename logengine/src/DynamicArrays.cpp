@@ -34,7 +34,7 @@ THArrayRaw::THArrayRaw()
     FCount    = 0;
     FCapacity = 0;
     FItemSize = 1;
-    FMemory   = NULL;
+    FMemory   = nullptr;
 }
 
 THArrayRaw::THArrayRaw(uint ItemSize):THArrayRaw()
@@ -94,13 +94,13 @@ void THArrayRaw::ClearMem()
 	Clear();
 	FCapacity = 0;
 	free(FMemory);
-	FMemory = NULL;
+	FMemory = nullptr;
 }
 
 void THArrayRaw::Get(const uint num, void *pValue) const
 {
 	Error(num, FCount - 1);
-	if (pValue != NULL) 
+	if (pValue != nullptr) 
 		memmove(pValue, CalcAddr(num), FItemSize);
 	return;
 }
@@ -154,7 +154,7 @@ void THArrayRaw::InsertMany(const uint num, const void *pValue, const uint Count
 void THArrayRaw::Update(const uint num, const void *pValue)
 {
 	Error(num, FCount - 1);
-	if (pValue != NULL) 
+	if (pValue != nullptr) 
 		memmove(CalcAddr(num), pValue, FItemSize);
 	else
 		memset(CalcAddr(num), 0, FItemSize);
@@ -220,7 +220,7 @@ void THArrayRaw::SetCapacity(const uint Value)
 	else  // Value == 0
 	{
 		free(FMemory);
-		FMemory = NULL;
+		FMemory = nullptr;
 	}
 
   if(FCount > FCapacity)

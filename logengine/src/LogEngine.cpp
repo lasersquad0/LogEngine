@@ -24,8 +24,8 @@
 #include <iostream>
  
 
-#define LogExt              ".log"
-#define BackupExt           ".bak"
+#define LogExt            ".log"
+#define BackupExt         ".bak"
 
 #define SecondMacro       "%SEC%"
 #define MinuteMacro       "%MIN%"
@@ -51,15 +51,16 @@
 
 const char LogTypeChars[5] = " #! ";
 
-#define DefaultLinePattern TimeMacro "#" ThreadMacro " : " MessageMacro
-
+#define DefaultLogFileName    "NONAME"
+#define DefaultAppName        "noname"
+#define DefaultLinePattern    (TimeMacro "#" ThreadMacro " : " MessageMacro)
 #define DefaultStartAppLine   "\n%APPNAME% %APPVERSION% startup\nLog is started at %DATETIME%."
 #define DefaultStopAppLine    "%APPNAME% %APPVERSION% normal shutdown \nLog stopped at %DATETIME%.\n"
 #define DefaultSeparatorLine  "----------------------------------------------------------------"
 
 
 // 10K should be enough for one format line
-#define VARIABLE_LIST_BUFFER_SIZE 10*1024
+#define VARIABLE_LIST_BUFFER_SIZE (10*1024)
 
 //////////////////////////////////////////////////////////////////////
 // LogException
@@ -97,13 +98,6 @@ const char* LogException::what() const throw()
 	return s.c_str();
 }
 
-/*std::string LogException::GetError(void)
-{
-	std::string s("LogException : ");
-	s=s+Text;
-	return s;
-}
-*/
 
 //////////////////////////////////////////////////////////////////////
 // TLogEngineParams
@@ -138,30 +132,30 @@ TLogBackupType TLogEngine::LogEngineProperties::GetBackupType(const Properties& 
 
 void TLogEngine::LogEngineProperties::Fill(const Properties& Props)
 {
-	BackupType		= GetBackupType(Props, lbSingle);
+	BackupType = GetBackupType(Props, DefaultBackupType);
 
 	// if FileName is not specified then construct from ApplicationName
-	FileName		= Props.getString("LogFileName");
-	if (0 == FileName.length())  
-		FileName = Props.getString("ApplicationName", "noname") + LogExt;
+	FileName = Props.getString("LogFileName");
+	if (FileName.empty())
+		FileName = Props.getString("ApplicationName", DefaultLogFileName) + LogExt;
 
-	ApplicationName = Props.getString("ApplicationName", "NONAME");
-	Version			= Props.getString("Version", "0.0.0.0");
-	MaxLogSize		= Props.getInt("MaxLogSize", DefaultMaxLogSize);
-	MaxLogSize == 0 ? MaxLogSize = DefaultMaxLogSize : MaxLogSize = MaxLogSize;
+	ApplicationName = Props.getString("ApplicationName", DefaultAppName);
+	Version         = Props.getString("Version", "0.0.0.0");
+	MaxLogSize      = Props.getUInt("MaxLogSize", DefaultMaxLogSize); // if MaxLogSize=0 it means "no limit on log file size".
+	//MaxLogSize == 0 ? MaxLogSize = DefaultMaxLogSize : MaxLogSize = MaxLogSize;
 
-	DetailLevel		= Props.getInt("DebugLevel", DefaultDetailLevel);
-	DetailLevel		= Props.getInt("DetailLevel", DetailLevel);
-	Threaded		= Props.getBool("Threaded", false);
+	//DetailLevel = Props.getUInt("DebugLevel", DefaultDetailLevel);
+	DetailLevel = Props.getUInt("DetailLevel", DefaultDetailLevel /*DetailLevel*/);
+	Threaded    = Props.getBool("Threaded", false);
 
 	SeparatorLine.ProcessPattern(Props.getString("SeparatorLine", DefaultSeparatorLine));
-	ErrorLine.ProcessPattern(Props.getString("ErrorLine", DefaultLinePattern));
-	WarningLine.ProcessPattern(Props.getString("WarningLine", DefaultLinePattern));
-	InfoLine.ProcessPattern(Props.getString("InfoLine", DefaultLinePattern));
+	ErrorLine.ProcessPattern    (Props.getString("ErrorLine"    , DefaultLinePattern));
+	WarningLine.ProcessPattern  (Props.getString("WarningLine"  , DefaultLinePattern));
+	InfoLine.ProcessPattern     (Props.getString("InfoLine"     , DefaultLinePattern));
+	StartAppLine.ProcessPattern (Props.getString("StartAppLine" , DefaultStartAppLine));
+	StopAppLine.ProcessPattern  (Props.getString("StopAppLine"  , DefaultStopAppLine));
 	//LongExceptionLine  = "Exception '%E%' in %CLASSNAME% [ %CLASS% ].";
 	//ShortExceptionLine = "Exception '%E%'";
-	StartAppLine.ProcessPattern(Props.getString("StartAppLine", DefaultStartAppLine));
-	StopAppLine.ProcessPattern(Props.getString("StopAppLine", DefaultStopAppLine));
 }
 
 
@@ -265,10 +259,10 @@ void TLogEngine::InitThread(void)
 
 #ifdef WIN32
 	unsigned long threadID;
-	hThread = CreateThread(NULL, 0, ThreadProc, info, 0, &threadID); // <<<< TODO: right param?
+	hThread = CreateThread(nullptr, 0, ThreadProc, info, 0, &threadID); // <<<< TODO: right param?
 #else 
 //#ifdef HAVE_PTHREAD_H
-	if (pthread_create(&hThread, NULL, ThreadProc, info) != 0)
+	if (pthread_create(&hThread, nullptr, ThreadProc, info) != 0)
 	{
 		// TODO: exception on failure?
 	}
@@ -355,7 +349,8 @@ void TLogEngine::InternalWrite(const std::string& msg)
 	if(!FStarted)
 		throw LogException("The LogEngine is not started!");
 
-	if(FLogStream->Length() > FProperties.MaxLogSize*1024)
+	// TODO на каждый Write мы вызываем API ф-цию fstat() дл€ получени€ размера файла. ѕодумать как это сделать менее напр€жно дл€ системы и быстрее.
+	if(FProperties.MaxLogSize > 0 && FLogStream->Length() > FProperties.MaxLogSize*1024)
 		TruncLogFile();
 
 	//FBytesWritten += msg.size();
@@ -404,9 +399,6 @@ std::string TLogEngine::FormatStr(const std::string& str, uint /*DetailLevel = 0
 
 std::string TLogEngine::FormatInfo(const std::string& str, uint DetailLevel /*= 0*/)
 {
-	//timeb tm;
-	//ftime(&tm);
-	
 	LogEvent event(str, lmInfo, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
 	
 	return LogTypeChars[lmInfo] + FProperties.InfoLine.format(event);
@@ -414,8 +406,6 @@ std::string TLogEngine::FormatInfo(const std::string& str, uint DetailLevel /*= 
 
 std::string TLogEngine::FormatWarning(const std::string& str, uint DetailLevel /*= 0*/)
 {
-	//timeb tm;
-	//ftime(&tm);
 	LogEvent event(str, lmWarning, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
 	
 	return LogTypeChars[lmWarning] + FProperties.WarningLine.format(event);
@@ -423,8 +413,6 @@ std::string TLogEngine::FormatWarning(const std::string& str, uint DetailLevel /
 
 std::string TLogEngine::FormatError(const std::string& str, uint DetailLevel /*= 0*/)
 {
-	//timeb tm;
-	//ftime(&tm);
 	LogEvent event(str, lmError, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
 	
 	return LogTypeChars[lmError] + FProperties.ErrorLine.format(event);
@@ -481,8 +469,6 @@ void TLogEngine::WriteWarning(const std::string& str, uint DetailLevel /*=0*/)
 
 	if(FProperties.Threaded) 
 	{	
-		//timeb tm;
-		//ftime(&tm);
 		LogEvent* event = new LogEvent(str, lmWarning, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
 		
 		LogQueue.PushElement(event);
@@ -603,10 +589,6 @@ void TLogEngine::WriteErrorFmt(uint DetailLevel, const char* formatstr, ...)
 
 void TLogEngine::WriteStart()
 {
-	//std::string tmp,s;
-
-	//timeb tm;
-	//ftime(&tm);
 	LogEvent event("", lmNone, GET_THREAD_ID(), GetCurrTime(), 0, this);
 	
 	InternalWrite(FProperties.StartAppLine.format(event));
@@ -614,10 +596,6 @@ void TLogEngine::WriteStart()
 
 void TLogEngine::WriteStop()
 {
-	//std::string tmp,s;
-
-	//timeb tm;
-	//ftime(&tm);
 	LogEvent event("", lmNone, GET_THREAD_ID(), GetCurrTime(), 0, this);
 	
 	InternalWrite(FProperties.StopAppLine.format(event));
@@ -633,12 +611,16 @@ void TLogEngine::SetAppName(const std::string& AppName)
 	FProperties.ApplicationName = AppName;
 }
 
-void TLogEngine::SetMaxLogSize(const int MaxLogSize)
+void TLogEngine::SetMaxLogSize(const uint MaxLogSize)
 {
+	// if new MaxLogSize is less than current filesize - do truncate.
+	if (MaxLogSize > 0 && FLogStream->Length() > MaxLogSize * 1024)
+		TruncLogFile();
+
 	FProperties.MaxLogSize = MaxLogSize;
 }
 
-void TLogEngine::SetLogDetailLevel(const int DetailLevel)
+void TLogEngine::SetLogDetailLevel(const uint DetailLevel)
 {
 	FProperties.DetailLevel = DetailLevel;
 }
@@ -668,17 +650,22 @@ std::string TLogEngine::GenerateBackupName(void)
 
 void TLogEngine::TruncLogFile(void)
 {
-	if(FProperties.BackupType == lbNone)
-		return;
-
 	ENTER_CRITICAL_SECTION(CriticalSection);
 
 	delete FLogStream;
 	FLogStream = nullptr;
 
-	std::string newName = GenerateBackupName();
-	remove(newName.c_str());
-	rename(FProperties.FileName.c_str(), newName.c_str());
+	if (FProperties.BackupType == lbNone)
+	{
+		remove(FProperties.FileName.c_str()); // for lbNone we remove existing log file and start it from beginning
+	}
+	else
+	{
+		std::string newName = GenerateBackupName();
+		remove(newName.c_str());
+		rename(FProperties.FileName.c_str(), newName.c_str());
+	}
+
 	FLogStream = new TFileStream(FProperties.FileName, fmWrite);
 
 	LEAVE_CRITICAL_SECTION(CriticalSection);

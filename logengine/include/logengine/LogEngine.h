@@ -36,11 +36,12 @@
 #include "threads.h"
 #include "SynchronizedQueue.h"
 
-#define DefaultMaxLogSize  1000 // in kilobytes
-#define DefaultDetailLevel 5
-
-enum TLogBackupType  {lbNone, lbTimeStamp, lbSingle};
+enum TLogBackupType { lbNone, lbTimeStamp, lbSingle };
 //enum TLogMessageType {lmError, lmWarning, lmInfo};
+
+#define DefaultDetailLevel 0  // see  example.cfg for more details
+#define DefaultMaxLogSize  1000 // in kilobytes
+#define DefaultBackupType  lbNone
 
 typedef SynchronizedQueue<LogEvent*> LogEventQueue;
 
@@ -79,7 +80,7 @@ private:
 		std::string FileName;
 		std::string ApplicationName;
 		std::string Version;
-		int MaxLogSize;
+		uint MaxLogSize;
 		uint DetailLevel;
 		bool Threaded;
 		
@@ -134,16 +135,16 @@ public:
 	void Flush(); // forces save data to the disk
 
 	//log format functions
-	std::string FormatStr		(const std::string& str, uint DetailLevel = 0);
-	std::string FormatInfo		(const std::string& str, uint DetailLevel = 0);
-	std::string FormatWarning	(const std::string& str, uint DetailLevel = 0);
-	std::string FormatError		(const std::string& str, uint DetailLevel = 0);
+	std::string FormatStr		(const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	std::string FormatInfo		(const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	std::string FormatWarning	(const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	std::string FormatError		(const std::string& str, uint DetailLevel = DefaultDetailLevel);
 
 	//write functions
-	void WriteStr		(const std::string& str, uint DetailLevel = 0);
-	void WriteInfo		(const std::string& str, uint DetailLevel = 0);
-	void WriteWarning	(const std::string& str, uint DetailLevel = 0);
-	void WriteError		(const std::string& str, uint DetailLevel = 0);
+	void WriteStr		(const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	void WriteInfo		(const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	void WriteWarning	(const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	void WriteError		(const std::string& str, uint DetailLevel = DefaultDetailLevel);
 
 	// formatted write functions
 	void WriteStrFmt	(uint DetailLevel, const char* formatstr,...);
@@ -153,16 +154,16 @@ public:
 
 	void SetVersionInfo(const std::string& VerInfo);
 	void SetAppName(const std::string& AppName);
-	void SetMaxLogSize(const int MaxLogSize);
+	void SetMaxLogSize(const uint MaxLogSize);
 	void SetBackupType(const TLogBackupType BackupType);
-	void SetLogDetailLevel(const int DetailLevel); 
+	void SetLogDetailLevel(const uint DetailLevel); 
 
 	TLogBackupType	GetBackupType(void)		const { return FProperties.BackupType; }
-	int				GetMaxLogSize(void)		const { return FProperties.MaxLogSize; }
+	uint			GetMaxLogSize(void)		const { return FProperties.MaxLogSize; }
 	std::string		GetLogFileName(void)	const { return FProperties.FileName; }
 	std::string		GetAppName(void)		const { return FProperties.ApplicationName; }
 	std::string		GetVersionInfo(void)	const { return FProperties.Version; }
-	int				GetLogDetailLevel(void) const { return FProperties.DetailLevel; } 
+	uint			GetLogDetailLevel(void) const { return FProperties.DetailLevel; } 
 	unsigned int	GetBytesWritten(void)   const { return FBytesWritten; } 
 	
 
@@ -189,7 +190,7 @@ void InitLogEngine(const std::string& ConfigFileName);
 void InitLogEngine();
 void CloseLogEngine();
 
-inline void LOG_ERROR(const std::string& mess, int DetailLevel = 0) 
+inline void LOG_ERROR(const std::string& mess, int DetailLevel = DefaultDetailLevel)
 {
 	TLogEngine* log = getLogEngine(); 
     if(log)
@@ -197,7 +198,7 @@ inline void LOG_ERROR(const std::string& mess, int DetailLevel = 0)
 }
 
 	
-inline void LOG_INFO(const std::string& mess, int DetailLevel = 0) 
+inline void LOG_INFO(const std::string& mess, int DetailLevel = DefaultDetailLevel)
 {
 	TLogEngine* log = getLogEngine();
 	if(log)
@@ -205,14 +206,14 @@ inline void LOG_INFO(const std::string& mess, int DetailLevel = 0)
 }
 
 
-inline void LOG_WARN(const std::string& mess, int DetailLevel = 0) 
+inline void LOG_WARN(const std::string& mess, int DetailLevel = DefaultDetailLevel)
 {
 	TLogEngine* log = getLogEngine();
 	if(log)
 		log->WriteWarning(mess, DetailLevel);
 }
 
-inline void LOG_STR(const std::string& mess, int DetailLevel = 0) 
+inline void LOG_STR(const std::string& mess, int DetailLevel = DefaultDetailLevel)
 {
 	TLogEngine* log = getLogEngine();
 	if(log)

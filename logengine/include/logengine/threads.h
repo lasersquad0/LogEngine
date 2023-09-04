@@ -35,7 +35,7 @@
 //#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 
-#define INIT_CRITICAL_SECTION(CritSec)   CritSec = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP //pthread_mutex_init(&CritSec, NULL)
+#define INIT_CRITICAL_SECTION(CritSec)   CritSec = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP //pthread_mutex_init(&CritSec, nullptr)
 #define ENTER_CRITICAL_SECTION(CritSec)	 pthread_mutex_lock(&CritSec)
 #define LEAVE_CRITICAL_SECTION(CritSec)  pthread_mutex_unlock(&CritSec)
 #define DELETE_CRITICAL_SECTION(CritSec) pthread_mutex_destroy(&CritSec)

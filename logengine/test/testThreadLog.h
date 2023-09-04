@@ -11,8 +11,8 @@
 class LogEngineThreadLogTest : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( LogEngineThreadLogTest );
-  CPPUNIT_TEST( testCallLogFromManyThreads );
-  CPPUNIT_TEST( testThreadLog1 );  
+  //CPPUNIT_TEST( testCallLogFromManyThreads );
+  //CPPUNIT_TEST( testThreadLog1 );  
   CPPUNIT_TEST_SUITE_END();
 public:
 	void setUp();

@@ -63,7 +63,7 @@ SynchronizedQueue<T>::SynchronizedQueue()
 {
     INIT_CRITICAL_SECTION(ListMutex);
 #ifdef WIN32
-    ListSemaphore = CreateSemaphore(NULL, 0, MAXLONG, NULL);
+    ListSemaphore = CreateSemaphore(nullptr, 0, MAXLONG, nullptr);
 //#endif
 #else
 //#ifdef HAVE_PTHREAD_H
@@ -95,7 +95,7 @@ void SynchronizedQueue<T>::PushElement(T in_element)
     this->AddValue(in_element);//push_back(in_element);
 
 #ifdef WIN32
-    ReleaseSemaphore(ListSemaphore, 1, NULL);
+    ReleaseSemaphore(ListSemaphore, 1, nullptr);
 //#endif 
 #else
 //#ifdef HAVE_PTHREAD_H

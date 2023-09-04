@@ -25,7 +25,7 @@ public:
 	IOException(const char * Message) { Text = Message;	}
 	IOException(const std::string& Message) { Text = Message; }
 	IOException(const IOException& ex) { Text = ex.Text; }
-	virtual ~IOException() throw() {};
+	virtual ~IOException() noexcept {};
 	IOException& operator=(const IOException& rhs);
 	virtual const char *what() const throw();
 	//std::string GetError(void);
@@ -39,7 +39,7 @@ class TStream
 public:
 	virtual int Read(void *Buffer, size_t Size) = 0;
 	virtual int Write(const void *Buffer, const size_t Size) = 0;
-	virtual int Length() = 0;
+	virtual long Length() = 0;
 	void operator >>(bool& Value); 
 	void operator >>(int& Value); 
 	void operator <<(int Value); 
@@ -78,7 +78,7 @@ public:
 	int WriteString(const std::string& str);
 	int WriteLn(const void *Buffer, const size_t Size);
 	int WriteCRLF(void);
-	int Length();
+	long Length();
 	void Flush();
 
 /* Moves the current position in the file.

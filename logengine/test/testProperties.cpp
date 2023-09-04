@@ -2,6 +2,7 @@
 #include "Shared.h"
 #include "testProperties.h"
 #include "Properties.h"
+#include "LogEngine.h"
 //#include "debug_support.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION( LogEnginePropertiesTest );
@@ -248,6 +249,31 @@ void LogEnginePropertiesTest::testProperties11()
     {
         CPPUNIT_ASSERT_MESSAGE("Incorrect exception is thrown", false);
     }
+}
+
+void LogEnginePropertiesTest::testProperties12()
+{
+	std::ifstream fin(TEST_FILES_FOLDER "test13.lfg");
+	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test8.lfg", !fin.fail());
+
+	Properties props;
+	props.load(fin);
+
+	CPPUNIT_ASSERT_EQUAL(12u, props.Count());
+	CPPUNIT_ASSERT_EQUAL(0ul, props.getUInt("DetailLevel", DefaultDetailLevel)); // in file it is '-1'
+	CPPUNIT_ASSERT_EQUAL(1000ul, props.getUInt("MaxLogSize", DefaultMaxLogSize)); // should be default value 100 while in file it is non digit value
+	CPPUNIT_ASSERT_EQUAL(std::string("Nones"), props.getString("BackupType")); // in file it is errorenos value
+	CPPUNIT_ASSERT_EQUAL(std::string("Exam\npleApp"), props.getString("ApplicationName"));
+	CPPUNIT_ASSERT_EQUAL(std::string("t.t.t.t"), props.getString("Version"));
+	CPPUNIT_ASSERT_EQUAL(std::string("Error\nLog.log"), props.getString("LogFileName"));
+	std::string s = props.getString("StartAppLine");
+	CPPUNIT_ASSERT_EQUAL(std::string("%APPNAME% %APPVERSION% startup.\nLog is started at %DATETIME%."), s);
+	CPPUNIT_ASSERT_EQUAL(std::string("%APPNAME% %APPVERSION% normal shutdown.\nLog is stopped at %DATETIME%."), props.getString("StopAppLine"));
+	CPPUNIT_ASSERT_EQUAL(std::string("---------------------------------------------------------------------"), props.getString("SeparatorLine"));
+	s = props.getString("ErrorLine");
+	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), s);
+	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), props.getString("WarningLine"));
+	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), props.getString("InfoLine"));
 }
 
 #undef TEST_FILES_FOLDER

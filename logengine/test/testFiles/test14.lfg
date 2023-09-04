@@ -1,0 +1,29 @@
+DetailLevel = -3
+
+MaxLogSize = rrr
+
+BackupType = Nones
+
+ApplicationName = BadLFGFileApp
+
+Version = t.t.t.t
+
+LogFileName = BadLFGLog.log
+
+# This text is written to the file when LogEngine is initializing. 
+StartAppLine  = %APPNAME%  ${TMP}  %APPVERSION% ${COMPUTERNAME} startup.\nLog is started at %DATETIME%.
+
+# This text is written to the file when LogEngine is stopping. 
+StopAppLine   = %APPNAME% %APPVERSION% normal shutdown.\nLog is stopped at %DATETIME%.
+
+SeparatorLine = ---------------------------------------------------------------------
+
+# Template for error line.
+ErrorLine     = %TIME% #%THREAD% : %MSG%
+
+# Template for warning line.
+WarningLine   = %TIME% #%THREAD% : %MSG%
+
+# Template for information line.
+InfoLine      = %TIME% #%THREAD% : %MSG%
+ 
