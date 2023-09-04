@@ -154,13 +154,14 @@ TFileStream::TFileStream(const std::string& FileName, const TFileMode fMode)
 	case fmReadWrite:res = _sopen_s(&hf, FFileName.c_str(), O_RDWR   | O_CREAT | O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE); break;
 	}
 #else
-	int res = errno;
 	switch (fMode)
 	{ 
 	case fmRead:     hf = open(FFileName.c_str(), O_RDONLY);break;
 	case fmWrite:    hf = open(FFileName.c_str(), O_WRONLY | O_CREAT,S_IREAD | S_IWRITE);break;
 	case fmReadWrite:hf = open(FFileName.c_str(), O_RDWR | O_CREAT,S_IREAD | S_IWRITE);break;
 	}
+
+	int res = errno;
 #endif
 
 	if(hf == -1)
