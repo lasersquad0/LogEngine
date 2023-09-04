@@ -21,7 +21,7 @@ class LogEngineLogTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( testLogStartStop );  
   CPPUNIT_TEST( testLogInitClose );
   CPPUNIT_TEST( testLogPlaceholders );
-  CPPUNIT_TEST( testLogDebugLevel );
+  CPPUNIT_TEST( testLogDetailLevel );
   CPPUNIT_TEST( testLogBackupTypeNone );
   CPPUNIT_TEST( testLogBackupTypeSingle );
   CPPUNIT_TEST( testLogFullPath );
@@ -29,6 +29,8 @@ class LogEngineLogTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( testLogEmptyFileName );
   CPPUNIT_TEST( testLogAppName );  
   CPPUNIT_TEST( testWrong_LFG_File );
+  CPPUNIT_TEST( testBadLFGFile );
+  CPPUNIT_TEST( testBadLFGFile2 );
   CPPUNIT_TEST_SUITE_END();
 public:
 	void setUp();
@@ -43,7 +45,7 @@ public:
     void testLogStartStop();
     void testLogInitClose();
     void testLogPlaceholders();
-    void testLogDebugLevel();
+    void testLogDetailLevel();
     void testLogBackupTypeNone();
     void testLogBackupTypeSingle();
     void testLogFullPath();
@@ -51,7 +53,8 @@ public:
     void testLogEmptyFileName();
     void testLogAppName();
     void testWrong_LFG_File();
-
+    void testBadLFGFile();
+    void testBadLFGFile2();
 };
 
 inline std::string cutLog(std::string str)

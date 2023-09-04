@@ -156,7 +156,7 @@ std::string StringReplace(const std::string& S, const std::string& SearchPattern
 	while(true)
 	{
 		temp2 = (char*)strstr(temp1, SearchPattern.c_str());// explicit cast requred by C++ Builder 6
-		if(temp2 == NULL)
+		if(temp2 == nullptr)
 		{
 			Result += temp1;
 			break;
@@ -266,7 +266,7 @@ std::string FormatCurrDateTime(const std::string& FormatStr)
     tm tp;
     tm* ptp = &tp;
 
-	time_t t = time(NULL);
+	time_t t = time(nullptr);
 
 #if __STDC_SECURE_LIB__ //_MSC_VER < 1400    
     localtime_s(ptp, &t);
@@ -305,11 +305,11 @@ std::string DelCRLF(const std::string& S)
 	return res;
 }
 
-std::string trimCRLF(std::string S)
+std::string trimSPCRLF(std::string S)
 {
 	// remove any leading and traling spaces, just in case.
-	size_t strBegin = S.find_first_not_of("\0x0D\0x10");
-	size_t strEnd = S.find_last_not_of("\0x0D\0x10");
+	size_t strBegin = S.find_first_not_of(" \0x0D\0x0A");
+	size_t strEnd = S.find_last_not_of(" \0x0D\0x0A");
 	S.erase(strEnd + 1, S.size() - strEnd);
 	S.erase(0, strBegin);
 	
@@ -318,28 +318,39 @@ std::string trimCRLF(std::string S)
 
 bool EqualNCase(const std::string& str1, const std::string& str2)
 {
-	const char *s1,*s2;
+	const char* s1, * s2;
 
 	s1 = str1.c_str();
 	s2 = str2.c_str();
-	if((s1 == NULL) && (s2 == NULL))
+	if ((s1 == nullptr) && (s2 == nullptr))
 		return true;
-	if((s1 == NULL) && (s2 != NULL))
+	if ((s1 == nullptr) && (s2 != nullptr))
 		return false;
-	if((s1 != NULL) && (s2 == NULL))
+	if ((s1 != nullptr) && (s2 == nullptr))
 		return false;
 
 #ifdef HAVE_STRCASECMP
 	return strcasecmp(s1, s2) == 0;
 #else
 
-	for(;*s1 != '\0' && s2 != '\0'; s1++, s2++)
-		if(toupper(*s1) != toupper(*s2))
+	for (; *s1 != '\0' && s2 != '\0'; s1++, s2++)
+		if (toupper(*s1) != toupper(*s2))
 			return false;
 
-	if(*s1 == '\0' && *s2 == '\0')
-		return true; 
-	else 
+	if (*s1 == '\0' && *s2 == '\0')
+		return true;
+	else
 		return false;
 #endif
 }
+
+bool isUInt(std::string & value)
+{
+	if (value.size() == 0) return false;
+
+	size_t start = 0;
+	if (value[0] == '+') start = 1; // we need only positive numbers here
+
+	return value.find_first_not_of("0123456789", start) == std::string::npos;
+}
+

@@ -18,6 +18,8 @@
 //#endif
 
 #define uint unsigned int
+#define ulong unsigned long
+
 #define DA_NPOS -1 // return value that usually mean "item is not found", this value returned by functions like IndexOf()
 
 #define DA_EXCEPTION_PREFIX "THArrayException : "
@@ -369,7 +371,7 @@ THArray<T>::THArray()
 	Sorted    = false;
 	FCount    = 0;
 	FCapacity = 0;
-	FMemory   = NULL;
+	FMemory   = nullptr;
 }
 
 template<class T> 
@@ -461,7 +463,7 @@ void THArray<T>::SetCapacity(const uint Value)
 			newMemory[i] = FMemory[i];
 	}
 	else 
-		newMemory = NULL;
+		newMemory = nullptr;
 
 	delete [] FMemory;
 	FMemory = newMemory;
@@ -581,7 +583,7 @@ template<class T>
 void THArray<T>::ClearMem() 
 {
 	delete [] FMemory;
-	FMemory   = NULL;
+	FMemory   = nullptr;
 	FCount    = 0;
 	FCapacity = 0;
 }
@@ -910,7 +912,7 @@ V* THash<I,V>::GetValuePointer(const I& Key)
 	int n;
     n = FAKeys.IndexOf(Key);
     if (n == DA_NPOS) 
-		return NULL;
+		return nullptr;
     return FAValues.GetValuePointer(n);
 }
 
@@ -920,7 +922,7 @@ V* THash<I,V>::GetValuePointer(const I& Key, const Compare<I>& cmp)
 	int n;
 	n = FAKeys.IndexOf(Key, cmp);
 	if (n == DA_NPOS)
-		return NULL;
+		return nullptr;
 	return FAValues.GetValuePointer(n);
 }
 
@@ -1035,7 +1037,7 @@ template <class I1, class I2, class V>
 V THash2<I1,I2,V>::GetValue(const I1& Key1, const I2& Key2)
 {
 	THash<I2,V>* h = hash.GetValuePointer(Key1);
-	if(h == NULL)
+	if(h == nullptr)
 		throw THArrayException("THash2::GetValue(Key1, Key2) : Key1 not found !");
 	return h->GetValue(Key2);
 }

@@ -8,6 +8,7 @@
 
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #ifdef __unix__
 #include <sys/io.h>
@@ -16,35 +17,13 @@
 #include <io.h>
 #endif
 
-
 #include "FileStream.h"
 
 //////////////////////////////////////////////////////////////////////
 //  IOException Class
 //////////////////////////////////////////////////////////////////////
 
-
-//IOException::IOException(const char * Message)
-//{
-//	Text = Message; 
-//}
-//
-//IOException::IOException(const std::string& Message)
-//{
-//	Text = Message;
-//}
-//
-//IOException::IOException(const IOException& ex)
-//{
-//	Text = ex.Text;
-//}
-//
-//IOException::~IOException() throw()
-//{
-//	// nothing done
-//}
-
-const char* IOException::what() const throw()
+const char* IOException::what() const throw() // TODO - make like in DynamicArrays
 {
 	std::string s ="LogException : "+Text;
 	char * err = (char*)malloc(s.size() + 1); //on extra byte for terminator
@@ -56,7 +35,6 @@ const char* IOException::what() const throw()
 	}
 	return err;
 }
-
 
 IOException& IOException::operator=(const IOException& ex)
 {
@@ -128,7 +106,7 @@ std::string TStream::LoadPString()
 
 /*TMemoryStream::TMemoryStream()
 {
-    Data=NULL;
+    Data=nullptr;
     len=0;
 }
 
@@ -165,30 +143,32 @@ TFileStream::TFileStream(const std::string& FileName, const TFileMode fMode)
 {
 	FFileName = FileName;
 	FFileMode = fMode;
-		
-
-	//_fmode=O_BINARY;
+	hf = 0;
+	
 #ifdef WIN32
+	errno_t res = 0;
 	switch (fMode)
 	{ 
-	case fmRead:     hf = _open(FFileName.c_str(), O_RDONLY | O_BINARY);break; 
-	case fmWrite:    hf = _open(FFileName.c_str(), O_WRONLY | O_CREAT|O_BINARY, S_IREAD | S_IWRITE);break;
-	case fmReadWrite:hf = _open(FFileName.c_str(), O_RDWR | O_CREAT | O_BINARY, S_IREAD | S_IWRITE);break;
+	case fmRead:     res = _sopen_s(&hf, FFileName.c_str(), O_RDONLY | O_BINARY,           _SH_DENYNO, _S_IREAD | _S_IWRITE); break;
+	case fmWrite:    res = _sopen_s(&hf, FFileName.c_str(), O_WRONLY | O_CREAT | O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE); break;
+	case fmReadWrite:res = _sopen_s(&hf, FFileName.c_str(), O_RDWR   | O_CREAT | O_BINARY, _SH_DENYWR, _S_IREAD | _S_IWRITE); break;
 	}
 #else
+	int res = errno;
 	switch (fMode)
 	{ 
 	case fmRead:     hf = open(FFileName.c_str(), O_RDONLY);break;
 	case fmWrite:    hf = open(FFileName.c_str(), O_WRONLY | O_CREAT,S_IREAD | S_IWRITE);break;
 	case fmReadWrite:hf = open(FFileName.c_str(), O_RDWR | O_CREAT,S_IREAD | S_IWRITE);break;
 	}
-	
 #endif
 
-	
 	if(hf == -1)
 	{
-		std::string s = "Can't open file '" + FileName + "'!";
+		std::string s;
+		if(res == EINVAL) s = "Wrong file name '" + FileName + "'!";
+		else if (res == EACCES) s = "Can't get access to file '" + FileName + "'!";
+		else s = "Can't open file '" + FileName + "'!";
 		throw IOException(s.c_str());
 	}
 	
@@ -249,19 +229,25 @@ int TFileStream::WriteString(const std::string& str)
 	return Write((void*)str.data(), str.length()/*strlen(str.data())*/);
 }
 
+#ifdef WIN32
+#define mylseek _lseek
+#else
+#define mylseek lseek
+#endif
+
 int TFileStream::Seek(int Offset, TSeekMode sMode)
 {
 	switch (sMode)
 	{
-	case smFromBegin:   return lseek(hf, Offset, SEEK_SET);
-	case smFromEnd:     return lseek(hf, Offset, SEEK_END);
-	case smFromCurrent: return lseek(hf, Offset, SEEK_CUR);
+	case smFromBegin:   return mylseek(hf, Offset, SEEK_SET);
+	case smFromEnd:     return mylseek(hf, Offset, SEEK_END);
+	case smFromCurrent: return mylseek(hf, Offset, SEEK_CUR);
 	}
 
 	throw IOException("Invalid seek mode.");
 }
 
-int TFileStream::Length() 
+long TFileStream::Length() 
 {
 	struct stat st;
 	/*int g=Seek(0,smFromCurrent);

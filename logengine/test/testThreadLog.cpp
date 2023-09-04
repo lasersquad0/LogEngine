@@ -93,10 +93,10 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 		log->WriteInfo(s);
 
 #ifdef WIN32
-		hThread = CreateThread(NULL, 0, testThreadProc, &info, 0, &thrID);
+		hThread = CreateThread(nullptr, 0, testThreadProc, &info, 0, &thrID);
 #else
 //#ifdef HAVE_PTHREAD_H
-		pthread_create(&hThread, NULL, testThreadProc, &info);
+		pthread_create(&hThread, nullptr, testThreadProc, &info);
 #endif
 		
 		handles.insert(handles.end(), hThread);
@@ -129,7 +129,7 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 //#ifdef HAVE_PTHREAD_H
 	std::vector<THREAD_TYPE>::iterator j;
 	for (j = handles.begin(); j != handles.end(); j++)
-	    pthread_join(*j, NULL);
+	    pthread_join(*j, nullptr);
 #endif
 	
 	CloseLogEngine();

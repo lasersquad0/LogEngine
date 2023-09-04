@@ -258,21 +258,21 @@ void LogEngineLogTest::testLogPlaceholders()
 	//printf("PASSED\n");
 }
 
-void LogEngineLogTest::testLogDebugLevel()
+void LogEngineLogTest::testLogDetailLevel()
 {
-	//printf("testLogDebugLevel ... ");
+	//printf("testLogDetailLevel ... ");
 	
 	InitLogEngine(TEST_FILES_FOLDER "test9.lfg");
 	TLogEngine* log = getLogEngine();
-	CPPUNIT_ASSERT_EQUAL(11, log->GetLogDetailLevel());
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetLogDetailLevel());
 	
 	InitLogEngine(TEST_FILES_FOLDER "test10.lfg");
 	log = getLogEngine();
-	CPPUNIT_ASSERT_EQUAL(4, log->GetLogDetailLevel());
+	CPPUNIT_ASSERT_EQUAL(4u, log->GetLogDetailLevel());
 	
 	InitLogEngine(TEST_FILES_FOLDER "test11.lfg");
 	log = getLogEngine();
-	CPPUNIT_ASSERT_EQUAL(7, log->GetLogDetailLevel());
+	CPPUNIT_ASSERT_EQUAL(7u, log->GetLogDetailLevel());
 	
 	//printf("PASSED\n");
 }
@@ -291,7 +291,8 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	prop.SetValue("maxlogsize", "1");
 	prop.SetValue("logfilename", fileName);
 
-	unlink(fileName);
+	//unlink
+	remove(fileName);
 
 	InitLogEngine(prop);
 	TLogEngine* log = getLogEngine();
@@ -355,9 +356,9 @@ void LogEngineLogTest::testLogFullPath()
 	InitLogEngine(TEST_FILES_FOLDER "test12.lfg");
 	TLogEngine* log = getLogEngine();
 
-	CPPUNIT_ASSERT_EQUAL(11, log->GetLogDetailLevel());
+	CPPUNIT_ASSERT_EQUAL(11u, log->GetLogDetailLevel());
 	CPPUNIT_ASSERT_EQUAL(lbTimeStamp, log->GetBackupType());
-	CPPUNIT_ASSERT_EQUAL(101, log->GetMaxLogSize());
+	CPPUNIT_ASSERT_EQUAL(101u, log->GetMaxLogSize());
 	CPPUNIT_ASSERT_EQUAL(std::string("1.1.1.1"), log->GetVersionInfo());
 	CPPUNIT_ASSERT_EQUAL(std::string("ExampleApp11"), log->GetAppName());
 	CPPUNIT_ASSERT_EQUAL(std::string("c:\\temp\\ExampleApp11.log"), log->GetLogFileName());	
@@ -453,5 +454,29 @@ void LogEngineLogTest::testWrong_LFG_File()
 
     printf("PASSED\n");*/
 }
+
+void LogEngineLogTest::testBadLFGFile()
+{
+	CPPUNIT_ASSERT_THROW( InitLogEngine(TEST_FILES_FOLDER "test13.lfg"), IOException );
+	TLogEngine* log = getLogEngine();
+
+	CloseLogEngine();
+}
+
+void LogEngineLogTest::testBadLFGFile2()
+{
+	InitLogEngine(TEST_FILES_FOLDER "test14.lfg");
+	TLogEngine* log = getLogEngine();
+
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetLogDetailLevel());
+	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
+	CPPUNIT_ASSERT_EQUAL(1000u, log->GetMaxLogSize());
+	CPPUNIT_ASSERT_EQUAL(std::string("t.t.t.t"), log->GetVersionInfo());
+	CPPUNIT_ASSERT_EQUAL(std::string("BadLFGFileApp"), log->GetAppName());
+	CPPUNIT_ASSERT_EQUAL(std::string("BadLFGLog.log"), log->GetLogFileName());
+
+	CloseLogEngine();
+}
+
 
 #undef TEST_FILES_FOLDER

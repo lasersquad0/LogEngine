@@ -56,9 +56,10 @@ std::string DateTimeToStr(time_t t);
 std::string DelCRLF(const std::string& S);
 
 // removes leading and trailing \n and \r symbols
-std::string trimCRLF(std::string S);
+std::string trimSPCRLF(std::string S);
 
 // compares two strings case insensitive
 bool EqualNCase(const std::string& str1,const std::string& str2);
 
-
+// checks if string contains unsigned integer or not
+bool isUInt(std::string& value);

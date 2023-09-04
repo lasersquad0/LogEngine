@@ -22,7 +22,8 @@ class LogEnginePropertiesTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( testProperties9 );
   CPPUNIT_TEST( testProperties10 );
   CPPUNIT_TEST( testProperties11 );
-  
+  CPPUNIT_TEST( testProperties12 );
+
   CPPUNIT_TEST_SUITE_END();
 public:
 	void setUp();
@@ -39,7 +40,7 @@ public:
     void testProperties9();
     void testProperties10();
     void testProperties11();
-
+    void testProperties12();
 };
 
 #endif //_TEST_PROPERTIES_
