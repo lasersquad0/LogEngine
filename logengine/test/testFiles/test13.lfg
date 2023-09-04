@@ -8,7 +8,7 @@ ApplicationName = Exam\npleApp
 
 Version = t.t.t.t
 
-LogFileName = Error\0Log.log
+LogFileName = Error<Log.log
 
 # This text is written to the file when LogEngine is initializing. 
 StartAppLine  = %APPNAME%  ${TMP}  %APPVERSION% ${COMPUTERNAME} startup.\nLog is started at %DATETIME%.
