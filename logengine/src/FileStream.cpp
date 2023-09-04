@@ -6,7 +6,7 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#include <sys/stat.h>
+//#include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
 

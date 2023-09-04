@@ -458,7 +458,7 @@ void LogEngineLogTest::testWrong_LFG_File()
 void LogEngineLogTest::testBadLFGFile()
 {
 	CPPUNIT_ASSERT_THROW( InitLogEngine(TEST_FILES_FOLDER "test13.lfg"), IOException );
-	TLogEngine* log = getLogEngine();
+	//TLogEngine* log = getLogEngine();
 
 	CloseLogEngine();
 }
