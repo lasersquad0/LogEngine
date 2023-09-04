@@ -254,7 +254,7 @@ void LogEnginePropertiesTest::testProperties11()
 void LogEnginePropertiesTest::testProperties12()
 {
 	std::ifstream fin(TEST_FILES_FOLDER "test13.lfg");
-	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test8.lfg", !fin.fail());
+	CPPUNIT_ASSERT_MESSAGE("Cannot open file" TEST_FILES_FOLDER "test13.lfg", !fin.fail());
 
 	Properties props;
 	props.load(fin);

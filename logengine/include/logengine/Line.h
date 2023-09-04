@@ -190,6 +190,7 @@ protected:
     // container of pointers is required here to support proper virtual "->format()" calls 
 	THArray<Holder*> holders;
 	void parsePattern(const std::string pattern);
+	void clearHolders();
 public:
 	Line(){}
     Line(const Line& line); 

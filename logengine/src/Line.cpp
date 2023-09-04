@@ -58,7 +58,7 @@ void Line::ProcessPattern(const std::string pattern)
 
 void Line::parsePattern(const std::string pattern)
 {
-	THArray<std::string>  placeHolders;
+	THArray<std::string> placeHolders;
 
 	placeHolders.AddFillValues(12);
 
@@ -75,7 +75,7 @@ void Line::parsePattern(const std::string pattern)
 	placeHolders.SetValue(10, "%DETAILLEVEL%");
 	placeHolders.SetValue(11, "%DEBUGLEVEL%");
 
-	holders.Clear();
+	clearHolders();
 	
 	unsigned int i = 0;
 	while(i < pattern.size())
@@ -180,15 +180,21 @@ void Line::parsePattern(const std::string pattern)
 	
 }
 
-Line::~Line()
+void Line::clearHolders()
 {
-	for(uint i = 0; i < holders.Count(); i++)
+	for (uint i = 0; i < holders.Count(); i++)
 	{
 		Holder* h = holders[i];
 		delete h;
 	}
 
-    holders.Clear();
+	holders.Clear();
+
+}
+
+Line::~Line()
+{
+	clearHolders();
 }
 
 std::string Line::format(LogEvent& event)
