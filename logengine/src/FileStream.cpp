@@ -10,12 +10,12 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#ifdef __unix__
-#include <sys/io.h>
-#include <unistd.h>
-#else
+//#ifdef __unix__
+//#include <sys/io.h>
+//#include <unistd.h>
+//#else
 #include <io.h>
-#endif
+//#endif
 
 #include "FileStream.h"
 
