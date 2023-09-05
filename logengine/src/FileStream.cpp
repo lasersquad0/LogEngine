@@ -14,7 +14,7 @@
 //#include <sys/io.h>
 //#include <unistd.h>
 //#else
-#include <io.h>
+//#include <io.h>
 //#endif
 
 #include "FileStream.h"
