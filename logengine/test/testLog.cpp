@@ -3,6 +3,7 @@
 #include <unistd.h>
 #endif
 
+#include <thread>
 #include "Shared.h"
 #include "LogEngine.h"
 #include "testLog.h"
@@ -511,11 +512,7 @@ void LogEngineLogTest::testLogRotation1()
 	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 6, log->GetTotalBytesWritten());
 
 // wait to make sure that next backup file will have different name.
-#ifdef WIN32
-	Sleep(1000);
-#else
-	sleep(1000);
-#endif
+	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 	str.resize(MaxLogSize + 1, 'M');
 	log->WriteStr(str);
