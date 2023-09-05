@@ -7,6 +7,7 @@
 #include <unistd.h>
 #endif
 
+#include <thread>
 #include "Shared.h"
 #include "functions.h"
 #include "LogEngine.h"
@@ -41,11 +42,12 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
 	    return 0; // <<< unused, so 0. (void*) 1 looks silly =)
 
 	while (!info->begin)
-#ifdef WIN32
-	    Sleep(10);
-#else
-		usleep(10 * 1000);
-#endif
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+//#ifdef WIN32
+//	    Sleep(10);
+//#else
+//		usleep(10 * 1000);
+//#endif
 
 	std::string s = IntToStr((int) GET_THREAD_ID());
 	log->WriteError  (s + " is executing 1!");
