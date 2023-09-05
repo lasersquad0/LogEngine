@@ -272,9 +272,10 @@ off_t TFileStream::Length()
 
 void TFileStream::Flush()
 {
-#ifdef __unix__
-	fsync(hf);
-#else
+#ifdef WIN32
 	_commit(hf);
-#endif /* __unix__ */
+#else
+	fsync(hf); 
+#endif
 }
+

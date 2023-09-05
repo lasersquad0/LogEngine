@@ -19,7 +19,7 @@ void LogEngineLogTest::setUp ()
 
 void LogEngineLogTest::tearDown ()
 {
-    // free memory allocated in setUp, do other things
+	// free memory allocated in setUp, do other things
 }
 
 
@@ -42,7 +42,7 @@ void LogEngineLogTest::testLog1()
 	std::string s;
 	
 	s = log->FormatError("testLog1error");
-    CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("#testLog1error"), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("#testLog1error"), cutLog(s));
 
 	s = log->FormatInfo("testLog1info");
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string(" testLog1info"), cutLog(s));
@@ -310,7 +310,7 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	
 	struct stat st;
 	stat(fileName, &st);
-	CPPUNIT_ASSERT_EQUAL((unsigned int)st.st_size, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, log->GetBytesWritten());
 	
 	CloseLogEngine();
 	
@@ -433,26 +433,26 @@ void LogEngineLogTest::testLogAppName()
 
 void LogEngineLogTest::testWrong_LFG_File()
 {
-    try
-    {
-        InitLogEngine(TEST_FILES_FOLDER "test000.lfg");
-    }
-    catch (LogException& ex) 
-    {
-        CPPUNIT_ASSERT_EQUAL((char*)("[LogException] Cannot open config file: " TEST_FILES_FOLDER "test000.lfg"), (char*)ex.what());
-    }
+	try
+	{
+		InitLogEngine(TEST_FILES_FOLDER "test000.lfg");
+	}
+	catch (LogException& ex) 
+	{
+		CPPUNIT_ASSERT_EQUAL((char*)("[LogException] Cannot open config file: " TEST_FILES_FOLDER "test000.lfg"), (char*)ex.what());
+	}
 /* 
 
 
-    InitLogEngine(TEST_FILES_FOLDER "test10.lfg");
-    log = getLogEngine();
-    CPPUNIT_ASSERT_EQUAL(4, log->GetLogDetailLevel());
+	InitLogEngine(TEST_FILES_FOLDER "test10.lfg");
+	log = getLogEngine();
+	CPPUNIT_ASSERT_EQUAL(4, log->GetLogDetailLevel());
 
-    InitLogEngine(TEST_FILES_FOLDER "test11.lfg");
-    log = getLogEngine();
-    CPPUNIT_ASSERT_EQUAL(7, log->GetLogDetailLevel());
+	InitLogEngine(TEST_FILES_FOLDER "test11.lfg");
+	log = getLogEngine();
+	CPPUNIT_ASSERT_EQUAL(7, log->GetLogDetailLevel());
 
-    printf("PASSED\n");*/
+	printf("PASSED\n");*/
 }
 
 void LogEngineLogTest::testBadLFGFile()
@@ -474,6 +474,52 @@ void LogEngineLogTest::testBadLFGFile2()
 	CPPUNIT_ASSERT_EQUAL(std::string("t.t.t.t"), log->GetVersionInfo());
 	CPPUNIT_ASSERT_EQUAL(std::string("BadLFGFileApp"), log->GetAppName());
 	CPPUNIT_ASSERT_EQUAL(std::string("BadLFGLog.log"), log->GetLogFileName());
+
+	CloseLogEngine();
+}
+
+void LogEngineLogTest::testLogRotation1()
+{
+	std::string logfname = "TestLogRotation.log";
+	remove(logfname.c_str()); // name sure that previously created log file does not exist
+
+	Properties props;
+	props.SetValue("LogFileName", logfname);
+	props.SetValue("BackupType", "TimeStamp");
+	props.SetValue("MaxLogSize", "1"); // 1 Kilobyte
+	
+	InitLogEngine(props);
+	TLogEngine* log = getLogEngine();
+
+	ulong StartMsgLen = 64;
+	ulong MaxLogSize = 1024;
+	CPPUNIT_ASSERT_EQUAL(StartMsgLen, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(StartMsgLen, log->GetTotalBytesWritten());
+
+	std::string str;
+	str.resize(MaxLogSize - StartMsgLen - 2, 'M'); // we deduc 2 because WriteStr writes str AND 'CRLF' - 3 bytes in total
+	log->WriteStr(str); 
+	
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize, log->GetTotalBytesWritten());
+	log->WriteStr("F"); // 3 bytes written
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 3, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 3, log->GetTotalBytesWritten());
+	
+	log->WriteStr("A"); // 3 bytes written
+	CPPUNIT_ASSERT_EQUAL(3ul, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 6, log->GetTotalBytesWritten());
+	
+	Sleep(2000); // wait to make sure that next backup file will have different name.
+
+	str.resize(MaxLogSize + 1, 'M');
+	log->WriteStr(str);
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 6, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 6 + MaxLogSize + 3, log->GetTotalBytesWritten());
+
+	log->WriteStr("G");
+	CPPUNIT_ASSERT_EQUAL(3ul, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 6 + MaxLogSize + 6, log->GetTotalBytesWritten());
 
 	CloseLogEngine();
 }

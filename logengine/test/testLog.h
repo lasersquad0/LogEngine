@@ -31,6 +31,7 @@ class LogEngineLogTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( testWrong_LFG_File );
   CPPUNIT_TEST( testBadLFGFile );
   CPPUNIT_TEST( testBadLFGFile2 );
+  CPPUNIT_TEST( testLogRotation1 );
   CPPUNIT_TEST_SUITE_END();
 public:
 	void setUp();
@@ -55,6 +56,7 @@ public:
     void testWrong_LFG_File();
     void testBadLFGFile();
     void testBadLFGFile2();
+    void testLogRotation1();
 };
 
 inline std::string cutLog(std::string str)

@@ -103,7 +103,7 @@ const char* LogException::what() const throw()
 
 
 //////////////////////////////////////////////////////////////////////
-// TLogEngineParams
+// LogEngineProperties
 //////////////////////////////////////////////////////////////////////
 
 TLogEngine::LogEngineProperties::LogEngineProperties()
@@ -170,7 +170,9 @@ TLogEngine::TLogEngine(void): LogQueue()
 { 
 	FLogStream    = nullptr;
 	FStarted	  = false;
-	FBytesWritten = 0;
+	FFileBytesWritten = 0;
+	FTotalBytesWritten = 0;
+	FInitialFileSize    = 0;
 	FMessageCount[lmError]   = 0;
 	FMessageCount[lmWarning] = 0;
 	FMessageCount[lmInfo]    = 0;
@@ -183,16 +185,6 @@ TLogEngine::TLogEngine(void): LogQueue()
 TLogEngine::TLogEngine(const Properties& Props): TLogEngine()//, LogQueue()
 {
 	FProperties.Fill(Props);
-	/*FLogStream = NULL;
-	FStarted = false;
-	FBytesWritten = 0;
-	FMessageCount[lmError] = 0;
-	FMessageCount[lmWarning] = 0;
-	FMessageCount[lmInfo] = 0;
-
-	hThread = THREAD_TYPE_INITIALIZER;
-
-	INIT_CRITICAL_SECTION(CriticalSection);*/
 }
 
 TLogEngine::TLogEngine(const std::string& ConfigFileName): TLogEngine() // : LogQueue()
@@ -207,27 +199,6 @@ TLogEngine::TLogEngine(const std::string& ConfigFileName): TLogEngine() // : Log
 
 	Props.load(fin);
 	FProperties.Fill(Props);
-	
-/*	if(argv != NULL)
-		params.ProgramName = ExtractFileName(argv[0]);
-	else
-		params.ProgramName = ExtractFileName(FileName);
-
-	if(MaxLogSize > 0)
-		params.MaxLogSize = MaxLogSize;
-	else 
-		params.MaxLogSize = DefaultMaxLogSize;
-*/
-	/*FLogStream = NULL;
-	FStarted = false;
-	FBytesWritten = 0;
-	FMessageCount[lmError] = 0;
-	FMessageCount[lmWarning] = 0;
-	FMessageCount[lmInfo] = 0;
-	
-	hThread = THREAD_TYPE_INITIALIZER;
-
-	INIT_CRITICAL_SECTION(CriticalSection);*/
 }
 
 TLogEngine::~TLogEngine()
@@ -251,7 +222,7 @@ TLogEngine::~TLogEngine()
 	DELETE_CRITICAL_SECTION(CriticalSection);
 }
 
-void TLogEngine::InitThread(void)
+void TLogEngine::initThread(void)
 {
 	if(!FProperties.Threaded)
 		return;
@@ -285,7 +256,7 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION TLogEngine::ThreadProc(void *parameter)
 			//OutputDebugString("new event");
 
 			LogEvent* event = current_msg;
-			info->LogEngine->WriteEvent(event);
+			info->LogEngine->writeEvent(event);
 			delete event;
 		}
 		
@@ -298,7 +269,9 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION TLogEngine::ThreadProc(void *parameter)
 
 void TLogEngine::resetStatistics()
 {
-	FBytesWritten = 0;
+	FFileBytesWritten        = 0;
+	FTotalBytesWritten       = 0;
+	FInitialFileSize         = 0;
 	FMessageCount[lmError]   = 0;
 	FMessageCount[lmWarning] = 0;
 	FMessageCount[lmInfo]    = 0;
@@ -315,12 +288,12 @@ void TLogEngine::Start(void)
 
 	FLogStream = new TFileStream(FProperties.FileName, fmWrite);
 	FLogStream->Seek(0, smFromEnd);
-	FInitialLogStreamSize = FLogStream->Length();
+	FInitialFileSize = FLogStream->Length();
 	FStarted = true;
 
-	InitThread();
+	initThread();
 
-	WriteStart();
+	writeStart();
 	
 //	LEAVE_CRITICAL_SECTION(CriticalSection);
 }
@@ -347,7 +320,7 @@ void TLogEngine::Stop(void)
 #endif
 	}
 
-	WriteStop();
+	writeStop();
 
 	delete FLogStream;
 	FLogStream = nullptr;
@@ -356,27 +329,32 @@ void TLogEngine::Stop(void)
 //	LEAVE_CRITICAL_SECTION(CriticalSection);
 }
 
-void TLogEngine::InternalWrite(const std::string& msg)
+ulong TLogEngine::getFileLength()
+{
+	return FInitialFileSize + FFileBytesWritten;
+}
+
+void TLogEngine::internalWrite(const std::string& msg)
 {
 	ENTER_CRITICAL_SECTION(CriticalSection);
 
 	if(!FStarted)
 		throw LogException("The LogEngine is not started!");
 
-	// TODO на каждый Write мы вызываем API ф-цию fstat() дл€ получени€ размера файла. ѕодумать как это сделать менее напр€жно дл€ системы и быстрее.
-	if(FProperties.MaxLogSize > 0 && (FInitialLogStreamSize + FBytesWritten) > FProperties.MaxLogSize*1024)
-		TruncLogFile();
+	if(FProperties.MaxLogSize > 0 && getFileLength() > FProperties.MaxLogSize * 1024)
+		truncLogFile();
 
-	//FBytesWritten += msg.size();
+	int written = FLogStream->WriteString(msg);
+	written += FLogStream->WriteCRLF();
 
-	FBytesWritten += FLogStream->WriteString(msg);
-	FBytesWritten += FLogStream->WriteCRLF();
+	FFileBytesWritten += written;
+	FTotalBytesWritten += written;
 	//FLogStream->Flush();
 
 	LEAVE_CRITICAL_SECTION(CriticalSection);
 }
 
-void TLogEngine::WriteEvent(LogEvent* event)
+void TLogEngine::writeEvent(LogEvent* event)
 {
 	if(event->m_detailLevel > FProperties.DetailLevel)
 		return;
@@ -384,23 +362,23 @@ void TLogEngine::WriteEvent(LogEvent* event)
 	switch(event->m_msgType)
 	{
 		case lmNone:
-			InternalWrite(event->m_message);
+			internalWrite(event->m_message);
 			FMessageCount[lmNone]++;
 			break;
 		case lmInfo:
-			InternalWrite(LogTypeChars[lmInfo] + FProperties.InfoLine.format(*event));
+			internalWrite(LogTypeChars[lmInfo] + FProperties.InfoLine.format(*event));
 			FMessageCount[lmInfo]++;
 			break;
 		case lmWarning:
-			InternalWrite(LogTypeChars[lmWarning] + FProperties.InfoLine.format(*event));
+			internalWrite(LogTypeChars[lmWarning] + FProperties.InfoLine.format(*event));
 			FMessageCount[lmWarning]++;
 			break;
 		case lmError:
-			InternalWrite(LogTypeChars[lmError] + FProperties.InfoLine.format(*event));
+			internalWrite(LogTypeChars[lmError] + FProperties.InfoLine.format(*event));
 			FMessageCount[lmError]++;
 			break;
 		default:
-			InternalWrite("UNRECOGNIZED MESSAGE TYPE " + event->m_message);
+			internalWrite("UNRECOGNIZED MESSAGE TYPE " + event->m_message);
 			FMessageCount[lmNone]++;
 			break;
 	}	
@@ -413,21 +391,21 @@ std::string TLogEngine::FormatStr(const std::string& str, uint /*DetailLevel = 0
 
 std::string TLogEngine::FormatInfo(const std::string& str, uint DetailLevel /*= 0*/)
 {
-	LogEvent event(str, lmInfo, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
+	LogEvent event(str, lmInfo, GET_THREAD_ID(), GetCurrDateTime(), DetailLevel, this);
 	
 	return LogTypeChars[lmInfo] + FProperties.InfoLine.format(event);
 }
 
 std::string TLogEngine::FormatWarning(const std::string& str, uint DetailLevel /*= 0*/)
 {
-	LogEvent event(str, lmWarning, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
+	LogEvent event(str, lmWarning, GET_THREAD_ID(), GetCurrDateTime(), DetailLevel, this);
 	
 	return LogTypeChars[lmWarning] + FProperties.WarningLine.format(event);
 }
 
 std::string TLogEngine::FormatError(const std::string& str, uint DetailLevel /*= 0*/)
 {
-	LogEvent event(str, lmError, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
+	LogEvent event(str, lmError, GET_THREAD_ID(), GetCurrDateTime(), DetailLevel, this);
 	
 	return LogTypeChars[lmError] + FProperties.ErrorLine.format(event);
 }
@@ -441,13 +419,13 @@ void TLogEngine::WriteStr(const std::string& str, uint DetailLevel /*=0*/)
 	{	
 		//timeb tm;
 		//ftime(&tm);
-		LogEvent* event = new LogEvent(str, lmNone, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
+		LogEvent* event = new LogEvent(str, lmNone, GET_THREAD_ID(), GetCurrDateTime(), DetailLevel, this);
 		
 		LogQueue.PushElement(event);
 	}
 	else
 	{		
-		InternalWrite(LogTypeChars[lmNone] + str);
+		internalWrite(LogTypeChars[lmNone] + str);
 		FMessageCount[lmNone]++;
 	}
 }
@@ -461,7 +439,7 @@ void TLogEngine::WriteInfo(const std::string& str, uint DetailLevel /*=0*/)
 	{	
 		//timeb tm;
 		//ftime(&tm);
-		LogEvent* event = new LogEvent(str, lmInfo, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
+		LogEvent* event = new LogEvent(str, lmInfo, GET_THREAD_ID(), GetCurrDateTime(), DetailLevel, this);
 		
 		LogQueue.PushElement(event);
 	}
@@ -471,7 +449,7 @@ void TLogEngine::WriteInfo(const std::string& str, uint DetailLevel /*=0*/)
 		ftime(&tm);
 		LogEvent event(str, lmInfo, GET_THREAD_ID(), tm, DetailLevel);
 	*/
-		InternalWrite(FormatInfo(str, DetailLevel));
+		internalWrite(FormatInfo(str, DetailLevel));
 		FMessageCount[lmInfo]++;
 	}
 }
@@ -483,7 +461,7 @@ void TLogEngine::WriteWarning(const std::string& str, uint DetailLevel /*=0*/)
 
 	if(FProperties.Threaded) 
 	{	
-		LogEvent* event = new LogEvent(str, lmWarning, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
+		LogEvent* event = new LogEvent(str, lmWarning, GET_THREAD_ID(), GetCurrDateTime(), DetailLevel, this);
 		
 		LogQueue.PushElement(event);
 	}
@@ -493,7 +471,7 @@ void TLogEngine::WriteWarning(const std::string& str, uint DetailLevel /*=0*/)
 		ftime(&tm);
 		LogEvent event(str, lmWarning, GET_THREAD_ID(), tm, DetailLevel);
 */		
-		InternalWrite(FormatWarning(str, DetailLevel));
+		internalWrite(FormatWarning(str, DetailLevel));
 		FMessageCount[lmWarning]++;
 	}
 }
@@ -507,7 +485,7 @@ void TLogEngine::WriteError(const std::string& str, uint DetailLevel /*=0*/)
 	{	
 		//timeb tm;
 		//ftime(&tm);
-		LogEvent* event = new LogEvent(str, lmError, GET_THREAD_ID(), GetCurrTime(), DetailLevel, this);
+		LogEvent* event = new LogEvent(str, lmError, GET_THREAD_ID(), GetCurrDateTime(), DetailLevel, this);
 		
 		LogQueue.PushElement(event);
 	}
@@ -517,7 +495,7 @@ void TLogEngine::WriteError(const std::string& str, uint DetailLevel /*=0*/)
 		ftime(&tm);
 		LogEvent event(str, lmError, GET_THREAD_ID(), tm, DetailLevel);
 */		
-		InternalWrite(FormatError(str, DetailLevel));
+		internalWrite(FormatError(str, DetailLevel));
 		FMessageCount[lmError]++;
 	}
 }
@@ -601,18 +579,18 @@ void TLogEngine::WriteErrorFmt(uint DetailLevel, const char* formatstr, ...)
 	WriteError(res, DetailLevel);
 }
 
-void TLogEngine::WriteStart()
+void TLogEngine::writeStart()
 {
-	LogEvent event("", lmNone, GET_THREAD_ID(), GetCurrTime(), 0, this);
+	LogEvent event("", lmNone, GET_THREAD_ID(), GetCurrDateTime(), 0, this);
 	
-	InternalWrite(FProperties.StartAppLine.format(event));
+	internalWrite(FProperties.StartAppLine.format(event));
 }
 
-void TLogEngine::WriteStop()
+void TLogEngine::writeStop()
 {
-	LogEvent event("", lmNone, GET_THREAD_ID(), GetCurrTime(), 0, this);
+	LogEvent event("", lmNone, GET_THREAD_ID(), GetCurrDateTime(), 0, this);
 	
-	InternalWrite(FProperties.StopAppLine.format(event));
+	internalWrite(FProperties.StopAppLine.format(event));
 }
 
 void TLogEngine::SetVersionInfo(const std::string& VerInfo)
@@ -630,7 +608,7 @@ void TLogEngine::SetMaxLogSize(const uint MaxLogSize)
 	// if new MaxLogSize is less than current filesize - do truncate.
 	FLogStream->Flush();
 	if (MaxLogSize > 0 && FLogStream->Length() > MaxLogSize * 1024)
-		TruncLogFile();
+		truncLogFile();
 
 	FProperties.MaxLogSize = MaxLogSize;
 }
@@ -645,7 +623,15 @@ void TLogEngine::SetBackupType(const TLogBackupType BackupType)
 	FProperties.BackupType = BackupType;
 }
 
-std::string TLogEngine::GenerateBackupName(void)
+void TLogEngine::SetLogFileName(const std::string& newFileName)
+{
+	if (FStarted)
+		throw LogException("Cannot change log filename when LogEngine is started. Stop LogEngne before changing log filename.");
+
+	FProperties.FileName = newFileName;
+}
+
+std::string TLogEngine::generateBackupName(void)
 {
 	std::string s;
 	switch(FProperties.BackupType)
@@ -663,7 +649,7 @@ std::string TLogEngine::GenerateBackupName(void)
 	return s;
 }
 
-void TLogEngine::TruncLogFile(void)
+void TLogEngine::truncLogFile(void)
 {
 	ENTER_CRITICAL_SECTION(CriticalSection);
 
@@ -676,19 +662,21 @@ void TLogEngine::TruncLogFile(void)
 	}
 	else
 	{
-		std::string newName = GenerateBackupName();
+		std::string newName = generateBackupName();
 		remove(newName.c_str());
 		rename(FProperties.FileName.c_str(), newName.c_str());
 	}
 
 	FLogStream = new TFileStream(FProperties.FileName, fmWrite);
+	FInitialFileSize = FLogStream->Length();
+	FFileBytesWritten = 0;
 
 	LEAVE_CRITICAL_SECTION(CriticalSection);
 }
 
 void TLogEngine::Flush()
 {
-	//Add here wait while other thread purges all data tot he disk and the call FLogStream->Flush
+	//TODO Add here wait while other thread purges all data tot he disk and then call FLogStream->Flush
 	FLogStream->Flush();
 }
 

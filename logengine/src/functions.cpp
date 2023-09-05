@@ -169,12 +169,14 @@ std::string StringReplace(const std::string& S, const std::string& SearchPattern
 	return Result;
 }
 
+#define DATETIME_BUF 100
+
 tm_point GetCurrTimePoint()
 {
 	return std::chrono::system_clock::now();
 }
 
-struct tm GetCurrTime()
+struct tm GetCurrDateTime()
 {
 	const std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	return *std::localtime(&tt);	
@@ -201,8 +203,8 @@ std::string GetCurrTimeAsString(void)
 
 	const std::time_t tt = std::chrono::system_clock::to_time_t(stime);
 
-    char ss[100];
-    std::strftime(ss, 100, "%X", std::localtime(&tt));
+    char ss[DATETIME_BUF];
+    std::strftime(ss, DATETIME_BUF, "%X", std::localtime(&tt));
 
 	char sss[20];
 #if __STDC_SECURE_LIB__ //_MSC_VER < 1400    
@@ -228,9 +230,9 @@ std::string GetCurrDateAsString(void)
 //#else
 //    ptp = localtime(&t);    
 //#endif	
-	struct tm t = GetCurrTime();
-    char ss[100];
-    std::strftime(ss, 100, "%d-%m-%Y", &t);
+	struct tm t = GetCurrDateTime();
+    char ss[DATETIME_BUF];
+    std::strftime(ss, DATETIME_BUF, "%d-%m-%Y", &t);
 
 	//std::string s = DelCRLF(ss);
 	return ss;
@@ -242,9 +244,9 @@ std::string GetCurrDateTimeAsString(void)
 	//time_t t = time(NULL);
 	//std::string s = ctime(&t);
 	//s = DelCRLF(s);
-	struct tm t = GetCurrTime();
-	char ss[100];
-	std::strftime(ss, 100, "%c", &t);
+	struct tm t = GetCurrDateTime();
+	char ss[DATETIME_BUF];
+	std::strftime(ss, DATETIME_BUF, "%c", &t);
 
 	return ss;
 }
@@ -252,8 +254,8 @@ std::string GetCurrDateTimeAsString(void)
 // converts native datetime value into AString
 std::string DateTimeToStr(time_t t)
 {
-	char ss[100];
-	std::strftime(ss, 100, "%c", std::localtime(&t));
+	char ss[DATETIME_BUF];
+	std::strftime(ss, DATETIME_BUF, "%c", std::localtime(&t));
 
 	//std::string s = ctime(&t);
 	//s = DelCRLF(s);
@@ -263,7 +265,13 @@ std::string DateTimeToStr(time_t t)
 // gets formatted current datetime
 std::string FormatCurrDateTime(const std::string& FormatStr)
 {   	
-    tm tp;
+	struct tm t = GetCurrDateTime();
+	char ss[DATETIME_BUF];
+	std::strftime(ss, DATETIME_BUF, FormatStr.c_str(), &t);
+
+	return ss;
+
+/*    tm tp;
     tm* ptp = &tp;
 
 	time_t t = time(nullptr);
@@ -287,7 +295,7 @@ std::string FormatCurrDateTime(const std::string& FormatStr)
 	strftime(ss, 100, FormatStr.c_str(), ptp);
 
 	s = DelCRLF(ss);
-	return s;
+	return s;*/
 }
 
 std::string DelCRLF(const std::string& S)

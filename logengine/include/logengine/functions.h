@@ -6,7 +6,7 @@
 typedef std::chrono::time_point<std::chrono::system_clock> tm_point;
 
 tm_point GetCurrTimePoint();
-struct tm GetCurrTime();
+struct tm GetCurrDateTime();
 
 
 // truncates Value to Precision digits after point

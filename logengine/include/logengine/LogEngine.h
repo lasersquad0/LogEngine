@@ -99,9 +99,10 @@ private:
 	
 	TFileStream* FLogStream; 
 	bool FStarted;
-	uint FBytesWritten;
+	ulong FFileBytesWritten;
+	ulong FTotalBytesWritten;
+	off_t FInitialFileSize;
 	uint FMessageCount[4];
-	off_t FInitialLogStreamSize;
 	//FMessageTime[3];
 	//FStartupTime;
 	
@@ -118,15 +119,15 @@ protected:
 	virtual ~TLogEngine();
 	
 
-	void InitThread();
-	void TruncLogFile(void);
-	void InternalWrite(const std::string& msg);
-	void WriteStart(void);
-	void WriteStop(void);
-	void WriteEvent(LogEvent* event);
-
-	std::string GenerateBackupName(void);
+	void initThread();
+	void truncLogFile(void);
+	void internalWrite(const std::string& msg);
+	void writeStart(void);
+	void writeStop(void);
+	void writeEvent(LogEvent* event);
+	std::string generateBackupName(void);
 	void resetStatistics();
+	ulong getFileLength();
 
 	static THREAD_OUT_TYPE THREAD_CALL_CONVENTION ThreadProc(void* parameter);
 public:
@@ -137,16 +138,16 @@ public:
 	void Flush(); // forces save data to the disk
 
 	//log format functions
-	std::string FormatStr		(const std::string& str, uint DetailLevel = DefaultDetailLevel);
-	std::string FormatInfo		(const std::string& str, uint DetailLevel = DefaultDetailLevel);
-	std::string FormatWarning	(const std::string& str, uint DetailLevel = DefaultDetailLevel);
-	std::string FormatError		(const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	std::string FormatStr	  (const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	std::string FormatInfo	  (const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	std::string FormatWarning (const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	std::string FormatError	  (const std::string& str, uint DetailLevel = DefaultDetailLevel);
 
 	//write functions
-	void WriteStr		(const std::string& str, uint DetailLevel = DefaultDetailLevel);
-	void WriteInfo		(const std::string& str, uint DetailLevel = DefaultDetailLevel);
-	void WriteWarning	(const std::string& str, uint DetailLevel = DefaultDetailLevel);
-	void WriteError		(const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	void WriteStr	  (const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	void WriteInfo	  (const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	void WriteWarning (const std::string& str, uint DetailLevel = DefaultDetailLevel);
+	void WriteError	  (const std::string& str, uint DetailLevel = DefaultDetailLevel);
 
 	// formatted write functions
 	void WriteStrFmt	(uint DetailLevel, const char* formatstr,...);
@@ -155,10 +156,11 @@ public:
 	void WriteErrorFmt	(uint DetailLevel, const char* formatstr,...);
 
 	void SetVersionInfo(const std::string& VerInfo);
-	void SetAppName(const std::string& AppName);
-	void SetMaxLogSize(const uint MaxLogSize);
-	void SetBackupType(const TLogBackupType BackupType);
+	void SetAppName    (const std::string& AppName);
+	void SetMaxLogSize (const uint MaxLogSize);
+	void SetBackupType (const TLogBackupType BackupType);
 	void SetLogDetailLevel(const uint DetailLevel); 
+	void SetLogFileName(const std::string& newFileName);
 
 	TLogBackupType	GetBackupType(void)		const { return FProperties.BackupType; }
 	uint			GetMaxLogSize(void)		const { return FProperties.MaxLogSize; }
@@ -166,9 +168,9 @@ public:
 	std::string		GetAppName(void)		const { return FProperties.ApplicationName; }
 	std::string		GetVersionInfo(void)	const { return FProperties.Version; }
 	uint			GetLogDetailLevel(void) const { return FProperties.DetailLevel; } 
-	unsigned int	GetBytesWritten(void)   const { return FBytesWritten; } 
+	ulong			GetBytesWritten(void)   const { return FFileBytesWritten; }
+	ulong			GetTotalBytesWritten(void) const { return FTotalBytesWritten; }
 	
-
 	static TLogEngine* getInstance();
 	static TLogEngine* getInstance(const Properties& Props);
 	static void InitLogEngine();
