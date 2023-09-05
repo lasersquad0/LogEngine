@@ -36,11 +36,19 @@ class Compare<std::string>
 public:
     // returns True when string a is equal b
 	virtual bool eq(const std::string& a, const std::string& b) const { return EqualNCase(a, b); };
+
+#ifdef WIN32
 #pragma warning(push)
 #pragma warning(disable : 4100)
+#endif
+
 	virtual bool lt(const std::string& a, const std::string& b) const { throw std::exception();/*"string comparing don't process operator '<'");*/ };
 	virtual bool mt(const std::string& a, const std::string& b) const { throw std::exception();/*"string comparing don't process operator '>'");*/ };
+
+#ifdef WIN32
 #pragma warning(pop)
+#endif
+
 	virtual ~Compare() {};
 };
 
