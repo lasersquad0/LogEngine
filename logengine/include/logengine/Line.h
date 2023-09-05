@@ -91,8 +91,10 @@ public:
 	std::string format(LogEvent& event);
 };
 
+#ifdef WIN32
 #pragma warning(push)
 #pragma warning(disable : 4100)
+#endif
 
 class LiteralHolder : public Holder
 {
@@ -137,8 +139,9 @@ public:
 	}
 };
 
+#ifdef WIN32
 #pragma warning(pop)
-
+#endif
 
 class DetailLevelHolder: public Holder
 {
