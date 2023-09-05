@@ -509,8 +509,13 @@ void LogEngineLogTest::testLogRotation1()
 	log->WriteStr("A"); // 3 bytes written
 	CPPUNIT_ASSERT_EQUAL(3ul, log->GetBytesWritten());
 	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 6, log->GetTotalBytesWritten());
-	
-	Sleep(2000); // wait to make sure that next backup file will have different name.
+
+// wait to make sure that next backup file will have different name.
+#ifdef WIN32
+	Sleep(1000);
+#else
+	sleep(1000);
+#endif
 
 	str.resize(MaxLogSize + 1, 'M');
 	log->WriteStr(str);
