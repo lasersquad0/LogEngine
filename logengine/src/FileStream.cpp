@@ -10,13 +10,11 @@
 #include <fcntl.h>
 #include <errno.h>
 
-//#ifdef __unix__
-//#include <sys/io.h>
-//#include <unistd.h>
-//#else
- 
 #ifdef WIN32
 #include <io.h>
+#else
+#include <sys/io.h>
+#include <unistd.h>
 #endif
 
 #include "FileStream.h"
