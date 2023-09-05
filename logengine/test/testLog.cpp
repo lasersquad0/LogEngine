@@ -312,6 +312,7 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	
 	struct stat st;
 	stat(fileName, &st);
+	
 	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, log->GetBytesWritten());
 	
 	log->WriteInfo("!");
@@ -353,8 +354,8 @@ void LogEngineLogTest::testLogBackupTypeSingle()
 			break;
 	}
 	
-	struct _stat st;
-	_stat(logfname.c_str(), &st);
+	struct stat st;
+	stat(logfname.c_str(), &st);
 	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, log->GetBytesWritten());
 	
 	CPPUNIT_ASSERT_EQUAL(42u, log->GetMessageCount(lmError));
