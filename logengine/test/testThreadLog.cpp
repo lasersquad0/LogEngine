@@ -43,10 +43,8 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
 	while (!info->begin)
 #ifdef WIN32
 	    Sleep(10);
-#endif
-
-#ifdef __unix__
-  	    usleep(10 * 1000);
+#else
+		usleep(10 * 1000);
 #endif
 
 	std::string s = IntToStr((int) GET_THREAD_ID());
