@@ -23,22 +23,24 @@
 //  IOException Class
 //////////////////////////////////////////////////////////////////////
 
-const char* IOException::what() const throw() // TODO - make like in DynamicArrays
-{
-	std::string s ="LogException : "+Text;
-	char * err = (char*)malloc(s.size() + 1); //on extra byte for terminator
-	if(err) // don't want to include <string.h>
-	{
-		for(unsigned int i = 0; i < s.size(); i++)
-			err[i] = s[i];
-		err[s.size()] = '\0';
-	}
-	return err;
-}
+//const char* IOException::what() const throw()
+//{
+//	std::string s = "LogException : " + Text;
+//
+//	char * err = (char*)malloc(s.size() + 1); //on extra byte for terminator
+//	if(err) // don't want to include <string.h>
+//	{
+//		for(unsigned int i = 0; i < s.size(); i++)
+//			err[i] = s[i];
+//		err[s.size()] = '\0';
+//	}
+//	return err;
+//}
 
 IOException& IOException::operator=(const IOException& ex)
 {
 	Text = ex.Text;
+	whatText = ex.whatText;
 	return *this;
 }
 
@@ -49,13 +51,13 @@ IOException& IOException::operator=(const IOException& ex)
 
 void TStream::operator >>(bool& Value) 
 {
-	if (Read(&Value,sizeof(Value)) != sizeof(Value))
+	if (Read(&Value, sizeof(Value)) != sizeof(Value))
 		throw IOException("End of stream !");
 }
 
 void TStream::operator >>(int& Value) 
 {
-	if (Read(&Value,sizeof(Value)) != sizeof(Value))
+	if (Read(&Value, sizeof(Value)) != sizeof(Value))
 		throw IOException("End of stream !");
 }
 void TStream::operator <<(int Value) 
@@ -80,7 +82,7 @@ void TStream::operator <<(std::string& Value)
 char TStream::ReadChar() 
 {
 	char c;
-	Read(&c,sizeof(c));
+	Read(&c, sizeof(c));
 	return c;
 }
 void TStream::operator >>(std::string& Value) 
@@ -96,7 +98,7 @@ std::string TStream::LoadPString()
 	int i;
 	*this >> i;
 	res.resize(i);
-	Read((void*)res.data(),res.length());
+	Read((void*)res.data(), res.length());
 	return res;
 }
 
@@ -167,9 +169,13 @@ TFileStream::TFileStream(const std::string& FileName, const TFileMode fMode)
 	if(hf == -1)
 	{
 		std::string s;
-		if(res == EINVAL) s = "Wrong file name '" + FileName + "'!";
-		else if (res == EACCES) s = "Can't get access to file '" + FileName + "'!";
-		else s = "Can't open file '" + FileName + "'!";
+		if(res == EINVAL) 
+			s = "Wrong file name '" + FileName + "'!";
+		else if (res == EACCES) 
+			s = "Can't get access to file '" + FileName + "'!";
+		else 
+			s = "Can't open file '" + FileName + "'!";
+		
 		throw IOException(s.c_str());
 	}
 	
@@ -212,7 +218,7 @@ int TFileStream::Write(const void *Buffer, const size_t Size)
 	
 	if(c == -1)
 	{
-		std::string s = "Cannot write to file '"+FFileName+"'! May be disk full?";	
+		std::string s = "Cannot write to file '" + FFileName + "'! May be disk full?";	
 		throw IOException(s.c_str());
 	}
 
@@ -222,7 +228,7 @@ int TFileStream::Write(const void *Buffer, const size_t Size)
 int TFileStream::WriteLn(const void *Buffer, const size_t Size)
 {
 	int c = Write(Buffer, Size);
-	return WriteCRLF() + c;
+	return WriteCRLF() + c; // TODO why do we sum up two return values???
 }
 
 int TFileStream::WriteString(const std::string& str)
@@ -236,7 +242,7 @@ int TFileStream::WriteString(const std::string& str)
 #define mylseek lseek
 #endif
 
-int TFileStream::Seek(int Offset, TSeekMode sMode)
+off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
 {
 	switch (sMode)
 	{
@@ -245,10 +251,10 @@ int TFileStream::Seek(int Offset, TSeekMode sMode)
 	case smFromCurrent: return mylseek(hf, Offset, SEEK_CUR);
 	}
 
-	throw IOException("Invalid seek mode.");
+	throw IOException("Invalid Seek() mode.");
 }
 
-long TFileStream::Length() 
+off_t TFileStream::Length() 
 {
 	struct stat st;
 	/*int g=Seek(0,smFromCurrent);

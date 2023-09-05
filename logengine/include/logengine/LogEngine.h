@@ -101,6 +101,7 @@ private:
 	bool FStarted;
 	uint FBytesWritten;
 	uint FMessageCount[4];
+	off_t FInitialLogStreamSize;
 	//FMessageTime[3];
 	//FStartupTime;
 	
@@ -108,7 +109,7 @@ private:
 	MUTEX_TYPE CriticalSection;
 
 protected:
-	LogEventQueue  LogQueue;
+	LogEventQueue LogQueue;
 	static TLogEngine* loginstance;
 
 	TLogEngine();
@@ -125,13 +126,14 @@ protected:
 	void WriteEvent(LogEvent* event);
 
 	std::string GenerateBackupName(void);
+	void resetStatistics();
 
 	static THREAD_OUT_TYPE THREAD_CALL_CONVENTION ThreadProc(void* parameter);
 public:
 	//int FLogDetailLevel;
 	void Start(void);
 	void Stop(void);
-	bool IsStarted(){ return FStarted; }
+	bool IsStarted() { return FStarted; }
 	void Flush(); // forces save data to the disk
 
 	//log format functions

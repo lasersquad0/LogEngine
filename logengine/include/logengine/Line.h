@@ -32,25 +32,16 @@ public:
 	virtual ~Holder() {};
 };
 
+#define STRFTIME_SIZE 100
+
 class DateHolder: public Holder
 {
 public:
 	std::string format(LogEvent& event)
 	{ 
-#if 1 //__STDC_SECURE_LIB__ //_MSC_VER < 1400
-        // TODO: check for return value
-		//const std::time_t tt = std::chrono::system_clock::to_time_t(event.time);
-        //tm tp;
-        //localtime_s(&tp, &(event.time.time));
-        char ss[100];
-        std::strftime(ss, 100, "%d-%b-%Y", &event.m_time);
+        char ss[STRFTIME_SIZE];
+        std::strftime(ss, STRFTIME_SIZE, "%d-%b-%Y", &event.m_time);
         return ss;
-#else
-        struct tm *tp = localtime(&(event.time.time));
-        char ss[100];
-        strftime(ss, 100, "%d-%b-%Y", tp);
-        return ss;
-#endif
 	};
 };
 
@@ -59,25 +50,9 @@ class TimeHolder: public Holder
 public:
 	std::string format(LogEvent& event)
 	{ 
-#if 1//__STDC_SECURE_LIB__ // _MSC_VER < 1400
-        //TODO: check return value here
-
-		//const std::time_t tt = std::chrono::system_clock::to_time_t(event.time);
-		//std::string = std::put_time(std::localtime(&tt), "%F %T");
-		
-        //tm tp;
-        //localtime_s(&tp, &(event.time.time));
-        
-		char ss[100];
-        std::strftime(ss, 100, "%X", &event.m_time);
+		char ss[STRFTIME_SIZE];
+        std::strftime(ss, STRFTIME_SIZE, "%X", &event.m_time);
         return ss;
-#else        
-        struct tm *tp = localtime(&(event.time.time));
-        char ss[100];
-        strftime(ss, 100, "%X", tp);
-        return ss;
-#endif
-
 	};
 };
 
@@ -86,21 +61,9 @@ class DateTimeHolder: public Holder
 public:
 	std::string format(LogEvent& event)
 	{ 
-#if 1//__STDC_SECURE_LIB__ //_MSC_VER < 1400
-        // TODO: check return value here
-		//const std::time_t tt = std::chrono::system_clock::to_time_t(event.time);
-
-        //tm tp;
-        //localtime_s(&tp, &(event.time.time));
-        char ss[100];
-        std::strftime(ss, 100, "%d-%b-%Y %X", &event.m_time);
+        char ss[STRFTIME_SIZE];
+        std::strftime(ss, STRFTIME_SIZE, "%d-%b-%Y %X", &event.m_time);
         return ss;
-#else        
-        struct tm *tp = localtime(&(event.time.time));
-        char ss[100];
-        strftime(ss, 100, "%d-%b-%Y %X", tp);
-        return ss;
-#endif
 	};
 };
 

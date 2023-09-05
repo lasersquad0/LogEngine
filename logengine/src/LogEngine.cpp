@@ -4,6 +4,9 @@
  * Copyright 2003, LogEngine Project. All rights reserved.
  *
  * See the COPYING file for the terms of usage and distribution.
+ * 
+ * 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
+ * 
  */
 
 #include <LogEngine.h>
@@ -293,6 +296,14 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION TLogEngine::ThreadProc(void *parameter)
 	return 0;
 }
 
+void TLogEngine::resetStatistics()
+{
+	FBytesWritten = 0;
+	FMessageCount[lmError]   = 0;
+	FMessageCount[lmWarning] = 0;
+	FMessageCount[lmInfo]    = 0;
+}
+
 void TLogEngine::Start(void)
 {
 	if(FStarted)
@@ -300,8 +311,11 @@ void TLogEngine::Start(void)
 	
 //	ENTER_CRITICAL_SECTION(CriticalSection);
 	
+	resetStatistics();
+
 	FLogStream = new TFileStream(FProperties.FileName, fmWrite);
 	FLogStream->Seek(0, smFromEnd);
+	FInitialLogStreamSize = FLogStream->Length();
 	FStarted = true;
 
 	InitThread();
@@ -350,7 +364,7 @@ void TLogEngine::InternalWrite(const std::string& msg)
 		throw LogException("The LogEngine is not started!");
 
 	// TODO на каждый Write мы вызываем API ф-цию fstat() дл€ получени€ размера файла. ѕодумать как это сделать менее напр€жно дл€ системы и быстрее.
-	if(FProperties.MaxLogSize > 0 && FLogStream->Length() > FProperties.MaxLogSize*1024)
+	if(FProperties.MaxLogSize > 0 && (FInitialLogStreamSize + FBytesWritten) > FProperties.MaxLogSize*1024)
 		TruncLogFile();
 
 	//FBytesWritten += msg.size();
@@ -614,6 +628,7 @@ void TLogEngine::SetAppName(const std::string& AppName)
 void TLogEngine::SetMaxLogSize(const uint MaxLogSize)
 {
 	// if new MaxLogSize is less than current filesize - do truncate.
+	FLogStream->Flush();
 	if (MaxLogSize > 0 && FLogStream->Length() > MaxLogSize * 1024)
 		TruncLogFile();
 

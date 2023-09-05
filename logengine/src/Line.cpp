@@ -60,7 +60,7 @@ void Line::parsePattern(const std::string pattern)
 {
 	THArray<std::string> placeHolders;
 
-	placeHolders.AddFillValues(12);
+	placeHolders.AddFillValues(12); // do not replace by SetCapacity()
 
 	placeHolders.SetValue(0, ""); // for LiteralHolder
 	placeHolders.SetValue(1, "%DATE%");
