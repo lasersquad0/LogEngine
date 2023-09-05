@@ -43,11 +43,6 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
 
 	while (!info->begin)
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-//#ifdef WIN32
-//	    Sleep(10);
-//#else
-//		usleep(10 * 1000);
-//#endif
 
 	std::string s = IntToStr((int) GET_THREAD_ID());
 	log->WriteError  (s + " is executing 1!");

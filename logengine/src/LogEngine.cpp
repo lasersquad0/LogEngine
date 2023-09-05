@@ -170,9 +170,10 @@ TLogEngine::TLogEngine(void): LogQueue()
 { 
 	FLogStream    = nullptr;
 	FStarted	  = false;
-	FFileBytesWritten = 0;
-	FTotalBytesWritten = 0;
+	FFileBytesWritten   = 0;
+	FTotalBytesWritten  = 0;
 	FInitialFileSize    = 0;
+	FMessageCount[lmNone]    = 0;
 	FMessageCount[lmError]   = 0;
 	FMessageCount[lmWarning] = 0;
 	FMessageCount[lmInfo]    = 0;
@@ -229,7 +230,7 @@ void TLogEngine::initThread(void)
 
 	LogEngineThreadInfo *info = new LogEngineThreadInfo;
 	info->LogQueue = &LogQueue;
-	info->LogEngine = this; // <<<< TODO: is this correct?
+	info->LogEngine = this; 
 
 #ifdef WIN32
 	unsigned long threadID;
@@ -272,6 +273,7 @@ void TLogEngine::resetStatistics()
 	FFileBytesWritten        = 0;
 	FTotalBytesWritten       = 0;
 	FInitialFileSize         = 0;
+	FMessageCount[lmNone]    = 0;
 	FMessageCount[lmError]   = 0;
 	FMessageCount[lmWarning] = 0;
 	FMessageCount[lmInfo]    = 0;
@@ -426,8 +428,9 @@ void TLogEngine::WriteStr(const std::string& str, uint DetailLevel /*=0*/)
 	else
 	{		
 		internalWrite(LogTypeChars[lmNone] + str);
-		FMessageCount[lmNone]++;
 	}
+
+	FMessageCount[lmNone]++;
 }
 
 void TLogEngine::WriteInfo(const std::string& str, uint DetailLevel /*=0*/)
@@ -450,8 +453,9 @@ void TLogEngine::WriteInfo(const std::string& str, uint DetailLevel /*=0*/)
 		LogEvent event(str, lmInfo, GET_THREAD_ID(), tm, DetailLevel);
 	*/
 		internalWrite(FormatInfo(str, DetailLevel));
-		FMessageCount[lmInfo]++;
 	}
+
+	FMessageCount[lmInfo]++;
 }
 
 void TLogEngine::WriteWarning(const std::string& str, uint DetailLevel /*=0*/)
@@ -472,8 +476,9 @@ void TLogEngine::WriteWarning(const std::string& str, uint DetailLevel /*=0*/)
 		LogEvent event(str, lmWarning, GET_THREAD_ID(), tm, DetailLevel);
 */		
 		internalWrite(FormatWarning(str, DetailLevel));
-		FMessageCount[lmWarning]++;
 	}
+
+	FMessageCount[lmWarning]++;
 }
 
 void TLogEngine::WriteError(const std::string& str, uint DetailLevel /*=0*/)
@@ -491,13 +496,14 @@ void TLogEngine::WriteError(const std::string& str, uint DetailLevel /*=0*/)
 	}
 	else
 	{
-/*		timeb tm;
-		ftime(&tm);
-		LogEvent event(str, lmError, GET_THREAD_ID(), tm, DetailLevel);
-*/		
+		/*		timeb tm;
+				ftime(&tm);
+				LogEvent event(str, lmError, GET_THREAD_ID(), tm, DetailLevel);
+		*/
 		internalWrite(FormatError(str, DetailLevel));
-		FMessageCount[lmError]++;
 	}
+
+	FMessageCount[lmError]++;
 }
 
 void TLogEngine::WriteStrFmt(uint DetailLevel, const char* formatstr, ...)

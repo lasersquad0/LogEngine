@@ -282,7 +282,7 @@ void LogEngineLogTest::testLogBackupTypeNone()
 {
 	//printf("testLogBackupTypeNone1 ...  ");
 	
-	const char* fileName = "aaa.log";
+	const char* fileName = "a3.log";
 
 	// preparing parameters
 	Properties prop;
@@ -299,7 +299,8 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	TLogEngine* log = getLogEngine();
 
 	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
-	
+	CPPUNIT_ASSERT_EQUAL(71ul, log->GetBytesWritten());
+
 	while(true)
 	{
 		log->WriteError("1234567890");
@@ -313,6 +314,14 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	stat(fileName, &st);
 	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, log->GetBytesWritten());
 	
+	log->WriteInfo("!");
+	CPPUNIT_ASSERT_EQUAL(20ul, log->GetBytesWritten());
+
+	CPPUNIT_ASSERT_EQUAL(33u, log->GetMessageCount(lmError));
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmNone));
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmWarning));
+	CPPUNIT_ASSERT_EQUAL(1u, log->GetMessageCount(lmInfo));
+
 	CloseLogEngine();
 	
 	//printf("PASSED\n");
@@ -320,14 +329,18 @@ void LogEngineLogTest::testLogBackupTypeNone()
 
 void LogEngineLogTest::testLogBackupTypeSingle()
 {
+	std::string logfname = "aaa.log";
 	// preparing parameters
 	Properties prop;
 	prop.SetValue("ApplicationName", "LogEngine_tests");
 	prop.SetValue("Version", "1.1.1");
 	prop.SetValue("backuptype", "single");
 	prop.SetValue("maxlogsize", "1");
-	prop.SetValue("logfilename", "aaa.log");
+	prop.SetValue("logfilename", logfname);
+	prop.SetValue("ErrorLine", "%TIME% : %MSG%"); //  fixed length pattern needed for this test
 	
+	remove(logfname.c_str());
+
 	InitLogEngine(prop);
 	TLogEngine* log = getLogEngine();
 	
@@ -340,10 +353,14 @@ void LogEngineLogTest::testLogBackupTypeSingle()
 			break;
 	}
 	
-	/*struct _stat st;
-	_stat("aaa.log", &st);
-	CPPUNIT_ASSERT_EQUAL(st.st_size, log->GetBytesWritten());
-	*/
+	struct _stat st;
+	_stat(logfname.c_str(), &st);
+	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, log->GetBytesWritten());
+	
+	CPPUNIT_ASSERT_EQUAL(42u, log->GetMessageCount(lmError));
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmNone));
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmWarning));
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmInfo));
 	
 	CloseLogEngine();
 	
@@ -378,6 +395,11 @@ void LogEngineLogTest::testLogMacro()
 	LOG_ERROR("dfdfdf");
 	LOG_ERROR("dfdfdf");
 
+	TLogEngine* log = getLogEngine();
+	CPPUNIT_ASSERT_EQUAL(2u, log->GetMessageCount(lmError));
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmNone));
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmWarning));
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmInfo));
 	CloseLogEngine();
 
 	//printf("PASSED\n");
@@ -492,6 +514,8 @@ void LogEngineLogTest::testLogRotation1()
 	InitLogEngine(props);
 	TLogEngine* log = getLogEngine();
 
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmNone));
+
 	ulong StartMsgLen = 64;
 	ulong MaxLogSize = 1024;
 	CPPUNIT_ASSERT_EQUAL(StartMsgLen, log->GetBytesWritten());
@@ -522,6 +546,11 @@ void LogEngineLogTest::testLogRotation1()
 	log->WriteStr("G");
 	CPPUNIT_ASSERT_EQUAL(3ul, log->GetBytesWritten());
 	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 6 + MaxLogSize + 6, log->GetTotalBytesWritten());
+
+	CPPUNIT_ASSERT_EQUAL(5u, log->GetMessageCount(lmNone));
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmError));
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmWarning));
+	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmInfo));
 
 	CloseLogEngine();
 }

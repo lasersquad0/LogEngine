@@ -162,15 +162,16 @@ public:
 	void SetLogDetailLevel(const uint DetailLevel); 
 	void SetLogFileName(const std::string& newFileName);
 
-	TLogBackupType	GetBackupType(void)		const { return FProperties.BackupType; }
-	uint			GetMaxLogSize(void)		const { return FProperties.MaxLogSize; }
-	std::string		GetLogFileName(void)	const { return FProperties.FileName; }
-	std::string		GetAppName(void)		const { return FProperties.ApplicationName; }
-	std::string		GetVersionInfo(void)	const { return FProperties.Version; }
-	uint			GetLogDetailLevel(void) const { return FProperties.DetailLevel; } 
-	ulong			GetBytesWritten(void)   const { return FFileBytesWritten; }
-	ulong			GetTotalBytesWritten(void) const { return FTotalBytesWritten; }
-	
+	TLogBackupType GetBackupType(void)	   const { return FProperties.BackupType; }
+	uint		   GetMaxLogSize(void)	   const { return FProperties.MaxLogSize; }
+	std::string	   GetLogFileName(void)	   const { return FProperties.FileName; }
+	std::string	   GetAppName(void)		   const { return FProperties.ApplicationName; }
+	std::string	   GetVersionInfo(void)	   const { return FProperties.Version; }
+	uint		   GetLogDetailLevel(void) const { return FProperties.DetailLevel; } 
+	ulong		   GetBytesWritten(void)   const { return FFileBytesWritten; }
+	ulong		   GetTotalBytesWritten(void) const { return FTotalBytesWritten; }
+	uint		   GetMessageCount(TLogMessageType msgType) const { return FMessageCount[msgType]; }
+
 	static TLogEngine* getInstance();
 	static TLogEngine* getInstance(const Properties& Props);
 	static void InitLogEngine();
