@@ -14,8 +14,10 @@
 //#include <sys/io.h>
 //#include <unistd.h>
 //#else
-//#include <io.h>
-//#endif
+ 
+#ifdef WIN32
+#include <io.h>
+#endif
 
 #include "FileStream.h"
 
