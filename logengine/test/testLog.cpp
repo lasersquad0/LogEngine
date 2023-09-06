@@ -282,7 +282,7 @@ void LogEngineLogTest::testLogBackupTypeNone()
 {
 	//printf("testLogBackupTypeNone1 ...  ");
 	
-	const char* fileName = "a3.log";
+	std::string fileName = "a3.log";
 
 	// preparing parameters
 	Properties prop;
@@ -293,7 +293,11 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	prop.SetValue("logfilename", fileName);
 
 	//unlink
-	remove(fileName);
+	int res = remove(fileName.c_str());
+	if (res == -1)
+	{
+		throw IOException("Cannot remove file: " + fileName);
+	}
 
 	InitLogEngine(prop);
 	TLogEngine* log = getLogEngine();
@@ -311,7 +315,7 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	log->Flush();
 	
 	struct stat st;
-	stat(fileName, &st);
+	stat(fileName.c_str(), &st);
 	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, log->GetBytesWritten());
 	
 	log->WriteInfo("!");
