@@ -130,7 +130,7 @@ template<class T>
 T SafeQueue<T>::WaitForElement()
 {
     std::unique_lock<std::mutex> lock(mtx);
-    while (Count() == 0)
+    while (this->Count() == 0)
         cv.wait(lock);
 
     LogEvent* out = this->GetValue(0);
