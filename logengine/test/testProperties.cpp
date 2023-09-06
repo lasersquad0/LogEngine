@@ -269,7 +269,7 @@ void LogEnginePropertiesTest::testProperties12()
 
 	std::string s = props.getString("StartAppLine");
 #ifdef WIN32
-	CPPUNIT_ASSERT_EQUAL(std::string("%APPNAME%  C:\\Users\\Andrey\\AppData\\Local\\Temp %APPVERSION% CMDB-182726 startup.\nLog is started at %DATETIME%."), s);
+	CPPUNIT_ASSERT_EQUAL(std::string("%APPNAME% C:\\Users\\Andrey\\AppData\\Local\\Temp %APPVERSION% CMDB-182726 startup.\nLog is started at %DATETIME%."), s);
 #else
 	CPPUNIT_ASSERT_EQUAL(std::string(" %APPNAME%  /bin/bash  %APPVERSION% CMDB-182726 startup.\nLog is started at % DATETIME % ."), s);
 #endif
