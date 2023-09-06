@@ -102,7 +102,7 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 		threads.AddValue(thr);
 		//ids.AddValue(thrID);
 
-		log->WriteInfoFmt(0, "Created thread #%d", thr->get_id());
+		log->WriteInfoFmt(0, "Created thread #%u", thr->get_id());
 	}
 
 	log->WriteInfo("all threads created");
