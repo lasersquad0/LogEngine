@@ -18,6 +18,8 @@
 #define TEST_FILES_FOLDER "testFiles/"
 #endif
 
+#define LOG_FILES_FOLDER "./logs/"
+
 CPPUNIT_NS_BEGIN
 template<>
 struct assertion_traits<std::string>   // specialization for the std::string type
