@@ -266,14 +266,20 @@ void LogEnginePropertiesTest::testProperties12()
 	CPPUNIT_ASSERT_EQUAL(std::string("Exam\npleApp"), props.getString("ApplicationName"));
 	CPPUNIT_ASSERT_EQUAL(std::string("t.t.t.t"), props.getString("Version"));
 	CPPUNIT_ASSERT_EQUAL(std::string("Error\nLog.log"), props.getString("LogFileName"));
+
 	std::string s = props.getString("StartAppLine");
-	CPPUNIT_ASSERT_EQUAL(std::string("%APPNAME% %APPVERSION% startup.\nLog is started at %DATETIME%."), s);
+#ifdef WIN32
+	CPPUNIT_ASSERT_EQUAL(std::string("%APPNAME%  C:\\Users\\Andrey\\AppData\\Local\\Temp %APPVERSION% CMDB-182726 startup.\nLog is started at %DATETIME%."), s);
+#else
+	CPPUNIT_ASSERT_EQUAL(std::string(" %APPNAME%  /bin/bash  %APPVERSION% CMDB-182726 startup.\nLog is started at % DATETIME % ."), s);
+#endif
+	
 	CPPUNIT_ASSERT_EQUAL(std::string("%APPNAME% %APPVERSION% normal shutdown.\nLog is stopped at %DATETIME%."), props.getString("StopAppLine"));
 	CPPUNIT_ASSERT_EQUAL(std::string("---------------------------------------------------------------------"), props.getString("SeparatorLine"));
 	s = props.getString("ErrorLine");
 	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), s);
 	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), props.getString("WarningLine"));
-	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MSG%"), props.getString("InfoLine"));
+	CPPUNIT_ASSERT_EQUAL(std::string("%TIME% #%THREAD% : %MESSAGE%"), props.getString("InfoLine"));
 }
 
 #undef TEST_FILES_FOLDER

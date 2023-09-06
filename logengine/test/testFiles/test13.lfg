@@ -11,7 +11,7 @@ Version = t.t.t.t
 LogFileName = Error\nLog.log
 
 # This text is written to the file when LogEngine is initializing. 
-StartAppLine  = %APPNAME%  ${TMP}  %APPVERSION% ${COMPUTERNAME} startup.\nLog is started at %DATETIME%.
+StartAppLine  = %APPNAME%  ${TMP}${SHELL} %APPVERSION% ${COMPUTERNAME}${NAME} startup.\nLog is started at %DATETIME%.
 
 # This text is written to the file when LogEngine is stopping. 
 StopAppLine   = %APPNAME% %APPVERSION% normal shutdown.\nLog is stopped at %DATETIME%.
@@ -25,5 +25,5 @@ ErrorLine     = %TIME% #%THREAD% : %MSG%
 WarningLine   = %TIME% #%THREAD% : %MSG%
 
 # Template for information line.
-InfoLine      = %TIME% #%THREAD% : %MSG%
+InfoLine      = %TIME% #%THREAD% : %MESSAGE%
  
