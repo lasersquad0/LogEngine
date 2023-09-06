@@ -9,26 +9,28 @@
 #ifndef _LOGENGINE_THREADS_
 #define _LOGENGINE_THREADS_
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include <mutex>
+
+//#ifdef HAVE_CONFIG_H
+//#include "config.h"
+//#endif
+
+typedef std::lock_guard<std::recursive_mutex> mutexguard;
 
 #ifdef WIN32
 #include <windows.h>
 
-#define INIT_CRITICAL_SECTION(CritSec)   InitializeCriticalSection(&CritSec)
-#define ENTER_CRITICAL_SECTION(CritSec)	 EnterCriticalSection (&CritSec)
-#define LEAVE_CRITICAL_SECTION(CritSec)  LeaveCriticalSection (&CritSec)
-#define DELETE_CRITICAL_SECTION(CritSec) DeleteCriticalSection(&CritSec)
+//#define INIT_CRITICAL_SECTION(CritSec)   InitializeCriticalSection(&CritSec)
+//#define ENTER_CRITICAL_SECTION(CritSec)	 EnterCriticalSection (&CritSec)
+//#define LEAVE_CRITICAL_SECTION(CritSec)  LeaveCriticalSection (&CritSec)
+//#define DELETE_CRITICAL_SECTION(CritSec) DeleteCriticalSection(&CritSec)
 
-#define GET_THREAD_ID() GetCurrentThreadId() 
-//std::hash<std::thread::id> hasher, size_t val=hasher(std::this_thread::get_id()))
-
-
+#define GET_THREAD_ID() GetThreadIdHash() 
+//GetCurrentThreadId() 
  
 #define THREAD_OUT_TYPE unsigned long
 
-#define MUTEX_TYPE CRITICAL_SECTION
+//#define MUTEX_TYPE CRITICAL_SECTION
 #define THREAD_TYPE HANDLE
 #define THREAD_CALL_CONVENTION __stdcall
 
@@ -39,15 +41,15 @@
 //#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 
-#define INIT_CRITICAL_SECTION(CritSec)   CritSec = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP //pthread_mutex_init(&CritSec, nullptr)
-#define ENTER_CRITICAL_SECTION(CritSec)	 pthread_mutex_lock(&CritSec)
-#define LEAVE_CRITICAL_SECTION(CritSec)  pthread_mutex_unlock(&CritSec)
-#define DELETE_CRITICAL_SECTION(CritSec) pthread_mutex_destroy(&CritSec)
+//#define INIT_CRITICAL_SECTION(CritSec)   CritSec = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP //pthread_mutex_init(&CritSec, nullptr)
+//#define ENTER_CRITICAL_SECTION(CritSec)	 pthread_mutex_lock(&CritSec)
+//#define LEAVE_CRITICAL_SECTION(CritSec)  pthread_mutex_unlock(&CritSec)
+//#define DELETE_CRITICAL_SECTION(CritSec) pthread_mutex_destroy(&CritSec)
 
 #define GET_THREAD_ID() pthread_self()
 #define THREAD_OUT_TYPE void*
 
-#define MUTEX_TYPE pthread_mutex_t
+//#define MUTEX_TYPE pthread_mutex_t
 #define THREAD_TYPE pthread_t
 #define THREAD_CALL_CONVENTION
 

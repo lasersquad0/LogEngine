@@ -14,7 +14,9 @@ double round(const double Value,const int Precision);
 
 // function for convert int Value to string
 std::string IntToStr(int Value, int FieldSize);
+std::string IntToStr(unsigned int Value, int FieldSize);
 std::string IntToStr(int Value);
+std::string IntToStr(unsigned int Value);
 
 // function to convert double value to string
 std::string FloatToStr(double Value);

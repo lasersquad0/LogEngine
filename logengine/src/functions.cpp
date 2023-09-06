@@ -62,6 +62,23 @@ std::string IntToStr(int Value, int FieldSize)
 
 	return buf;
 }
+
+// function for convert int Value to string
+std::string IntToStr(unsigned int Value, int FieldSize)
+{
+	char buf[20];
+	char buf2[20];
+
+#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+	sprintf_s(buf2, 20, "%%-%du", FieldSize);
+	sprintf_s(buf, 20, buf2, Value);
+#else
+	sprintf(buf2, "%%-%du", FieldSize);
+	sprintf(buf, buf2, Value);
+#endif
+
+	return buf;
+}
 	
 // function for convert int Value to string
 std::string IntToStr(int Value)
@@ -71,6 +88,18 @@ std::string IntToStr(int Value)
 	sprintf_s(buf, 20, "%d", Value);
 #else
     sprintf(buf, "%d", Value);    
+#endif
+	return buf;
+}
+
+// function for convert int Value to string
+std::string IntToStr(unsigned int Value)
+{
+	char buf[20];
+#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+	sprintf_s(buf, 20, "%u", Value);
+#else
+	sprintf(buf, "%u", Value);
 #endif
 	return buf;
 }

@@ -45,16 +45,16 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
 	while (!info->begin)
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-	std::string s = IntToStr((int) GET_THREAD_ID());
+	std::string s = IntToStr(GET_THREAD_ID());
 	log->WriteError  (s + " is executing 1.");
 	log->WriteInfo   (s + " is executing 2.");
 	log->WriteStr    (s + " is executing 3.");
 	log->WriteWarning(s + " is executing 4.");
 
-	log->WriteErrorFmt  (0, "%d is executing %s.", GET_THREAD_ID(), "11");
-	log->WriteInfoFmt   (0, "%d is executing %s.", GET_THREAD_ID(), "22");
-	log->WriteStrFmt    (0, "%d is executing %s.", GET_THREAD_ID(), "33");
-	log->WriteWarningFmt(0, "%d is executing %s.", GET_THREAD_ID(), "44");
+	log->WriteErrorFmt  (0, "%u is executing %s.", GET_THREAD_ID(), "11");
+	log->WriteInfoFmt   (0, "%u is executing %s.", GET_THREAD_ID(), "22");
+	log->WriteStrFmt    (0, "%u is executing %s.", GET_THREAD_ID(), "33");
+	log->WriteWarningFmt(0, "%u is executing %s.", GET_THREAD_ID(), "44");
 
 	return 0;
 }
@@ -63,9 +63,6 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
 
 void LogEngineThreadLogTest::testCallLogFromManyThreads()
 {
-	//TODO it is incorrect to call LogEngine methods from many threads in parallel, since LogEngine does not have any sync means inside
-	// however according to this test it works more or less good.
-
 	Properties prop;
 	prop.SetValue("LogFileName", "ThreadsLog.log");
 	prop.SetValue("ApplicationName", "testCallLogFromManyThreads");
@@ -76,8 +73,11 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 	log->Start();
 	log->WriteInfo("begin creating threads");
 	
-	std::vector<THREAD_TYPE> handles;
-	std::vector<unsigned long> ids;
+	THArray <THREAD_TYPE> handles;
+	//THArray<unsigned long> ids;
+
+	//std::vector<THREAD_TYPE> handles;
+	//std::vector<unsigned long> ids;
 
 	unsigned long thrID = 0;
 	THREAD_TYPE hThread;
@@ -97,8 +97,10 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 		pthread_create(&hThread, nullptr, testThreadProc, &info);
 #endif
 		
-		handles.insert(handles.end(), hThread);
-		ids.insert(ids.end(), thrID);
+		//handles.insert(handles.end(), hThread);
+		//ids.insert(ids.end(), thrID);
+		handles.AddValue(hThread);
+		//ids.AddValue(thrID);
 
 		log->WriteInfoFmt(0, "Created thread #%d", thrID);
 	}
@@ -119,15 +121,21 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 	log->WriteInfo("all threads resumed");
 
 #ifdef WIN32
-	if(WaitForMultipleObjects(nthreads, &(*handles.begin()), TRUE, INFINITE) == WAIT_FAILED)
+	//if(WaitForMultipleObjects(nthreads, &(*handles.begin()), TRUE, INFINITE) == WAIT_FAILED)
+	if (WaitForMultipleObjects(nthreads, handles.Memory(), TRUE, INFINITE) == WAIT_FAILED)
 	{
 		log->WriteError("WaitForMultipleObjects FAILED!");
 	}
 #else
 //#ifdef HAVE_PTHREAD_H
 	std::vector<THREAD_TYPE>::iterator j;
-	for (j = handles.begin(); j != handles.end(); j++)
-	    pthread_join(*j, nullptr);
+	//for (j = handles.begin(); j != handles.end(); j++)
+	//pthread_join(*j, nullptr);
+	for (size_t i = 0; i < handles.Count(); i++)
+	{
+		pthread_join(handles[i], nullptr);
+	}
+	    
 #endif
 	
 	CloseLogEngine();

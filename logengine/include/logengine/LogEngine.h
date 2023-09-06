@@ -108,7 +108,6 @@ private:
 	//FStartupTime;
 	
 	THREAD_TYPE hThread;
-	typedef std::lock_guard<std::recursive_mutex> mutexguard;
 	//MUTEX_TYPE CriticalSection;
 	std::recursive_mutex mtx;
 
