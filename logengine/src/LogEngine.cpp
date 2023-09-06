@@ -613,7 +613,7 @@ void TLogEngine::SetMaxLogSize(const uint MaxLogSize)
 {
 	// if new MaxLogSize is less than current filesize - do truncate.
 	FLogStream->Flush();
-	if (MaxLogSize > 0 && FLogStream->Length() > MaxLogSize * 1024)
+	if (MaxLogSize > 0 && (uint)FLogStream->Length() > MaxLogSize * 1024)
 		truncLogFile();
 
 	FProperties.MaxLogSize = MaxLogSize;

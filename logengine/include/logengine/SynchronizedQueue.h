@@ -9,9 +9,12 @@
 #ifndef SYNCHRONIZED_QUEUE_H
 #define SYNCHRONIZED_QUEUE_H
 
-#include "threads.h"
+#include <mutex>
+//#include "threads.h"
 #include "DynamicArrays.h"
+//#include "LogEvent.h"
 
+/*
 template<class T>
 class SynchronizedQueue : private THArray<T>
 {
@@ -106,6 +109,42 @@ void SynchronizedQueue<T>::PushElement(T in_element)
     pthread_cond_signal(&ListSemaphore);
 #endif
     //LEAVE_CRITICAL_SECTION(ListMutex);
+}
+*/
+
+//----------------------------------------------------------------------
+template<class T>
+class SafeQueue : private THArray<T>
+{
+private:
+    std::mutex mtx;
+    std::condition_variable cv;
+
+public:
+    T WaitForElement();
+    void PushElement(T in_element);
+};
+
+template<class T>
+T SafeQueue<T>::WaitForElement()
+{
+    std::unique_lock<std::mutex> lock(mtx);
+    while (Count() == 0)
+        cv.wait(lock);
+
+    LogEvent* out = this->GetValue(0);
+    this->DeleteValue(0);
+
+    return out;
+}
+
+template<class T>
+void SafeQueue<T>::PushElement(T in_element)
+{
+    std::lock_guard<std::mutex> lock(mtx);
+
+    this->AddValue(in_element);
+    cv.notify_one();
 }
 
 #endif /* SYNCHRONIZED_QUEUE_H */

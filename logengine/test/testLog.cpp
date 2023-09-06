@@ -32,7 +32,7 @@ void LogEngineLogTest::testLog1()
 	Properties prop;
 	prop.SetValue("BackupType", "None");
 	prop.SetValue("DetailLevel", "DefaultDetailLevel"); 
-	prop.SetValue("FileName", "testLog1.log");
+	prop.SetValue("FileName", LOG_FILES_FOLDER "testLog1.log");
 	prop.SetValue("MaxLogSize", "100");
 	prop.SetValue("ApplicationName", "LogEngine tests");
 	prop.SetValue("Version", "1.1.1");
@@ -204,7 +204,7 @@ void LogEngineLogTest::testLogInitClose()
 	//printf("testLogInitClose ... ");
 
 	Properties prop;
-	prop.SetValue("FileName", "testLogInitClose.log");
+	prop.SetValue("FileName", LOG_FILES_FOLDER "testLogInitClose.log");
 	
 	InitLogEngine();
 	InitLogEngine(prop);
@@ -241,7 +241,7 @@ void LogEngineLogTest::testLogPlaceholders()
 	
 	// preparing parameters
 	Properties prop;
-	prop.SetValue("ApplicationName", "LogEngine_tests");
+	prop.SetValue("ApplicationName", LOG_FILES_FOLDER "LogEngine_tests");
 	prop.SetValue("Version", "1.1.1");
 	prop.SetValue("ErrorLine", "%MSG% %APPNAME% %APPVERSION% %OS% %OSVERSION% %DETAILLEVEL%");
 	prop.SetValue("WarningLine", "%DETAILLEVEL% %OS% %OSVERSION% %APPNAME% %APPVERSION% %MSG%");
@@ -282,7 +282,7 @@ void LogEngineLogTest::testLogBackupTypeNone()
 {
 	//printf("testLogBackupTypeNone1 ...  ");
 	
-	std::string fileName = "a3.log";
+	std::string fileName = LOG_FILES_FOLDER "a3.log";
 
 	// preparing parameters
 	Properties prop;
@@ -339,7 +339,7 @@ void LogEngineLogTest::testLogBackupTypeNone()
 
 void LogEngineLogTest::testLogBackupTypeSingle()
 {
-	std::string logfname = "aaa.log";
+	std::string logfname = LOG_FILES_FOLDER "aaa.log";
 	// preparing parameters
 	Properties prop;
 	prop.SetValue("ApplicationName", "LogEngine_tests");
@@ -516,7 +516,7 @@ void LogEngineLogTest::testBadLFGFile2()
 
 void LogEngineLogTest::testLogRotation1()
 {
-	std::string logfname = "TestLogRotation.log";
+	std::string logfname = LOG_FILES_FOLDER "TestLogRotation.log";
 	remove(logfname.c_str()); // name sure that previously created log file does not exist
 
 	Properties props;

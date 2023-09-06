@@ -1,7 +1,7 @@
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+//#ifdef HAVE_CONFIG_H
+//#include "config.h"
+//#endif
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -44,8 +44,8 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
 
 	while (!info->begin)
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
-	std::string s = IntToStr(GET_THREAD_ID());
+	
+	std::string s = IntToStr((size_t)GET_THREAD_ID());
 	log->WriteError  (s + " is executing 1.");
 	log->WriteInfo   (s + " is executing 2.");
 	log->WriteStr    (s + " is executing 3.");
@@ -64,7 +64,7 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
 void LogEngineThreadLogTest::testCallLogFromManyThreads()
 {
 	Properties prop;
-	prop.SetValue("LogFileName", "ThreadsLog.log");
+	prop.SetValue("LogFileName", LOG_FILES_FOLDER "ThreadsLog.log");
 	prop.SetValue("ApplicationName", "testCallLogFromManyThreads");
 	InitLogEngine(prop);
 
@@ -147,7 +147,7 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 void LogEngineThreadLogTest::testThreadLog1()
 {
 	Properties prop;
-	prop.SetValue("LogFileName", "ThreadedLog.log");
+	prop.SetValue("LogFileName", LOG_FILES_FOLDER "ThreadedLog.log");
 	prop.SetValue("Threaded", "trUe");
 	InitLogEngine(prop);
 
@@ -166,19 +166,26 @@ void LogEngineThreadLogTest::testThreadLog1()
 
 void LogEngineThreadLogTest::testThreadLogMeasureTime1()
 {
+	std::string fileName = LOG_FILES_FOLDER "ThreadLogMeasureTime1.log";
+
 	Properties prop;
 	prop.SetValue("ApplicationName", "testThreadLogMeasureTime1");
-	prop.SetValue("LogFileName", "ThreadLogMeasureTime1.log");
+	prop.SetValue("LogFileName", fileName);
+	prop.SetValue("MaxLogSize", "0"); // to prevent creating log file backup copies, etc
 	prop.SetValue("Threaded", "TRUE");
-	InitLogEngine(prop);
 
+	remove(fileName.c_str());
+
+	InitLogEngine(prop);
 	TLogEngine* log = getLogEngine();
 
 	auto start1 = std::chrono::high_resolution_clock::now();
+	
+	const int NUM_LOGS = 10000;
 
-	for (size_t i = 0; i < 10000; i++)
+	for (size_t i = 0; i < NUM_LOGS; i++)
 	{
-		log->WriteWarning("threaded warning #" + std::to_string(i));
+		log->WriteWarning("threaded warning ###" + std::to_string(i));
 	}
 
 	auto stop = std::chrono::high_resolution_clock::now();
@@ -186,16 +193,43 @@ void LogEngineThreadLogTest::testThreadLogMeasureTime1()
 	std::cout << " Excec time: " << millisecToStr(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start1).count());
 	
 	CloseLogEngine();
+
+	std::fstream ff(fileName);
+	if (!ff)
+		throw IOException("Cannot open file for reading:" + fileName);
+
+	std::string ln;
+	std::getline(ff, ln);
+	CPPUNIT_ASSERT_EQUAL(0u, ln.size());
+	
+	std::getline(ff, ln);
+	size_t n = ln.find("###");
+	CPPUNIT_ASSERT_EQUAL(std::string::npos, n);
+	
+	std::getline(ff, ln);
+	n = ln.find("###");
+	CPPUNIT_ASSERT_EQUAL(std::string::npos, n);
+
+	for (size_t i = 0; i < NUM_LOGS; i++)
+	{
+		std::getline(ff, ln);
+		n = ln.find("###");
+		std::string seq = ln.substr(n + 3);
+		std::string si = std::to_string(i);
+		CPPUNIT_ASSERT_EQUAL(seq, si);
+	}
+	
 }
 
 void LogEngineThreadLogTest::testNONThreadLogMeasureTime1()
 {
 	Properties prop;
 	prop.SetValue("ApplicationName", "testNONThreadLogMeasureTime1");
-	prop.SetValue("LogFileName", "NONThreadLogMeasureTime1.log");
+	prop.SetValue("LogFileName", LOG_FILES_FOLDER "NONThreadLogMeasureTime1.log");
+	prop.SetValue("MaxLogSize", "0"); // to prevent creating log file backup copies, etc
 	prop.SetValue("Threaded", "false");
-	InitLogEngine(prop);
 
+	InitLogEngine(prop);
 	TLogEngine* log = getLogEngine();
 
 	auto start1 = std::chrono::high_resolution_clock::now();

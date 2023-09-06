@@ -8,9 +8,9 @@
 #include <thread>
 #include <sys/timeb.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+//#ifdef HAVE_CONFIG_H
+//#include "config.h"
+//#endif
 
 #include <functions.h>
 

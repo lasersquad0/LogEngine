@@ -13,9 +13,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+//#ifdef HAVE_CONFIG_H
+//#include "config.h"
+//#endif
 
 #ifdef WIN32
 #include  <windows.h>
@@ -44,7 +44,8 @@ enum TLogBackupType { lbNone, lbTimeStamp, lbSingle };
 #define DefaultMaxLogSize  1000 // in kilobytes
 #define DefaultBackupType  lbNone
 
-typedef SynchronizedQueue<LogEvent*> LogEventQueue;
+//typedef SynchronizedQueue<LogEvent*> LogEventQueue;
+typedef SafeQueue<LogEvent*> LogEventQueue;
 
 class LogException : public std::exception
 {
