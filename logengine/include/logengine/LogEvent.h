@@ -30,7 +30,7 @@ protected:
 public:
 	TLogEngine* m_logEngine;
 	TLogMessageType m_msgType;
-	unsigned int m_threadID;
+	unsigned int m_threadID; // this is a thread that generated a log message. it may differ from thread that makes actual writing to the file (in case LogEngone.Threaded property is set to true)
 	struct tm m_time;
 	unsigned int m_detailLevel;
 	std::string m_message;  

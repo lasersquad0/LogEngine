@@ -372,11 +372,11 @@ void TLogEngine::writeEvent(LogEvent* event)
 			FMessageCount[lmInfo]++;
 			break;
 		case lmWarning:
-			internalWrite(LogTypeChars[lmWarning] + FProperties.InfoLine.format(*event));
+			internalWrite(LogTypeChars[lmWarning] + FProperties.WarningLine.format(*event));
 			FMessageCount[lmWarning]++;
 			break;
 		case lmError:
-			internalWrite(LogTypeChars[lmError] + FProperties.InfoLine.format(*event));
+			internalWrite(LogTypeChars[lmError] + FProperties.ErrorLine.format(*event));
 			FMessageCount[lmError]++;
 			break;
 		default:
@@ -428,9 +428,8 @@ void TLogEngine::WriteStr(const std::string& str, uint DetailLevel /*=0*/)
 	else
 	{		
 		internalWrite(LogTypeChars[lmNone] + str);
+		FMessageCount[lmNone]++;
 	}
-
-	FMessageCount[lmNone]++;
 }
 
 void TLogEngine::WriteInfo(const std::string& str, uint DetailLevel /*=0*/)
@@ -453,9 +452,8 @@ void TLogEngine::WriteInfo(const std::string& str, uint DetailLevel /*=0*/)
 		LogEvent event(str, lmInfo, GET_THREAD_ID(), tm, DetailLevel);
 	*/
 		internalWrite(FormatInfo(str, DetailLevel));
+		FMessageCount[lmInfo]++;
 	}
-
-	FMessageCount[lmInfo]++;
 }
 
 void TLogEngine::WriteWarning(const std::string& str, uint DetailLevel /*=0*/)
@@ -476,9 +474,8 @@ void TLogEngine::WriteWarning(const std::string& str, uint DetailLevel /*=0*/)
 		LogEvent event(str, lmWarning, GET_THREAD_ID(), tm, DetailLevel);
 */		
 		internalWrite(FormatWarning(str, DetailLevel));
+		FMessageCount[lmWarning]++;
 	}
-
-	FMessageCount[lmWarning]++;
 }
 
 void TLogEngine::WriteError(const std::string& str, uint DetailLevel /*=0*/)
@@ -501,9 +498,8 @@ void TLogEngine::WriteError(const std::string& str, uint DetailLevel /*=0*/)
 				LogEvent event(str, lmError, GET_THREAD_ID(), tm, DetailLevel);
 		*/
 		internalWrite(FormatError(str, DetailLevel));
+		FMessageCount[lmError]++;
 	}
-
-	FMessageCount[lmError]++;
 }
 
 void TLogEngine::WriteStrFmt(uint DetailLevel, const char* formatstr, ...)

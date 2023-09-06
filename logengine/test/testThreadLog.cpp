@@ -7,6 +7,7 @@
 #include <unistd.h>
 #endif
 
+#include <chrono>
 #include <thread>
 #include "Shared.h"
 #include "functions.h"
@@ -30,7 +31,7 @@ void LogEngineThreadLogTest::tearDown ()
 struct ThreadInfoStruct
 {
     TLogEngine *log;
-    bool       begin;
+    bool begin;
 };
 
 THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
@@ -45,15 +46,15 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
 	std::string s = IntToStr((int) GET_THREAD_ID());
-	log->WriteError  (s + " is executing 1!");
-	log->WriteInfo   (s + " is executing 2!");
-	log->WriteStr    (s + " is executing 3!");
-	log->WriteWarning(s + " is executing 4!");
+	log->WriteError  (s + " is executing 1.");
+	log->WriteInfo   (s + " is executing 2.");
+	log->WriteStr    (s + " is executing 3.");
+	log->WriteWarning(s + " is executing 4.");
 
-	log->WriteErrorFmt  (0, "%d is executing %s!", GET_THREAD_ID(), "11");
-	log->WriteInfoFmt   (0, "%d is executing %s!", GET_THREAD_ID(), "22");
-	log->WriteStrFmt    (0, "%d is executing %s!", GET_THREAD_ID(), "33");
-	log->WriteWarningFmt(0, "%d is executing %s!", GET_THREAD_ID(), "44");
+	log->WriteErrorFmt  (0, "%d is executing %s.", GET_THREAD_ID(), "11");
+	log->WriteInfoFmt   (0, "%d is executing %s.", GET_THREAD_ID(), "22");
+	log->WriteStrFmt    (0, "%d is executing %s.", GET_THREAD_ID(), "33");
+	log->WriteWarningFmt(0, "%d is executing %s.", GET_THREAD_ID(), "44");
 
 	return 0;
 }
@@ -62,16 +63,18 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
 
 void LogEngineThreadLogTest::testCallLogFromManyThreads()
 {
-	//printf("testLogManyThreads ....");
+	//TODO it is incorrect to call LogEngine methods from many threads in parallel, since LogEngine does not have any sync means inside
+	// however according to this test it works more or less good.
 
 	Properties prop;
 	prop.SetValue("LogFileName", "ThreadsLog.log");
+	prop.SetValue("ApplicationName", "testCallLogFromManyThreads");
 	InitLogEngine(prop);
 
 	TLogEngine* log = getLogEngine();
 	
 	log->Start();
-	log->WriteInfo("\nbegin creating threads");
+	log->WriteInfo("begin creating threads");
 	
 	std::vector<THREAD_TYPE> handles;
 	std::vector<unsigned long> ids;
@@ -104,7 +107,7 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 
 	log->WriteInfo("begin resuming");
 	
-	info.begin = true;
+	info.begin = true; //TODO small data race here, consider us atomics
 	/*
 
 	for( i = 0; i < nthreads; i++)
@@ -135,8 +138,6 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 
 void LogEngineThreadLogTest::testThreadLog1()
 {
-	//printf("testThreadLog1 ...");
-
 	Properties prop;
 	prop.SetValue("LogFileName", "ThreadedLog.log");
 	prop.SetValue("Threaded", "trUe");
@@ -144,13 +145,61 @@ void LogEngineThreadLogTest::testThreadLog1()
 
 	TLogEngine* log = getLogEngine();
 
-	log->WriteError("threaded error");
-	log->WriteInfo("threaded info");
-	log->WriteStr("threaded str");
-	log->WriteWarning("threaded warning");
-	LogEvent event;
+	std::string str("main thread ID: "); 
+	str += IntToStr(GET_THREAD_ID());
+	log->WriteInfo(str);
+	log->WriteError("threaded error #1");
+	log->WriteInfo("threaded info #2");
+	log->WriteStr("threaded str #3");
+	log->WriteWarning("threaded warning #4");
 
 	CloseLogEngine();
+}
 
-	//printf("PASSED\n");
+void LogEngineThreadLogTest::testThreadLogMeasureTime1()
+{
+	Properties prop;
+	prop.SetValue("ApplicationName", "testThreadLogMeasureTime1");
+	prop.SetValue("LogFileName", "ThreadLogMeasureTime1.log");
+	prop.SetValue("Threaded", "TRUE");
+	InitLogEngine(prop);
+
+	TLogEngine* log = getLogEngine();
+
+	auto start1 = std::chrono::high_resolution_clock::now();
+
+	for (size_t i = 0; i < 10000; i++)
+	{
+		log->WriteWarning("threaded warning #" + std::to_string(i));
+	}
+
+	auto stop = std::chrono::high_resolution_clock::now();
+
+	std::cout << " Excec time: " << millisecToStr(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start1).count());
+	
+	CloseLogEngine();
+}
+
+void LogEngineThreadLogTest::testNONThreadLogMeasureTime1()
+{
+	Properties prop;
+	prop.SetValue("ApplicationName", "testNONThreadLogMeasureTime1");
+	prop.SetValue("LogFileName", "NONThreadLogMeasureTime1.log");
+	prop.SetValue("Threaded", "false");
+	InitLogEngine(prop);
+
+	TLogEngine* log = getLogEngine();
+
+	auto start1 = std::chrono::high_resolution_clock::now();
+
+	for (size_t i = 0; i < 10000; i++)
+	{
+		log->WriteWarning("NON-threaded warning #" + std::to_string(i));
+	}
+
+	auto stop = std::chrono::high_resolution_clock::now();
+
+	std::cout << " Excec time: " << millisecToStr(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start1).count());
+
+	CloseLogEngine();
 }

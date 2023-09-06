@@ -68,3 +68,6 @@ struct assertion_traits<char*>   // specialization for the char* type
 };
 
 CPPUNIT_NS_END
+
+std::string millisecToStr(long long ms);
+
