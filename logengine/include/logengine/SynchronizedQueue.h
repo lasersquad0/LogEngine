@@ -10,6 +10,7 @@
 #define SYNCHRONIZED_QUEUE_H
 
 #include <mutex>
+#include <condition_variable>
 //#include "threads.h"
 #include "DynamicArrays.h"
 //#include "LogEvent.h"
