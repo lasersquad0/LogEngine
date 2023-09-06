@@ -17,10 +17,10 @@
 //#include "config.h"
 //#endif
 
-#ifdef WIN32
-#include  <windows.h>
+//#ifdef WIN32
+//#include  <windows.h>
 //#pragma warning( disable : 4786 )
-#endif
+//#endif
 
 //#ifdef HAVE_PTHREAD_H
 //#include <pthread.h>
@@ -30,6 +30,7 @@
 #include <string>
 #include <vector>
 #include <mutex>
+#include <thread>
 #include "FileStream.h"
 #include "Properties.h"
 #include "LogEvent.h"
