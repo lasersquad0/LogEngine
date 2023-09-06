@@ -291,12 +291,15 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	prop.SetValue("backuptype", "None");
 	prop.SetValue("maxlogsize", "1");
 	prop.SetValue("logfilename", fileName);
+	prop.SetValue("InfoLine", "%TIME% : %MSG%"); // fixed length pattern needed for this test to run properly on Win and Linux
 
-	//unlink
-	int res = remove(fileName.c_str());
-	if (res == -1)
+	std::ifstream iff(fileName);
+	if (iff.fail() == false) // if file does not exist then std::remove() fails. below workaround for this
 	{
-		throw IOException("Cannot remove file: " + fileName);
+		iff.close();
+		int res = std::remove(fileName.c_str());
+		if(res == -1)
+			throw IOException("Cannot remove file: " + fileName);
 	}
 
 	InitLogEngine(prop);
@@ -319,8 +322,8 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, log->GetBytesWritten());
 	
 	log->WriteInfo("!");
-	CPPUNIT_ASSERT_EQUAL(20ul, log->GetBytesWritten());
-	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size+ 20ul, log->GetTotalBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(14ul, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size+ 14ul, log->GetTotalBytesWritten());
 
 	CPPUNIT_ASSERT_EQUAL(33u, log->GetMessageCount(lmError));
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmNone));
