@@ -107,8 +107,9 @@ private:
 	uint FMessageCount[4];
 	//FMessageTime[3];
 	//FStartupTime;
-	
-	THREAD_TYPE hThread;
+
+	std::thread m_thread;
+	//THREAD_TYPE hThread;
 	//MUTEX_TYPE CriticalSection;
 	std::recursive_mutex mtx;
 

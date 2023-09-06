@@ -73,36 +73,36 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 	log->Start();
 	log->WriteInfo("begin creating threads");
 	
-	THArray <THREAD_TYPE> handles;
+	THArray<std::thread*> threads;
 	//THArray<unsigned long> ids;
 
 	//std::vector<THREAD_TYPE> handles;
 	//std::vector<unsigned long> ids;
 
-	unsigned long thrID = 0;
-	THREAD_TYPE hThread;
+	//unsigned long thrID = 0;
+	//THREAD_TYPE hThread;
 
 	ThreadInfoStruct info = { log, false };
-	int i;
 
-	for(i = 0; i < nthreads; i++)
+	for(uint i = 0; i < nthreads; i++)
 	{
 		std::string s = "Creating thread ";
 		log->WriteInfo(s);
 
-#ifdef WIN32
-		hThread = CreateThread(nullptr, 0, testThreadProc, &info, 0, &thrID);
-#else
+		std::thread* thr = new std::thread(testThreadProc, &info);
+//#ifdef WIN32
+//		hThread = CreateThread(nullptr, 0, testThreadProc, &info, 0, &thrID);
+//#else
 //#ifdef HAVE_PTHREAD_H
-		pthread_create(&hThread, nullptr, testThreadProc, &info);
-#endif
+//		pthread_create(&hThread, nullptr, testThreadProc, &info);
+//#endif
 		
 		//handles.insert(handles.end(), hThread);
 		//ids.insert(ids.end(), thrID);
-		handles.AddValue(hThread);
+		threads.AddValue(thr);
 		//ids.AddValue(thrID);
 
-		log->WriteInfoFmt(0, "Created thread #%d", thrID);
+		log->WriteInfoFmt(0, "Created thread #%d", thr->get_id());
 	}
 
 	log->WriteInfo("all threads created");
@@ -110,33 +110,31 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 	log->WriteInfo("begin resuming");
 	
 	info.begin = true; //TODO small data race here, consider us atomics
-	/*
-
-	for( i = 0; i < nthreads; i++)
-	{
-		log->WriteInfoFmt(0, "resuming thread with id=%d", ids[i]);
-		ResumeThread(handles[i]);
-		}*/
-
+	
 	log->WriteInfo("all threads resumed");
 
-#ifdef WIN32
-	//if(WaitForMultipleObjects(nthreads, &(*handles.begin()), TRUE, INFINITE) == WAIT_FAILED)
-	if (WaitForMultipleObjects(nthreads, handles.Memory(), TRUE, INFINITE) == WAIT_FAILED)
+	for (uint i = 0; i < threads.Count(); i++)
 	{
-		log->WriteError("WaitForMultipleObjects FAILED!");
+		threads[i]->join();
 	}
-#else
+
+//#ifdef WIN32
+	//if(WaitForMultipleObjects(nthreads, &(*handles.begin()), TRUE, INFINITE) == WAIT_FAILED)
+//	if (WaitForMultipleObjects(nthreads, handles.Memory(), TRUE, INFINITE) == WAIT_FAILED)
+//	{
+//		log->WriteError("WaitForMultipleObjects FAILED!");
+//	}
+//#else
 //#ifdef HAVE_PTHREAD_H
-	std::vector<THREAD_TYPE>::iterator j;
+//	std::vector<THREAD_TYPE>::iterator j;
 	//for (j = handles.begin(); j != handles.end(); j++)
 	//pthread_join(*j, nullptr);
-	for (size_t i = 0; i < handles.Count(); i++)
-	{
-		pthread_join(handles[i], nullptr);
-	}
+//	for (size_t i = 0; i < handles.Count(); i++)
+//	{
+//		pthread_join(handles[i], nullptr);
+//	}
 	    
-#endif
+//#endif
 	
 	CloseLogEngine();
 

@@ -180,7 +180,7 @@ TLogEngine::TLogEngine(void): LogQueue()
 	FMessageCount[lmWarning] = 0;
 	FMessageCount[lmInfo]    = 0;
 
-	hThread = THREAD_TYPE_INITIALIZER;
+	//hThread = THREAD_TYPE_INITIALIZER;
 
 	//INIT_CRITICAL_SECTION(CriticalSection);
 }
@@ -209,17 +209,17 @@ TLogEngine::~TLogEngine()
 	if(FStarted)
 		Stop();
 
-	if(FProperties.Threaded)
-	{
-#ifdef WIN32
-		DWORD exitCode;
-		if(GetExitCodeThread(hThread, &exitCode) == STILL_ACTIVE) // wait only when thread is running
-			WaitForSingleObject(hThread, INFINITE);
-#else
-//#ifdef HAVE_PTHREAD_H
-		pthread_join(hThread, NULL);
-#endif
-	}
+//	if(FProperties.Threaded)
+//	{
+//#ifdef WIN32
+//		DWORD exitCode;
+//		if(GetExitCodeThread(hThread, &exitCode) == STILL_ACTIVE) // wait only when thread is running
+//			WaitForSingleObject(hThread, INFINITE);
+//#else
+////#ifdef HAVE_PTHREAD_H
+//		pthread_join(hThread, NULL);
+//#endif
+//	}
 	
 	//	LEAVE_CRITICAL_SECTION(CriticalSection);
 	//DELETE_CRITICAL_SECTION(CriticalSection);
@@ -235,16 +235,23 @@ void TLogEngine::initThread(void)
 	info->LogQueue = &LogQueue;
 	info->LogEngine = this; 
 
-#ifdef WIN32
+	std::thread thr(ThreadProc, info);
+	m_thread.swap(thr);
+	std::stringstream s;
+	s<< thr.get_id();
 	unsigned long threadID;
-	hThread = CreateThread(nullptr, 0, ThreadProc, info, 0, &threadID); // <<<< TODO: right param?
-#else 
+	s >> threadID;
+
+//#ifdef WIN32
+//	unsigned long threadID;
+//	hThread = CreateThread(nullptr, 0, ThreadProc, info, 0, &threadID); // <<<< TODO: right param?
+//#else 
 //#ifdef HAVE_PTHREAD_H
-	if (pthread_create(&hThread, nullptr, ThreadProc, info) != 0)
-	{
+//	if (pthread_create(&hThread, nullptr, ThreadProc, info) != 0)
+//	{
 		// TODO: exception on failure?
-	}
-#endif
+//	}
+//#endif
 }
 
 THREAD_OUT_TYPE THREAD_CALL_CONVENTION TLogEngine::ThreadProc(void *parameter)
@@ -307,31 +314,29 @@ void TLogEngine::Stop(void)
 {
 	if(!FStarted)
 		return;
-	
-//	ENTER_CRITICAL_SECTION(CriticalSection);
 
 	if(FProperties.Threaded) 
 	{
 		LogQueue.PushElement(nullptr);
-#ifdef WIN32
-		WaitForSingleObject(hThread, INFINITE);
-		CloseHandle(hThread);
-#else
+		m_thread.join(); // waiting till thread finishes
+
+//#ifdef WIN32
+//		WaitForSingleObject(hThread, INFINITE);
+//		CloseHandle(hThread);
+//#else
 //#ifdef HAVE_PTHREAD_H
-		if (pthread_join(hThread, NULL))
-		{
+//		if (pthread_join(hThread, NULL))
+//		{
 			// TODO: exception on error?
-		}
-#endif
+//		}
+//#endif
 	}
 
-	writeStop();
-
+	writeStop(); // writeStop and writeStart do not use threads at all
+	
 	delete FLogStream;
 	FLogStream = nullptr;
 	FStarted = false;
-
-//	LEAVE_CRITICAL_SECTION(CriticalSection);
 }
 
 ulong TLogEngine::getFileLength()
