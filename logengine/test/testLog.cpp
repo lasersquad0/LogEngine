@@ -288,7 +288,7 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	Properties prop;
 	prop.SetValue("ApplicationName", "testLogBackupTypeNone()");
 	prop.SetValue("Version", "1.1.1");
-	prop.SetValue("backuptype", "Single");
+	prop.SetValue("backuptype", "None");
 	prop.SetValue("maxlogsize", "1");
 	prop.SetValue("logfilename", fileName);
 	prop.SetValue("InfoLine",  "%TIME% : %MSG%"); // fixed length pattern needed for this test to run properly on Win and Linux
@@ -306,7 +306,7 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	InitLogEngine(prop);
 	TLogEngine* log = getLogEngine();
 
-	//CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
+	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
 	CPPUNIT_ASSERT_EQUAL(79ul, log->GetBytesWritten());
 	CPPUNIT_ASSERT_EQUAL(79ul, log->GetTotalBytesWritten());
 
