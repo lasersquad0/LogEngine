@@ -18,8 +18,8 @@
 
 #define IO_EXCEPTION_PREFIX "LogException : "
 
-enum TFileMode {fmRead,fmWrite,fmReadWrite};
-enum TSeekMode {smFromBegin,smFromEnd,smFromCurrent};
+enum TFileMode {fmRead, fmWrite, fmReadWrite};
+enum TSeekMode {smFromBegin, smFromEnd, smFromCurrent};
 
 class IOException : public std::exception
 {
@@ -43,15 +43,17 @@ public:
 	virtual int Read(void *Buffer, size_t Size) = 0;
 	virtual int Write(const void *Buffer, const size_t Size) = 0;
 	virtual long Length() = 0;
-	void operator >>(bool& Value); 
+	virtual off_t Seek(const off_t Offset, const TSeekMode sMode) = 0;
+	virtual char ReadChar();
+	virtual std::string LoadPString(); 
+	
+	void operator >>(bool& Value);
 	void operator >>(int& Value); 
 	void operator <<(int Value); 
 	void operator <<(double Value) ;
 	void operator <<(const char *Value);
 	void operator <<(std::string& Value);
 	void operator >>(std::string& Value);
-	char ReadChar();
-	std::string LoadPString();
 };
 
 /*class TMemoryStream:public TStream
@@ -87,10 +89,12 @@ public:
 /* Moves the current position in the file.
  * When sMode=smFromEnd the current position moves _back_ (to the beginning).
  * Negative values of Offset parameter are allowed only when sMode=smFromCurrent.
- *
  */
 	off_t Seek(const off_t Offset, const TSeekMode sMode);
 
 };
+
+
+
 
 #endif

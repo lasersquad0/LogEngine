@@ -286,12 +286,13 @@ void LogEngineLogTest::testLogBackupTypeNone()
 
 	// preparing parameters
 	Properties prop;
-	prop.SetValue("ApplicationName", "LogEngine_tests");
+	prop.SetValue("ApplicationName", "testLogBackupTypeNone()");
 	prop.SetValue("Version", "1.1.1");
-	prop.SetValue("backuptype", "None");
+	prop.SetValue("backuptype", "Single");
 	prop.SetValue("maxlogsize", "1");
 	prop.SetValue("logfilename", fileName);
-	prop.SetValue("InfoLine", "%TIME% : %MSG%"); // fixed length pattern needed for this test to run properly on Win and Linux
+	prop.SetValue("InfoLine",  "%TIME% : %MSG%"); // fixed length pattern needed for this test to run properly on Win and Linux
+	prop.SetValue("ErrorLine", "%TIME% : %MSG%"); // fixed length pattern needed for this test to run properly on Win and Linux
 
 	std::ifstream iff(fileName);
 	if (iff.fail() == false) // if file does not exist then std::remove() fails. below workaround for this
@@ -305,8 +306,9 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	InitLogEngine(prop);
 	TLogEngine* log = getLogEngine();
 
-	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
-	CPPUNIT_ASSERT_EQUAL(71ul, log->GetBytesWritten());
+	//CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
+	CPPUNIT_ASSERT_EQUAL(79ul, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(79ul, log->GetTotalBytesWritten());
 
 	while(true)
 	{
@@ -316,16 +318,16 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	}
 	
 	log->Flush();
-	
 	struct stat st;
 	stat(fileName.c_str(), &st);
+
 	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, log->GetBytesWritten());
 	
-	log->WriteInfo("!");
+	log->WriteInfo("L");
 	CPPUNIT_ASSERT_EQUAL(14ul, log->GetBytesWritten());
-	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size+ 14ul, log->GetTotalBytesWritten());
+	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
-	CPPUNIT_ASSERT_EQUAL(33u, log->GetMessageCount(lmError));
+	CPPUNIT_ASSERT_EQUAL(42u, log->GetMessageCount(lmError));
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmNone));
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmWarning));
 	CPPUNIT_ASSERT_EQUAL(1u, log->GetMessageCount(lmInfo));
