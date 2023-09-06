@@ -133,7 +133,7 @@ T SafeQueue<T>::WaitForElement()
     while (this->Count() == 0)
         cv.wait(lock);
 
-    LogEvent* out = this->GetValue(0);
+    T out = this->GetValue(0);
     this->DeleteValue(0);
 
     return out;
