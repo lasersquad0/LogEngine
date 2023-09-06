@@ -45,7 +45,7 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
 	while (!info->begin)
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	
-	std::string s = IntToStr((size_t)GET_THREAD_ID());
+	std::string s = IntToStr((unsigned int)GET_THREAD_ID());
 	log->WriteError  (s + " is executing 1.");
 	log->WriteInfo   (s + " is executing 2.");
 	log->WriteStr    (s + " is executing 3.");
@@ -154,7 +154,7 @@ void LogEngineThreadLogTest::testThreadLog1()
 	TLogEngine* log = getLogEngine();
 
 	std::string str("main thread ID: "); 
-	str += IntToStr(GET_THREAD_ID());
+	str += IntToStr((uint)GET_THREAD_ID());
 	log->WriteInfo(str);
 	log->WriteError("threaded error #1");
 	log->WriteInfo("threaded info #2");
