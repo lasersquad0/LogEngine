@@ -29,6 +29,7 @@
 #include <exception>
 #include <string>
 #include <vector>
+#include <mutex>
 #include "FileStream.h"
 #include "Properties.h"
 #include "LogEvent.h"
@@ -107,7 +108,9 @@ private:
 	//FStartupTime;
 	
 	THREAD_TYPE hThread;
-	MUTEX_TYPE CriticalSection;
+	typedef std::lock_guard<std::recursive_mutex> mutexguard;
+	//MUTEX_TYPE CriticalSection;
+	std::recursive_mutex mtx;
 
 protected:
 	LogEventQueue LogQueue;

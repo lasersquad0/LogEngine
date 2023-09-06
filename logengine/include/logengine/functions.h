@@ -63,3 +63,5 @@ bool EqualNCase(const std::string& str1,const std::string& str2);
 
 // checks if string contains unsigned integer or not
 bool isUInt(std::string& value);
+
+size_t GetThreadIdHash();

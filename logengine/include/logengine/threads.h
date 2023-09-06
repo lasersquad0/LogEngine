@@ -21,7 +21,11 @@
 #define LEAVE_CRITICAL_SECTION(CritSec)  LeaveCriticalSection (&CritSec)
 #define DELETE_CRITICAL_SECTION(CritSec) DeleteCriticalSection(&CritSec)
 
-#define GET_THREAD_ID() GetCurrentThreadId()
+#define GET_THREAD_ID() GetCurrentThreadId() 
+//std::hash<std::thread::id> hasher, size_t val=hasher(std::this_thread::get_id()))
+
+
+ 
 #define THREAD_OUT_TYPE unsigned long
 
 #define MUTEX_TYPE CRITICAL_SECTION

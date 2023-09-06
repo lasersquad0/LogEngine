@@ -9,12 +9,14 @@
  * 
  */
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <chrono>
 #include <LogEngine.h>
 #include <functions.h>
 #include <LogEvent.h>
-#include <fstream>
-#include <string>
-#include <chrono>
 
 #ifndef WIN32 //HAVE_STDARG_H assume we have Linux here
 #include <stdarg.h>
@@ -180,7 +182,7 @@ TLogEngine::TLogEngine(void): LogQueue()
 
 	hThread = THREAD_TYPE_INITIALIZER;
 
-	INIT_CRITICAL_SECTION(CriticalSection);
+	//INIT_CRITICAL_SECTION(CriticalSection);
 }
 
 TLogEngine::TLogEngine(const Properties& Props): TLogEngine()//, LogQueue()
@@ -220,7 +222,8 @@ TLogEngine::~TLogEngine()
 	}
 	
 	//	LEAVE_CRITICAL_SECTION(CriticalSection);
-	DELETE_CRITICAL_SECTION(CriticalSection);
+	//DELETE_CRITICAL_SECTION(CriticalSection);
+
 }
 
 void TLogEngine::initThread(void)
@@ -338,7 +341,8 @@ ulong TLogEngine::getFileLength()
 
 void TLogEngine::internalWrite(const std::string& msg)
 {
-	ENTER_CRITICAL_SECTION(CriticalSection);
+	//ENTER_CRITICAL_SECTION(CriticalSection);
+	mutexguard lock(mtx);
 
 	if(!FStarted)
 		throw LogException("The LogEngine is not started!");
@@ -353,7 +357,7 @@ void TLogEngine::internalWrite(const std::string& msg)
 	FTotalBytesWritten += written;
 	//FLogStream->Flush();
 
-	LEAVE_CRITICAL_SECTION(CriticalSection);
+	//LEAVE_CRITICAL_SECTION(CriticalSection);
 }
 
 void TLogEngine::writeEvent(LogEvent* event)
@@ -653,7 +657,8 @@ std::string TLogEngine::generateBackupName(void)
 
 void TLogEngine::truncLogFile(void)
 {
-	ENTER_CRITICAL_SECTION(CriticalSection);
+	//ENTER_CRITICAL_SECTION(CriticalSection);
+	mutexguard lock(mtx);
 
 	delete FLogStream;
 	FLogStream = nullptr;
@@ -673,7 +678,7 @@ void TLogEngine::truncLogFile(void)
 	FInitialFileSize = FLogStream->Length();
 	FFileBytesWritten = 0;
 
-	LEAVE_CRITICAL_SECTION(CriticalSection);
+	//LEAVE_CRITICAL_SECTION(CriticalSection);
 }
 
 void TLogEngine::Flush()

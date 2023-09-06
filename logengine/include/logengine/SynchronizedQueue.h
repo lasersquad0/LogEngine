@@ -30,33 +30,32 @@ public:
 	SynchronizedQueue();
 	virtual ~SynchronizedQueue();
 
-	//T	 WaitForElement();
-    //template<class T>
-    T WaitForElement()
-    {
-#ifdef WIN32
-        WaitForSingleObject(ListSemaphore, INFINITE);
-        ENTER_CRITICAL_SECTION(ListMutex);
-//#endif
-#else
-//#ifdef HAVE_PTHREAD_H
-        ENTER_CRITICAL_SECTION(ListMutex);
-        while (ListSemaphoreValue == 0)
-            pthread_cond_wait(&ListSemaphore, &ListMutex);
-
-        ListSemaphoreValue--;
-#endif
-
-        T out = this->GetValue((const int)0);//front();
-        this->DeleteValue(0);//pop_front();
-        LEAVE_CRITICAL_SECTION(ListMutex);
-
-        return out;
-    }
+	T WaitForElement();
 	void PushElement(T in_element);
 };
 
+template<class T>
+T SynchronizedQueue<T>::WaitForElement()
+{
+#ifdef WIN32
+    WaitForSingleObject(ListSemaphore, INFINITE);
+    ENTER_CRITICAL_SECTION(ListMutex);
+    //#endif
+#else
+    //#ifdef HAVE_PTHREAD_H
+    ENTER_CRITICAL_SECTION(ListMutex);
+    while (ListSemaphoreValue == 0)
+        pthread_cond_wait(&ListSemaphore, &ListMutex);
 
+    ListSemaphoreValue--;
+#endif
+
+    T out = this->GetValue((const int)0);//front();
+    this->DeleteValue(0);//pop_front();
+    LEAVE_CRITICAL_SECTION(ListMutex);
+
+    return out;
+}
 
 template<class T>
 SynchronizedQueue<T>::SynchronizedQueue()

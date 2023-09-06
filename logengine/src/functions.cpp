@@ -5,6 +5,7 @@
 #endif
 
 #include <string>
+#include <thread>
 #include <sys/timeb.h>
 
 #ifdef HAVE_CONFIG_H
@@ -336,12 +337,11 @@ bool EqualNCase(const std::string& str1, const std::string& str2)
 		return false;
 	if ((s1 != nullptr) && (s2 == nullptr))
 		return false;
-
 #ifdef HAVE_STRCASECMP
 	return strcasecmp(s1, s2) == 0;
 #else
 
-	for (; *s1 != '\0' && s2 != '\0'; s1++, s2++)
+	for (; *s1 != '\0' && *s2 != '\0'; s1++, s2++)
 		if (toupper(*s1) != toupper(*s2))
 			return false;
 
@@ -360,5 +360,11 @@ bool isUInt(std::string & value)
 	if (value[0] == '+') start = 1; // we need only positive numbers here
 
 	return value.find_first_not_of("0123456789", start) == std::string::npos;
+}
+
+size_t GetThreadIdHash()
+{
+	std::hash<std::thread::id> hasher;
+	return hasher(std::this_thread::get_id());
 }
 
