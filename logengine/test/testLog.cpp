@@ -491,9 +491,11 @@ void LogEngineLogTest::testWrong_LFG_File()
 
 void LogEngineLogTest::testBadLFGFile()
 {
+#ifdef WIN32 // '\n' is not alowed in Windoes filenames, but allowed in Linux filenames
 	CPPUNIT_ASSERT_THROW( InitLogEngine(TEST_FILES_FOLDER "test13.lfg"), IOException );
-	//TLogEngine* log = getLogEngine();
-
+#else
+	InitLogEngine(TEST_FILES_FOLDER "test13.lfg"); // just make sure that no exception is thrown in contrast to Windows
+#endif
 	CloseLogEngine();
 }
 
