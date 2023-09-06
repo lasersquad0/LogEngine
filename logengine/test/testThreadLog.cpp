@@ -200,7 +200,7 @@ void LogEngineThreadLogTest::testThreadLogMeasureTime1()
 
 	std::string ln;
 	std::getline(ff, ln);
-	CPPUNIT_ASSERT_EQUAL(0u, ln.size());
+	CPPUNIT_ASSERT_EQUAL((size_t)0, ln.size());
 	
 	std::getline(ff, ln);
 	size_t n = ln.find("###");
