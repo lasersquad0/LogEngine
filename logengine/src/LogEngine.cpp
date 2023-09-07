@@ -5,7 +5,6 @@
  *
  * See the COPYING file for the terms of usage and distribution.
  * 
- * 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
  * 
  */
 
