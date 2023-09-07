@@ -8,7 +8,8 @@
 typedef std::lock_guard<std::recursive_mutex> mutexguard;
 #define GET_THREAD_ID() GetThreadID() 
 #define THREAD_OUT_TYPE unsigned long
-#define THREAD_CALL_CONVENTION __stdcall
+#define THREAD_CALL_CONVENTION 
+//__stdcall
 
 typedef std::chrono::time_point<std::chrono::system_clock> tm_point;
 
