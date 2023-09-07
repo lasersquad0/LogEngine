@@ -6,6 +6,10 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
+#ifndef WIN32 // required for Linux
+#include <string.h>
+#endif
+
 #include <sstream>
 #include <thread>
 #include <sys/timeb.h>
