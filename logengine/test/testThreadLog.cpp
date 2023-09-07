@@ -34,7 +34,7 @@ struct ThreadInfoStruct
     bool begin;
 };
 
-THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
+THREAD_OUT_TYPE testThreadProc(void* param)
 {
 	ThreadInfoStruct *info = (ThreadInfoStruct*) param;
 	TLogEngine *log = info->log;
