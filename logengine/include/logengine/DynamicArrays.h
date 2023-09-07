@@ -254,6 +254,7 @@ public:
 	void		AddFillValues(const uint Num);
 	inline void Push(const T& Value);
 	inline T	Pop();
+	inline T	PopFront();
 	inline void Swap(const uint Index1, const uint Index2);
 	void		Reverse();
 	void		Reverse(uint endIndex); // Reverse till specified element
@@ -399,12 +400,12 @@ THArray<T>::THArray(const THArray<T>& a):THArray()
 template<class T>
 void THArray<T>::Error(const uint Value, /*const uint vmin, */ const int vmax) const
 {
-	if(/*(vmin > Value) ||*/ (vmax < (int)Value))
+	if(/*(vmin > Value) ||*/ ((int)Value) > vmax)
 	{
-		char str[512];
+		char str[100];
 
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
-	    sprintf_s(str, 512, "Error in THArray: Element with index %i not found!", Value);
+#ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400
+	    sprintf_s(str, 100, "Error in THArray: Element with index %i not found!", Value);
 #else
         sprintf(str, "Error in THArray: Element with index %i not found!", Value);		
 #endif
@@ -529,55 +530,12 @@ THArray<T>& THArray<T>::operator=(const THArray<T>& a)
 	return *this;
 }
 
-
-//template<class T> 
-//T THArray<T>::operator [](const uint Index)const 
-//{
-//	return GetValue(Index);
-//}
-
-//template<class T>
-//inline uint THArray<T>::Count()const 
-//{
-//	return FCount;
-//}
-
-//template<class T>
-//inline void THArray<T>::SetSorted() 
-//{
-//	Sorted = true;
-//}
-
-//template<class T>
-//inline T* THArray<T>::Memory()const 
-//{
-//	return FMemory;
-//}
-
-//template<class T>
-//void THArray<T>::Clear() 
-//{
-//	FCount = 0;
-//}
-
 template<class T>
 void THArray<T>::Zero() 
 {
 	for (uint i = 0; i < FCount; i++)
 		FMemory[i] = T();
 }
-
-//template<class T>
-//uint THArray<T>::Capacity() const
-//{
-//	return FCapacity;
-//}
-
-//template<class T>
-//inline void THArray<T>::Hold() 
-//{
-//	SetCapacity(FCount);
-//}
 
 template<class T>
 void THArray<T>::ClearMem() 
@@ -618,12 +576,6 @@ uint THArray<T>::InsertValue(const uint Index, const T& Value)
 	return Index;
 }
 
-//template<class T>
-//void THArray<T>::Insert(const uint Index, const void* Value) 
-//{
-//	InsertValue(Index, *(T*)Value);
-//}
-
 template<class T>
 void THArray<T>::DeleteValue(const uint Index) 
 {
@@ -633,31 +585,12 @@ void THArray<T>::DeleteValue(const uint Index)
 	FCount--;
 }
 
-//template<class T>
-//inline uint THArray<T>::AddValue(const T& Value) 
-//{
-//	return InsertValue(FCount, Value);
-//	//return FCount - 1;
-//}
-
-//template<class T>
-//inline uint THArray<T>::Add(const void *pValue) 
-//{
-//	return AddValue(*(T *)pValue);
-//}
-
 template<class T>
 inline T* THArray<T>::GetValuePointer(const uint Index) const
 {
 	Error(Index, (int)FCount - 1);
 	return FMemory + Index;
 }
-
-//template<class T>
-//inline int THArray<T>::IndexOf(const T& Value, const Compare<T>& cmp) const 
-//{
-//	return IndexOfFrom(Value, 0, cmp);
-//}
 
 template<class T>
 int THArray<T>::IndexOfFrom(const T& Value, const uint Start, const Compare<T>& cmp) const 
@@ -670,12 +603,6 @@ int THArray<T>::IndexOfFrom(const T& Value, const uint Start, const Compare<T>& 
 	}
 	return DA_NPOS;
 }
-
-/*template<class T>
-inline int THArray<T>::IndexOf(const T& Value) const 
-{
-	return IndexOfFrom(Value, 0);
-}*/
 
 template<class T>
 int THArray<T>::IndexOfFrom(const T& Value, const uint Start) const 
@@ -709,6 +636,15 @@ T	THArray<T>::Pop()
 	Error(0/*FCount - 1 */ , (int)FCount - 1); // just check that array is not empty
 	FCount--;
 	return FMemory[FCount];
+}
+
+template<class T>
+T	THArray<T>::PopFront()
+{
+	Error(0, (int)FCount - 1); // just check that array is not empty
+	T tmp = FMemory[0];
+	DeleteValue(0);
+	return tmp;
 }
 
 template<class T>
@@ -785,12 +721,6 @@ THash<I,V>::THash(THash<I,V>& a)
 	FAKeys = a.FAKeys;
 	FAValues = a.FAValues;
 }
-
-//template <class I, class V>
-//THash<I,V>::~THash() 
-//{
-//
-//}
 
 /*template <class I, class V>
 THash<I,V>& THash<I,V>::operator=(const THash<I,V>& a) 

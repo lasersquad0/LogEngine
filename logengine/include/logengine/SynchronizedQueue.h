@@ -15,6 +15,45 @@
 #include "DynamicArrays.h"
 //#include "LogEvent.h"
 
+
+template<class T>
+class SafeQueue : private THArray<T>
+{
+private:
+    std::mutex mtx;
+    std::condition_variable cv;
+
+public:
+    T WaitForElement();
+    void PushElement(T in_element);
+};
+
+template<class T>
+T SafeQueue<T>::WaitForElement()
+{
+    std::unique_lock<std::mutex> lock(mtx);
+    while (this->Count() == 0)
+        cv.wait(lock);
+
+//    T out = this->GetValue(0);
+//    this->DeleteValue(0);
+
+    return this->PopFront(); //out;
+}
+
+template<class T>
+void SafeQueue<T>::PushElement(T in_element)
+{
+    std::lock_guard<std::mutex> lock(mtx);
+
+    this->AddValue(in_element);
+    cv.notify_one();
+}
+
+//-------------------------------------------------------------------
+// Old implementation based on WinAPI and pthread calls
+//-------------------------------------------------------------------
+
 /*
 template<class T>
 class SynchronizedQueue : private THArray<T>
@@ -113,40 +152,7 @@ void SynchronizedQueue<T>::PushElement(T in_element)
 }
 */
 
-//----------------------------------------------------------------------
-template<class T>
-class SafeQueue : private THArray<T>
-{
-private:
-    std::mutex mtx;
-    std::condition_variable cv;
 
-public:
-    T WaitForElement();
-    void PushElement(T in_element);
-};
-
-template<class T>
-T SafeQueue<T>::WaitForElement()
-{
-    std::unique_lock<std::mutex> lock(mtx);
-    while (this->Count() == 0)
-        cv.wait(lock);
-
-    T out = this->GetValue(0);
-    this->DeleteValue(0);
-
-    return out;
-}
-
-template<class T>
-void SafeQueue<T>::PushElement(T in_element)
-{
-    std::lock_guard<std::mutex> lock(mtx);
-
-    this->AddValue(in_element);
-    cv.notify_one();
-}
 
 #endif /* SYNCHRONIZED_QUEUE_H */
 

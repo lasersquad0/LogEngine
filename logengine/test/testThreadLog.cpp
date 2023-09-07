@@ -109,13 +109,20 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 
 	log->WriteInfo("begin resuming");
 	
-	info.begin = true; //TODO small data race here, consider us atomics
+	info.begin = true; //TODO small data race here, consider use atomics
 	
 	log->WriteInfo("all threads resumed");
 
+	// waiting till all threads finished
 	for (uint i = 0; i < threads.Count(); i++)
 	{
 		threads[i]->join();
+	}
+
+	//freeing memory
+	for (uint i = 0; i < threads.Count(); i++)
+	{
+		delete threads[i];
 	}
 
 //#ifdef WIN32

@@ -52,7 +52,7 @@ std::string IntToStr(int Value, int FieldSize)
 	char buf[20];
 	char buf2[20];
 
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+#ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400
     sprintf_s(buf2, 20,"%%-%dd", FieldSize);	
     sprintf_s(buf, 20, buf2, Value);
 #else
@@ -69,7 +69,7 @@ std::string IntToStr(unsigned int Value, int FieldSize)
 	char buf[20];
 	char buf2[20];
 
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
 	sprintf_s(buf2, 20, "%%-%du", FieldSize);
 	sprintf_s(buf, 20, buf2, Value);
 #else
@@ -84,7 +84,7 @@ std::string IntToStr(unsigned int Value, int FieldSize)
 std::string IntToStr(int Value)
 {
 	char buf[20];
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
 	sprintf_s(buf, 20, "%d", Value);
 #else
     sprintf(buf, "%d", Value);    
@@ -96,7 +96,7 @@ std::string IntToStr(int Value)
 std::string IntToStr(unsigned int Value)
 {
 	char buf[20];
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
 	sprintf_s(buf, 20, "%u", Value);
 #else
 	sprintf(buf, "%u", Value);
@@ -109,7 +109,7 @@ std::string FloatToStr(double Value)
 {
 	char buf[50];
 
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400    
+#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400    
 	sprintf_s(buf, 50, "%f", Value);
 #else
     sprintf(buf, "%f", Value);    
@@ -237,7 +237,7 @@ std::string GetCurrTimeAsString(void)
     std::strftime(ss, DATETIME_BUF, "%X", std::localtime(&tt));
 
 	char sss[20];
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400    
+#ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400    
 	sprintf_s(sss, 20, ".%03lld", millis);
 #else
     sprintf(sss, ".%03lld", millis);    

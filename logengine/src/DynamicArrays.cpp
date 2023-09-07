@@ -60,7 +60,7 @@ void THArrayRaw::Error(const uint Value, /*const uint vmin,*/ const int vmax) co
 	if(/*(vmin > Value) ||*/ (vmax < (int)Value))
 	{
 		char str[512];
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+#ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400
         sprintf_s(str, 512, "Error in HArray: Element with index %i not found!", Value);		
 #else
         sprintf(str, "Error in HArray: Element with index %i not found!", Value);        
@@ -117,7 +117,7 @@ void THArrayRaw::AddMany(const void *pValue, const uint Count)
 	if (Count == 0) 
 	{ 
 		char str[512];
-#if __STDC_SECURE_LIB__//_MSC_VER < 1400
+#ifdef WIN32 //__STDC_SECURE_LIB__//_MSC_VER < 1400
 		sprintf_s(str, 512, "AddMany(): invalid parameter 'Count'=%i !", Count);
 #else
         sprintf(str, "AddMany(): invalid parameter 'Count'=%i !", Count);        
@@ -314,7 +314,7 @@ uint THArrayStringFix::AddChars(const void *pValue, const uint len)
 
 	i = valuemin(len, data.GetItemSize());
 
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400  // less than VS2005
+#ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400  // less than VS2005
     strncpy_s(b, i, (char*)pValue, i);
 #else
     strncpy(b, (char *)pValue, i);    

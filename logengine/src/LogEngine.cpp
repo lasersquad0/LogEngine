@@ -81,7 +81,7 @@ LogException::LogException(const char* formatstr, ...)
 	char res[VARIABLE_LIST_BUFFER_SIZE];
 	va_list list;
 	va_start(list, formatstr);
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
 	vsprintf_s(res, VARIABLE_LIST_BUFFER_SIZE, formatstr, list);
 #else
     vsprintf(res, formatstr, list);    
@@ -519,7 +519,7 @@ void TLogEngine::WriteStrFmt(uint DetailLevel, const char* formatstr, ...)
 	char res[VARIABLE_LIST_BUFFER_SIZE];
 	va_list list;
 	va_start(list, formatstr);
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
 	vsprintf_s(res, VARIABLE_LIST_BUFFER_SIZE, formatstr, list);
 #else
     vsprintf(res, formatstr, list);
@@ -539,7 +539,7 @@ void TLogEngine::WriteInfoFmt(uint DetailLevel, const char* formatstr, ...)
 	va_list list;
 	va_start(list, formatstr);
 
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
 	vsprintf_s(res, VARIABLE_LIST_BUFFER_SIZE, formatstr, list);
 #else
     vsprintf(res, formatstr, list);    
@@ -559,7 +559,7 @@ void TLogEngine::WriteWarningFmt(uint DetailLevel, const char* formatstr, ...)
 	va_list list;
 	va_start(list, formatstr);
 
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
 	vsprintf_s(res, VARIABLE_LIST_BUFFER_SIZE, formatstr, list);
 #else
     vsprintf(res, formatstr, list);    
@@ -579,7 +579,7 @@ void TLogEngine::WriteErrorFmt(uint DetailLevel, const char* formatstr, ...)
 	va_list list;
 	va_start(list, formatstr);
 
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
+#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
     vsprintf_s(res, VARIABLE_LIST_BUFFER_SIZE, formatstr, list);
 #else
     vsprintf(res, formatstr, list);    
