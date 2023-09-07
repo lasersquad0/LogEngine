@@ -5,6 +5,7 @@
 #endif
 
 #include <string>
+#include <sstream>
 #include <thread>
 #include <sys/timeb.h>
 
@@ -391,9 +392,11 @@ bool isUInt(std::string & value)
 	return value.find_first_not_of("0123456789", start) == std::string::npos;
 }
 
-size_t GetThreadIdHash()
+size_t GetThreadID()
 {
-	std::hash<std::thread::id> hasher;
-	return hasher(std::this_thread::get_id());
+	std::stringstream ss;
+	ss << std::this_thread::get_id();
+	int thrID;
+	ss >> thrID;
+	return thrID;
 }
-

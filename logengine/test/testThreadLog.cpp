@@ -14,7 +14,7 @@
 #include "LogEngine.h"
 #include "testThreadLog.h"
 //#include "debug_support.h"
-#include "threads.h"
+//#include "threads.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION( LogEngineThreadLogTest );
 
@@ -45,7 +45,7 @@ THREAD_OUT_TYPE THREAD_CALL_CONVENTION testThreadProc(void* param)
 	while (!info->begin)
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	
-	std::string s = IntToStr((unsigned int)GET_THREAD_ID());
+	std::string s = IntToStr(GET_THREAD_ID());
 	log->WriteError  (s + " is executing 1.");
 	log->WriteInfo   (s + " is executing 2.");
 	log->WriteStr    (s + " is executing 3.");

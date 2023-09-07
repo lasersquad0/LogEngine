@@ -2,12 +2,18 @@
 #include <time.h>
 #include <string>
 #include <chrono>
+#include <mutex>
+
+//heler definition to work with threads
+typedef std::lock_guard<std::recursive_mutex> mutexguard;
+#define GET_THREAD_ID() GetThreadID() 
+#define THREAD_OUT_TYPE unsigned long
+#define THREAD_CALL_CONVENTION __stdcall
 
 typedef std::chrono::time_point<std::chrono::system_clock> tm_point;
 
 tm_point GetCurrTimePoint();
 struct tm GetCurrDateTime();
-
 
 // truncates Value to Precision digits after point
 double round(const double Value,const int Precision);
@@ -66,4 +72,4 @@ bool EqualNCase(const std::string& str1,const std::string& str2);
 // checks if string contains unsigned integer or not
 bool isUInt(std::string& value);
 
-size_t GetThreadIdHash();
+size_t GetThreadID();

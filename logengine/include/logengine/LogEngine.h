@@ -35,7 +35,7 @@
 #include "Properties.h"
 #include "LogEvent.h"
 #include "Line.h"
-#include "threads.h"
+//#include "threads.h"
 #include "SynchronizedQueue.h"
 
 enum TLogBackupType { lbNone, lbTimeStamp, lbSingle };
