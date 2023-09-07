@@ -6,12 +6,12 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef _stream_
-#define _stream_
+#ifndef _FILESTREAM_H_
+#define _FILESTREAM_H_
 
-#ifndef WIN32
-#include <string.h>
-#endif
+//#ifndef WIN32
+//#include <string.h>
+//#endif
 
 #include <string>
 #include <exception>
@@ -97,4 +97,4 @@ public:
 
 
 
-#endif
+#endif //_FILESTREAM_H_

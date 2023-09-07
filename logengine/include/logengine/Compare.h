@@ -6,12 +6,12 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef _Compare_
-#define _Compare_
+#ifndef _COMPARE_H_
+#define _COMPARE_H_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+//#if _MSC_VER > 1000
+//#pragma once
+//#endif // _MSC_VER > 1000
 
 #include <exception> //unix
 #include <string>
@@ -53,4 +53,4 @@ public:
 };
 
 
-#endif 
+#endif //_COMPARE_H_

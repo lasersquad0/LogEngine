@@ -7,7 +7,7 @@
 #include "Shared.h"
 #include "LogEngine.h"
 #include "testLog.h"
-#include <cppunit/portability/Stream.h>
+//#include <cppunit/portability/Stream.h>
 //#include "debug_support.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION( LogEngineLogTest );

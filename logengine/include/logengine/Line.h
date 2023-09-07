@@ -9,9 +9,9 @@
 #if !defined(_LINE_H_)
 #define _LINE_H_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+//#if _MSC_VER > 1000
+//#pragma once
+//#endif // _MSC_VER > 1000
 
 #include <vector>
 #include <chrono>
@@ -171,4 +171,4 @@ public:
 };
 
 
-#endif // !defined(_LINE_H_)
+#endif // _LINE_H_

@@ -18,9 +18,9 @@
 enum TLogMessageType {lmNone, lmError, lmWarning, lmInfo};
 //enum TLogMessageType;
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+//#if _MSC_VER > 1000
+//#pragma once
+//#endif // _MSC_VER > 1000
 
 class TLogEngine;
 
@@ -51,4 +51,4 @@ public:
 	
 };
 
-#endif // !defined(_LOGEVENT_H_)
+#endif //_LOGEVENT_H_

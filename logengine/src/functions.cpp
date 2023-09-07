@@ -1,18 +1,14 @@
-#ifndef WIN32
-#include <string.h>
-//#include <stdio.h>
-//#include <ctype.h>
-#endif
+/*
+ * functions.cpp
+ *
+ * Copyright 2003, LogEngine Project. All rights reserved.
+ *
+ * See the COPYING file for the terms of usage and distribution.
+ */
 
-#include <string>
 #include <sstream>
 #include <thread>
 #include <sys/timeb.h>
-
-//#ifdef HAVE_CONFIG_H
-//#include "config.h"
-//#endif
-
 #include <functions.h>
 
 // truncates Value to Precision digits after point

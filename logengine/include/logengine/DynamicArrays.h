@@ -1,9 +1,9 @@
-#ifndef _DYNAMIC_ARRAYS_
-#define _DYNAMIC_ARRAYS_
+#ifndef _DYNAMIC_ARRAYS_H_
+#define _DYNAMIC_ARRAYS_H_
 
-#ifndef WIN32 // assume it is Linux
-#include <string.h>
-#endif
+//#ifndef WIN32 // assume it is Linux
+//#include <string.h>
+//#endif
 
 #include <exception> 
 #include <string>
@@ -1061,4 +1061,4 @@ void THash2<I1,I2,V>::Minus(THash2<I1, I2, V>& in)
 
 
 
-#endif
+#endif //_DYNAMIC_ARRAYS_H_

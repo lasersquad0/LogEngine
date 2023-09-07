@@ -3,9 +3,9 @@
 //#include "config.h"
 //#endif
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+//#ifdef HAVE_UNISTD_H
+//#include <unistd.h>
+//#endif
 
 #include <chrono>
 #include <thread>
@@ -14,7 +14,6 @@
 #include "LogEngine.h"
 #include "testThreadLog.h"
 //#include "debug_support.h"
-//#include "threads.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION( LogEngineThreadLogTest );
 

@@ -9,23 +9,6 @@
 #ifndef _LOG_ENGINE_H_
 #define _LOG_ENGINE_H_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-//#ifdef HAVE_CONFIG_H
-//#include "config.h"
-//#endif
-
-//#ifdef WIN32
-//#include  <windows.h>
-//#pragma warning( disable : 4786 )
-//#endif
-
-//#ifdef HAVE_PTHREAD_H
-//#include <pthread.h>
-//#endif
-
 #include <exception>
 #include <string>
 #include <vector>
@@ -35,7 +18,6 @@
 #include "Properties.h"
 #include "LogEvent.h"
 #include "Line.h"
-//#include "threads.h"
 #include "SynchronizedQueue.h"
 
 enum TLogBackupType { lbNone, lbTimeStamp, lbSingle };
@@ -231,4 +213,4 @@ inline void LOG_STR(const std::string& mess, int DetailLevel = DefaultDetailLeve
 }
 
 	
-#endif // !defined _LOG_ENGINE_H_
+#endif //_LOG_ENGINE_H_

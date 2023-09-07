@@ -6,14 +6,12 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef SYNCHRONIZED_QUEUE_H
-#define SYNCHRONIZED_QUEUE_H
+#ifndef _SYNCHRONIZED_QUEUE_H_
+#define _SYNCHRONIZED_QUEUE_H_
 
 #include <mutex>
 #include <condition_variable>
-//#include "threads.h"
 #include "DynamicArrays.h"
-//#include "LogEvent.h"
 
 
 template<class T>
@@ -154,5 +152,5 @@ void SynchronizedQueue<T>::PushElement(T in_element)
 
 
 
-#endif /* SYNCHRONIZED_QUEUE_H */
+#endif //_SYNCHRONIZED_QUEUE_H_
 
