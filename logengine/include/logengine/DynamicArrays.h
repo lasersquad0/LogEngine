@@ -1,9 +1,9 @@
 #ifndef _DYNAMIC_ARRAYS_H_
 #define _DYNAMIC_ARRAYS_H_
 
-//#ifndef WIN32 // assume it is Linux
-//#include <string.h>
-//#endif
+#ifndef WIN32 // assume it is Linux
+#include <string.h>
+#endif
 
 #include <exception> 
 #include <string>
