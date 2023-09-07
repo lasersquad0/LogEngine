@@ -7,7 +7,7 @@
 //heler definition to work with threads
 typedef std::lock_guard<std::recursive_mutex> mutexguard;
 #define GET_THREAD_ID() GetThreadID() 
-#define THREAD_OUT_TYPE unsigned long
+//#define THREAD_OUT_TYPE unsigned long
 
 typedef std::chrono::time_point<std::chrono::system_clock> tm_point;
 

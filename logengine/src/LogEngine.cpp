@@ -252,7 +252,7 @@ void TLogEngine::initThread(void)
 //#endif
 }
 
-THREAD_OUT_TYPE TLogEngine::ThreadProc(void *parameter)
+int TLogEngine::ThreadProc(void *parameter)
 {
 	LogEngineThreadInfo *info = (LogEngineThreadInfo *) parameter;
 
