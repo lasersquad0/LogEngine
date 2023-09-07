@@ -1,6 +1,6 @@
-               LogEngine --- The C++ Log Library
-            https://github.com/lasersquad0/LogEngine2
-                       Version 1.02
+<h1>LogEngine --- The C++ Log Library </h1>
+https://github.com/lasersquad0/LogEngine2 <br>
+Version 1.02 <br><br>
 
 
 Last revision date September, 05, 2023.
@@ -78,128 +78,128 @@ History
 [*] Fixed a couple of security warnings under VS2005  <br>
 
 
-2004-03-12
-documentation manual?
-[*] if FileName is not specifies that AppName is got for the log file name.
+2004-03-12 <br>
+documentation manual? <br>
+[*] if FileName is not specifies that AppName is got for the log file name. <br>
 
-2003-04-12
-[*] Fixed bug with incorrect counting FBytesWritten.
-[*] "DebugLevel" parameter name was changed to "DetailLevel" for terminology 
+2003-04-12 <br>
+[ * ] Fixed bug with incorrect counting FBytesWritten. <br>
+[ * ] "DebugLevel" parameter name was changed to "DetailLevel" for terminology 
     consistence. It is not needed to change your old .lfg files, because it is 
-    still possible to use old name ("DebugLevel") for back compatibility. 
-[*] %DEBUGLEVEL% placeholder name was changed to the %DETAILLEVEL%. It is 
+    still possible to use old name ("DebugLevel") for back compatibility. <br> 
+[ * ] %DEBUGLEVEL% placeholder name was changed to the %DETAILLEVEL%. It is 
     possible to use old name for back compatibility, but in new applications 
-    new name %DETAILLEVEL% should be used.
+    new name %DETAILLEVEL% should be used. <br>
 
-!!! Version 1.02 is released !!!
+!!! Version 1.02 is released !!! <br>
 
-2003-04-01
-[+] testLogEngine project is ported to the Borland C++ Builder 6.
+2003-04-01 <br>
+[+] testLogEngine project is ported to the Borland C++ Builder 6. <br>
 
-2003-03-21
-[+] Changes to support C++ Builder 6.
+2003-03-21 <br>
+[+] Changes to support C++ Builder 6. <br>
 [+] Added project prj/Builder6/LogEngine to compile LogEngine.lib library
-    under C++ Builder 6.
-[*] Fixed bug in THArrayException.what method definition.
+    under C++ Builder 6.  <br>
+[*] Fixed bug in THArrayException.what method definition. <br>
 
 
-!!! Version 1.01 is released !!!
+!!! Version 1.01 is released !!! <br>
 
-2003-03-11
-[*] new features are buildable for Linux.
+2003-03-11 <br>
+[*] new features are buildable for Linux. <br>
 
-2003-03-09
-[+] Added test for new IntToStr function.
-[+] Added overloaded global function IntToStr(int Value, int FieldSize).
-[*] Fixed bug with different log patterns.
-[*] Changed implementation for placeholders %OSVERSION%, %DEBUGLEVEL%, %APPVERSION%,
-    %APPNAME%, %OS%.
-[+] Changed appropriate tests to support new LogEvent constructor.
-[+] Added field "logEngine" to the LogEvent structure. 
-
-
-2003-02-22
-[+] Created implementation for %OSVERSION% placeholder.
-[+] Added placeholder %DEBUGLEVEL%.
+2003-03-09 <br>
+[+] Added test for new IntToStr function. <br>
+[+] Added overloaded global function IntToStr(int Value, int FieldSize). <br>
+[ * ] Fixed bug with different log patterns. <br>
+[ * ] Changed implementation for placeholders %OSVERSION%, %DEBUGLEVEL%, %APPVERSION%,
+    %APPNAME%, %OS%. <br>
+[+] Changed appropriate tests to support new LogEvent constructor. <br>
+[+] Added field "logEngine" to the LogEvent structure.  <br>
 
 
-!!! Version 1.00 is released !!!
+2003-02-22 <br>
+[+] Created implementation for %OSVERSION% placeholder. <br>
+[+] Added placeholder %DEBUGLEVEL%. <br>
 
-2003-02-19
-[*] fixed segmentation fault in TLogEngine::ThreadProc (wrong pointer)
-[*] fixed tests compilation problems under Linux
 
-2003-02-18
-[+] Added method IsStarted() to the TLogEngine class.
-[*] Many tests were to use FormatXXX and the following ASSERT() instead of WriteXXX.
-[*] Many tests were rewritten to use ASSERT_EQUAL() macro instead of ASSERT() to produce
-    more understandable description.
-[+] Added tests: testLogInitClose(), testLogStartStop().
+!!! Version 1.00 is released !!! <br>
 
-2003-02-16
-[+] Added functions FormatXXX to format log messages before writing to the file. 
-[*] Global functions InitLogEngine(), CloseLogEngine(), getLogEngine() were rewritten to 
-    call static methods of TLogEngine with the same names. 
-[*] Internal global variable loginstance was moved as static to the 
-    TLogEngine class.
+2003-02-19 <br>
+[ * ] fixed segmentation fault in TLogEngine::ThreadProc (wrong pointer) <br>
+[ * ] fixed tests compilation problems under Linux <br>
+
+2003-02-18 <br>
+[+] Added method IsStarted() to the TLogEngine class. <br>
+[ * ] Many tests were to use FormatXXX and the following ASSERT() instead of WriteXXX. <br>
+[ * ] Many tests were rewritten to use ASSERT_EQUAL() macro instead of ASSERT() to produce <br>
+    more understandable description. <br>
+[+] Added tests: testLogInitClose(), testLogStartStop(). <br>
+
+2003-02-16 <br>
+[+] Added functions FormatXXX to format log messages before writing to the file.  <br>
+[ * ] Global functions InitLogEngine(), CloseLogEngine(), getLogEngine() were rewritten to 
+    call static methods of TLogEngine with the same names.  <br>
+[ * ] Internal global variable loginstance was moved as static to the 
+    TLogEngine class. <br>
 [*] Constructors and destructor of TLogEngine class were moved to the 
-    protected section to avoid creating several instances of logengine.
+    protected section to avoid creating several instances of logengine. <br>
 
-2003-02-11
-[*] new features are buildable for Linux.
+2003-02-11 <br>
+[*] new features are buildable for Linux. <br>
 
-2003-02-09
-[*] Fixed a serious bug with THArray copy constructor (file DynamicArrays.h).
-[*] Fixed bug in LogException.what() method which didn't allow to print error message properly.
-[+] Added overloaded InitLogEngine() function without parameters (default values will be used).
-[*] Added modificator "const" in parameters of the several methods of TFileStream class.
+2003-02-09 <br>
+[ * ] Fixed a serious bug with THArray copy constructor (file DynamicArrays.h). <br>
+[ * ] Fixed bug in LogException.what() method which didn't allow to print error message properly. <br>
+[+] Added overloaded InitLogEngine() function without parameters (default values will be used). <br>
+[*] Added modificator "const" in parameters of the several methods of TFileStream class. <br>
 
-!!! Version 1.0pre2 was released !!!
+!!! Version 1.0pre2 was released !!! <br>
 
-2003-02-08
-[+] Added class Line for internal use.
-[*] Parsing of line patters was remade to improve performance.
-[*] Changes in BooToStr function.
-[*] Changes in WriteXXX functions to support new line patterns parser.
-[*] BytesWritten and MessageCount[msgType] counters are work properly now.
+2003-02-08 <br>
+[+] Added class Line for internal use. <br>
+[ * ] Parsing of line patters was remade to improve performance. <br>
+[ * ] Changes in BooToStr function. <br>
+[ * ] Changes in WriteXXX functions to support new line patterns parser. <br>
+[ * ] BytesWritten and MessageCount[msgType] counters are work properly now. <br>
 
-!!! Version 1.0pre1 was released !!!
+!!! Version 1.0pre1 was released !!! <br>
 
-2003-02-06
-[+] Added bulid framework for unix systems.
-[+] Fixed compilation problems.
+2003-02-06 <br>
+[+] Added bulid framework for unix systems. <br>
+[+] Fixed compilation problems. <br>
 
-2003-02-05
-[+] Begins work to support writing log in separate thread (only for Windows now).
+2003-02-05 <br>
+[+] Begins work to support writing log in separate thread (only for Windows now). <br>
 [+] Added LogEvent class. I am going to remake all internal calls to use LogEvent class instead of
-    list of parameters)
+    list of parameters) <br>
 
-2003-02-01
-[+] Added InitLogEngine(Properties& Props) - global LogEngine initialization function.
+2003-02-01 <br>
+[+] Added InitLogEngine(Properties& Props) - global LogEngine initialization function. <br>
 
-2003-01-20
-[*] GetCurrTime function is changed to return milliseconds.
+2003-01-20 <br>
+[*] GetCurrTime function is changed to return milliseconds. <br>
 
-2003-01-17
-[*] Fixed bug with the symbol # in the middle line of config file.
-[*] Several methods are added.
+2003-01-17 <br>
+[ * ] Fixed bug with the symbol # in the middle line of config file. <br>
+[ * ] Several methods are added. <br>
 
-2003-01-12
-[*] LogEngine Header files were moved from src to include directory.
+2003-01-12 <br>
+[*] LogEngine Header files were moved from src to include directory. <br>
 
-2003-01-11
-[+] Added MSVC project "LogEngine" for building LogEngine library.
-[+] Added MSVC test project "testLogEngine" for testing LogEngine classes.
-[+] Added Properties class for reading properties from config file (*.lfg).
-[+] Added tests for Properties class.
+2003-01-11 <br>
+[+] Added MSVC project "LogEngine" for building LogEngine library. <br>
+[+] Added MSVC test project "testLogEngine" for testing LogEngine classes. <br>
+[+] Added Properties class for reading properties from config file (*.lfg). <br>
+[+] Added tests for Properties class. <br>
 
-2002-12-24
-[+] Added functions FloatToStr, BoolToStr, StrToBool, EqualNCase into functions.cpp.
-[*] functions.cpp code was reformatted for better look.
-[+] Changes in IOException nethods.
-[+] Added current thread ID into log line pattern.
-[*] Some changes for linux support (not tested yet).
-[*] LogEngine.cpp code was reformatted for better look.
+2002-12-24 <br>
+[+] Added functions FloatToStr, BoolToStr, StrToBool, EqualNCase into functions.cpp. <br>
+[ * ] functions.cpp code was reformatted for better look. <br>
+[+] Changes in IOException nethods. <br>
+[+] Added current thread ID into log line pattern. <br>
+[ * ] Some changes for linux support (not tested yet). <br>
+[ * ] LogEngine.cpp code was reformatted for better look. <br>
 
 
 
