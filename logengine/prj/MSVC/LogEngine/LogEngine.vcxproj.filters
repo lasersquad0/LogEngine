@@ -67,8 +67,5 @@
     <ClInclude Include="..\..\..\include\logengine\SynchronizedQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\include\logengine\threads.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
