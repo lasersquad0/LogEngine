@@ -134,7 +134,7 @@ protected:
 	void resetStatistics();
 	ulong getFileLength();
 
-	static THREAD_OUT_TYPE THREAD_CALL_CONVENTION ThreadProc(void* parameter);
+	static THREAD_OUT_TYPE ThreadProc(void* parameter);
 public:
 	//int FLogDetailLevel;
 	void Start(void);
