@@ -772,28 +772,41 @@ int THArraySorted<T>::IndexOfFrom(const T& Value, const uint Start) const
 template <class T>
 int THArraySorted<T>::IndexOfFrom(const T& Value, const uint Start, const Compare<T>& cmp) const
 {
-	uint begin = Start;
-	uint end = this->FCount;
-	uint middle;
-	while (end - begin > 1)
+
+	if (Start >= this->FCount && this->FCount != 0)
 	{
-		middle = (begin + end) / 2;
-		if (cmp.lt(Value, this->FMemory[middle]))
+		char str[100];
+#ifdef WIN32 
+		sprintf_s(str, 100, "Error in THArraySorted: Start index %i is out of bounds!", Start);
+#else
+		sprintf(str, "Error in THArraySorted: Start index %i is out of bounds!", Start);
+#endif
+		throw THArrayException(str);
+	}
+
+	if (this->FCount == 0) return -1;
+
+	uint left = Start, count = this->FCount - Start;
+	uint step, middle;
+
+	while (count > 0)
+	{
+		step = count / 2;
+		middle = left + step;
+		if (cmp.mt(Value, this->FMemory[middle]))
 		{
-			end = middle - 1;
+			left = middle + 1;
+			count -= step + 1;
 		}
-		else if(cmp.mt(Value, this->FMemory[middle]))
-		{
-			begin = middle + 1;
-		}
+		else if(cmp.lt(Value, this->FMemory[middle]))
+			count = step;
 		else
 			return middle;
 	}
 
-	if (Value == this->FMemory[begin]) return begin;
-	if (Value == this->FMemory[end])   return end;
+	if (left < this->FCount && cmp.eq(Value, this->FMemory[left])) return left;
 
-	return -(int)(end + 1); // return position (with negative sign) where element is going to be according to sorting
+	return -(int)(left + 1);  // return position (with negative sign) where element is going to be according to sorting
 }
 
 

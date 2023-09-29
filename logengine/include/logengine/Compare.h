@@ -42,8 +42,8 @@ public:
 //#pragma warning(disable : 4100)
 //#endif
 
-	virtual bool lt(const std::string&, const std::string&) const { throw std::exception();/*"string comparing don't process operator '<'");*/ };
-	virtual bool mt(const std::string&, const std::string&) const { throw std::exception();/*"string comparing don't process operator '>'");*/ };
+	virtual bool lt(const std::string& a, const std::string& b) const { return a.compare(b) < 0; };
+	virtual bool mt(const std::string& a, const std::string& b) const { return a.compare(b) > 0; };
 
 //#ifdef WIN32
 //#pragma warning(pop)
