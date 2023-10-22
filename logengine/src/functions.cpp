@@ -47,15 +47,17 @@ double round(const double Value,const int Precision)
 	return ret/p;
 }
 
+#define CONV_BUF 20
+
 // function for convert int Value to string
 std::string IntToStr(int Value, int FieldSize)
 {
-	char buf[20];
-	char buf2[20];
+	char buf[CONV_BUF];
+	char buf2[CONV_BUF];
 
 #ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400
-    sprintf_s(buf2, 20,"%%-%dd", FieldSize);	
-    sprintf_s(buf, 20, buf2, Value);
+    sprintf_s(buf2, CONV_BUF,"%%-%dd", FieldSize);
+    sprintf_s(buf, CONV_BUF, buf2, Value);
 #else
     sprintf(buf2, "%%-%dd", FieldSize);	
     sprintf(buf, buf2, Value);    
@@ -67,12 +69,12 @@ std::string IntToStr(int Value, int FieldSize)
 // function for convert int Value to string
 std::string IntToStr(unsigned int Value, int FieldSize)
 {
-	char buf[20];
-	char buf2[20];
+	char buf[CONV_BUF];
+	char buf2[CONV_BUF];
 
 #ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
-	sprintf_s(buf2, 20, "%%-%du", FieldSize);
-	sprintf_s(buf, 20, buf2, Value);
+	sprintf_s(buf2, CONV_BUF, "%%-%du", FieldSize);
+	sprintf_s(buf, CONV_BUF, buf2, Value);
 #else
 	sprintf(buf2, "%%-%du", FieldSize);
 	sprintf(buf, buf2, Value);
@@ -84,9 +86,9 @@ std::string IntToStr(unsigned int Value, int FieldSize)
 // function for convert int Value to string
 std::string IntToStr(int Value)
 {
-	char buf[20];
+	char buf[CONV_BUF];
 #ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
-	sprintf_s(buf, 20, "%d", Value);
+	sprintf_s(buf, CONV_BUF, "%d", Value);
 #else
     sprintf(buf, "%d", Value);    
 #endif
@@ -96,9 +98,9 @@ std::string IntToStr(int Value)
 // function for convert int Value to string
 std::string IntToStr(unsigned int Value)
 {
-	char buf[20];
+	char buf[CONV_BUF];
 #ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
-	sprintf_s(buf, 20, "%u", Value);
+	sprintf_s(buf, CONV_BUF, "%u", Value);
 #else
 	sprintf(buf, "%u", Value);
 #endif
@@ -132,6 +134,7 @@ bool StrToBool(std::string& Value)
 {
 	return EqualNCase(Value, "1") || EqualNCase(Value, "yes") || EqualNCase(Value, "true");
 }
+
 // extracts filename from path with filename
 std::string ExtractFileName(const std::string& FileName)
 {
@@ -148,7 +151,7 @@ std::string ExtractFileName(const std::string& FileName)
 
 std::string StripFileExt(const std::string& FileName)
 {
-	size_t i = FileName.length(); 
+	int i = (int)FileName.length(); 
 
 	if(i == 0)
 		return "";
@@ -251,16 +254,6 @@ std::string GetCurrTimeAsString(void)
 // retrieves current date as std::string
 std::string GetCurrDateAsString(void)
 {  	
-    //tm tp;
-    //tm* ptp = &tp;
-
-	//time_t t = time(NULL);
-
-//#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
-//    localtime_s(ptp, &t);
-//#else
-//    ptp = localtime(&t);    
-//#endif	
 	struct tm t = GetCurrDateTime();
     char ss[DATETIME_BUF];
     std::strftime(ss, DATETIME_BUF, "%d-%m-%Y", &t);
@@ -272,9 +265,6 @@ std::string GetCurrDateAsString(void)
 // retrieves current datetime as string
 std::string GetCurrDateTimeAsString(void)
 {
-	//time_t t = time(NULL);
-	//std::string s = ctime(&t);
-	//s = DelCRLF(s);
 	struct tm t = GetCurrDateTime();
 	char ss[DATETIME_BUF];
 	std::strftime(ss, DATETIME_BUF, "%c", &t);
@@ -283,15 +273,15 @@ std::string GetCurrDateTimeAsString(void)
 }
 
 // converts native datetime value into AString
-std::string DateTimeToStr(time_t t)
-{
-	char ss[DATETIME_BUF];
-	std::strftime(ss, DATETIME_BUF, "%c", std::localtime(&t));
-
-	//std::string s = ctime(&t);
-	//s = DelCRLF(s);
-	return ss;
-}
+//std::string DateTimeToStr(time_t t)
+//{
+//	char ss[DATETIME_BUF];
+//	std::strftime(ss, DATETIME_BUF, "%c", std::localtime(&t));
+//
+//	//std::string s = ctime(&t);
+//	//s = DelCRLF(s);
+//	return ss;
+//}
 
 // gets formatted current datetime
 std::string FormatCurrDateTime(const std::string& FormatStr)
@@ -301,32 +291,6 @@ std::string FormatCurrDateTime(const std::string& FormatStr)
 	std::strftime(ss, DATETIME_BUF, FormatStr.c_str(), &t);
 
 	return ss;
-
-/*    tm tp;
-    tm* ptp = &tp;
-
-	time_t t = time(nullptr);
-
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400    
-    localtime_s(ptp, &t);
-#else    
-    ptp = localtime(&t);    
-#endif	
-
-	std::string s;
-	s.resize(100, ' ');
-	char ss[100];
-
-#if __STDC_SECURE_LIB__ //_MSC_VER < 1400
-    strcpy_s(ss, 100, s.c_str());
-#else
-    strcpy(ss, s.c_str());	
-#endif    
-
-	strftime(ss, 100, FormatStr.c_str(), ptp);
-
-	s = DelCRLF(ss);
-	return s;*/
 }
 
 std::string DelCRLF(const std::string& S)
@@ -357,28 +321,72 @@ std::string trimSPCRLF(std::string S)
 
 bool EqualNCase(const std::string& str1, const std::string& str2)
 {
-	const char* s1, * s2;
+	//const char* s1, * s2;
 
-	s1 = str1.c_str();
-	s2 = str2.c_str();
-	if ((s1 == nullptr) && (s2 == nullptr))
+	//s1 = str1.c_str();
+	//s2 = str2.c_str();
+	//if ((s1 == nullptr) && (s2 == nullptr))
+	//	return true;
+	//if ((s1 == nullptr) && (s2 != nullptr))
+	//	return false;
+	//if ((s1 != nullptr) && (s2 == nullptr))
+	//	return false;
+
+
+	if (str1.length() == 0 && str2.length() == 0)
 		return true;
-	if ((s1 == nullptr) && (s2 != nullptr))
+	if ((str1.length() == 0) && (str2.length() > 0))
 		return false;
-	if ((s1 != nullptr) && (s2 == nullptr))
+	if ((str1.length() > 0) && (str2.length() == 0))
 		return false;
+
 #ifdef HAVE_STRCASECMP
 	return strcasecmp(s1, s2) == 0;
 #else
 
-	for (; *s1 != '\0' && *s2 != '\0'; s1++, s2++)
-		if (toupper(*s1) != toupper(*s2))
+	//for (; *s1 != '\0' && *s2 != '\0'; s1++, s2++)
+	for (int i = 0; i < str1.length() && i < str2.length(); i++)
+		if (toupper(static_cast<unsigned char>(str1[i])) != toupper(static_cast<unsigned char>(str2[i])))
 			return false;
 
-	if (*s1 == '\0' && *s2 == '\0')
+	if (str1.length() == str2.length())
 		return true;
 	else
 		return false;
+#endif
+}
+
+int CompareNCase(const std::string& str1, const std::string& str2)
+{	
+	if ((str1.length() == 0) && (str2.length() == 0)) // two empty strings are equal
+		return 0;
+
+	if ((str1.length() == 0)) //empty string is less any non empty 
+		return -1;
+
+	if (str2.length() == 0) // non-empty string is larger any empty one
+		return 1;
+
+#ifdef HAVE_STRCASECMP
+	return strcasecmp(s1, s2);
+#else
+	for (int i = 0; i < str1.length() && str2.length(); i++)
+	{
+		int upper1 = toupper(static_cast<unsigned char>(str1[i]));
+		int upper2 = toupper(static_cast<unsigned char>(str2[i]));
+
+		if (upper1 > upper2)
+			return 1;
+		else if (upper1 < upper2)
+			return -1;
+	}
+
+	if (str1.length() > str2.length())
+		return 1;
+	else if (str1.length() < str2.length())
+		return -1;
+	else 
+		return 0;
 #endif
 }
 

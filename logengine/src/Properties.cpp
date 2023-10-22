@@ -101,12 +101,12 @@ void Properties::save(std::ostream& out)
 
 int Properties::getInt(const std::string& property, int defaultValue /*=0*/) const
 {
-	Compare<std::string> cmp;
+	//CompareNCase cmp;
 
-	if(!IfExists(property, cmp))
+	if(!IfExists(property))
 		return defaultValue;
 	
-	std::string value = trim(GetValue(property, cmp));
+	std::string value = trim(GetValue(property));
 	if(value.size() == 0)
 		return defaultValue;
 	
@@ -115,12 +115,12 @@ int Properties::getInt(const std::string& property, int defaultValue /*=0*/) con
 
 ulong Properties::getUInt(const std::string& property, ulong defaultValue /*=0*/) const
 {
-	Compare<std::string> cmp;
+	//CompareNCase cmp;
 
-	if (!IfExists(property, cmp))
+	if (!IfExists(property))
 		return defaultValue;
 
-	std::string value = trim(GetValue(property, cmp));
+	std::string value = trim(GetValue(property));
 
 	if (!isUInt(value)) return defaultValue; // return defaultValue if string is NOT an integer
 
@@ -131,12 +131,12 @@ ulong Properties::getUInt(const std::string& property, ulong defaultValue /*=0*/
 
 bool Properties::getBool(const std::string& property, bool defaultValue /*=false*/) const
 {
-	Compare<std::string> cmp;
+	//CompareNCase cmp;
 
-	if(!IfExists(property, cmp))
+	if(!IfExists(property))
 		return defaultValue;
 	
-	std::string value = trim(GetValue(property, cmp));
+	std::string value = trim(GetValue(property));
 	
 	return (EqualNCase(value, "true") || EqualNCase(value, "1") || EqualNCase(value, "yes"));
 }
@@ -144,12 +144,12 @@ bool Properties::getBool(const std::string& property, bool defaultValue /*=false
 std::string Properties::getString(const std::string& property, 
 								  const char* defaultValue /*=""*/) const 
 {
-	Compare<std::string> cmp;
+	//CompareNCase cmp;
 
-	if(!IfExists(property, cmp))
+	if(!IfExists(property))
 		return defaultValue;
 	
-	return GetValue(property, cmp);
+	return GetValue(property);
 }
 
 void Properties::_substituteVariables(std::string& value) 

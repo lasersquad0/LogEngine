@@ -9,12 +9,9 @@
 #ifndef _COMPARE_H_
 #define _COMPARE_H_
 
-//#if _MSC_VER > 1000
-//#pragma once
-//#endif // _MSC_VER > 1000
-
-#include <exception> //unix
+//#include <exception> //unix
 #include <string>
+#include <algorithm>
 #include "functions.h"
 
 /// Class to compare classes by operators =, <, >
@@ -24,32 +21,59 @@ class Compare
 public:
     // returns True when object a is equal b
 	virtual bool eq(const C& a, const C& b) const { return a == b; };
-	virtual bool lt(const C& a, const C& b) const { return a < b;  }; 
+	virtual bool lt(const C& a, const C& b) const { return b > a;  }; 
 	virtual bool mt(const C& a, const C& b) const { return a > b;  }; 
 	virtual ~Compare() {};
 };
 
-/// Class to compare std::string WITHOUT CASE sensitivity
-template<>
-class Compare<std::string>
+template<class C>
+class CompareReverse : public Compare<C>
 {
 public:
-    // returns True when string a is equal b
-	virtual bool eq(const std::string& a, const std::string& b) const { return EqualNCase(a, b); };
+	bool eq(const C& a, const C& b) const override 
+	{
+		return a == b;
+	};
 
-//#ifdef WIN32
-//#pragma warning(push)
-//#pragma warning(disable : 4100)
-//#endif
+	bool lt(const C& a, const C& b) const override
+	{
+		return a > b;
+	};
 
-	virtual bool lt(const std::string& a, const std::string& b) const { return a.compare(b) < 0; };
-	virtual bool mt(const std::string& a, const std::string& b) const { return a.compare(b) > 0; };
+	bool mt(const C& a, const C& b) const override
+	{
+		return b > a;
+	};
+};
 
-//#ifdef WIN32
-//#pragma warning(pop)
-//#endif
+// Class to compare std::string WITHOUT CASE sensitivity
+class CompareStringNCase: public Compare<std::string>
+{
+public:
+	bool eq(const std::string& a, const std::string& b) const override // returns True when string a is equal b
+	{ 
+		return EqualNCase(a, b); 
+	};
 
-	virtual ~Compare() {};
+	bool lt(const std::string& a, const std::string& b) const override
+	{
+		return CompareNCase(a, b) < 0;
+
+		/*std::string aa = a, bb = b;
+		std::transform(aa.begin(), aa.end(), aa.begin(), ::toupper);
+		std::transform(bb.begin(), bb.end(), bb.begin(), ::toupper);
+		return aa.compare(bb) < 0;*/ 
+	};
+
+	bool mt(const std::string& a, const std::string& b) const override
+	{ 
+		return CompareNCase(a, b) > 0;
+
+		/*std::string aa = a, bb = b;
+		std::transform(aa.begin(), aa.end(), aa.begin(), ::toupper);
+		std::transform(bb.begin(), bb.end(), bb.begin(), ::toupper);
+		return aa.compare(bb) > 0;*/ 
+	};
 };
 
 

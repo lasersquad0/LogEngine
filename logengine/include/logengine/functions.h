@@ -68,6 +68,9 @@ std::string trimSPCRLF(std::string S);
 // compares two strings case insensitive
 bool EqualNCase(const std::string& str1,const std::string& str2);
 
+// compares two strings case insensitive
+int CompareNCase(const std::string& str1, const std::string& str2);
+
 // checks if string contains unsigned integer or not
 bool isUInt(std::string& value);
 

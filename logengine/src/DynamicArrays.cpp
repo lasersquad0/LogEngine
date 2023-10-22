@@ -8,29 +8,6 @@
 
 #include "DynamicArrays.h"
 
-//using namespace std;
-
-
-//////////////////////////////////////////////////////////////////////
-//  THArrayException Class Implementation
-//////////////////////////////////////////////////////////////////////
-//const char* THArrayException::what() const noexcept //throw()
-//{
-	//std::string s = getErrorMessage();
-	//char * err = (char*)malloc(s.size() + 1); //on extra byte for
-	//if(err) // don't want to include <string.h>
-	//{
-	//	for(unsigned int i = 0; i < s.size(); i++)
-	//		err[i] = s[i];
-	//	err[s.size()] = '\0';
-	//}
-	//	
-	//return err;
-
-	//return whatText.c_str();
-//};
-
-
 
 //////////////////////////////////////////////////////////////////////
 //  THArrayRaw Class Implementation
@@ -47,12 +24,10 @@ THArrayRaw::THArrayRaw()
 
 THArrayRaw::THArrayRaw(uint ItemSize):THArrayRaw()
 {
-	if(ItemSize > 0)
+	if (ItemSize > 0)
 		FItemSize = ItemSize;
 	else
-	{
-		throw THArrayException("Error in THArrayRaw: Cannot put zero (0) item size into constructor!");
-	}
+		ThrowZeroItemSize();
 }
 
 /*void THArrayRaw::operator=(const THArrayRaw& a) {
@@ -75,7 +50,7 @@ void THArrayRaw::Error(const uint Value, /*const uint vmin,*/ const int vmax) co
 #endif
 		throw THArrayException(str);
 	}
-}
+ }
 
 void* THArrayRaw::CalcAddr(const uint num) const 
 {
@@ -84,15 +59,18 @@ void* THArrayRaw::CalcAddr(const uint num) const
 
 void THArrayRaw::SetItemSize(const uint Size)
 {
-    ClearMem();
-    if(Size > 0/*1*/)
+ 	if (Size > 0)
 		FItemSize = Size;
+	else
+		ThrowZeroItemSize();
+	
+	ClearMem();
 }
 
 void THArrayRaw::Delete(const uint num)
 {
 	Error(num, FCount - 1);
-//	if (num < (FCount - 1))
+	if (num < (FCount - 1)) // do not need to call memmove if we delete last item.
 		memmove(GetAddr(num), GetAddr(num + 1), (FCount - (num + 1)) * FItemSize);
 	FCount--;
 }
@@ -110,7 +88,6 @@ void THArrayRaw::Get(const uint num, void *pValue) const
 	Error(num, FCount - 1);
 	if (pValue != nullptr) 
 		memmove(pValue, CalcAddr(num), FItemSize);
-	return;
 }
 
 uint THArrayRaw::Add(const void *pValue)
@@ -442,6 +419,7 @@ bool AVariant::HaveData()
 
 #endif //_USE_AVARIANT_
 
+
 // splits string to array of strings using Delim as delimiter
 void StringToArray(const std::string& str, THArrayString& arr, const char Delim /*= '\n'*/)
 {
@@ -464,5 +442,18 @@ void StringToArray(const std::string& str, THArrayString& arr, const char Delim 
 		if (s.length() > 0)
 			arr.AddValue(s);
 	}
+}
+
+//
+std::string toString(const THArrayString& array)
+{
+	std::string res;
+	res.reserve(array.Count()*100); // to reduce number of memory re-allocations we assume that each string in array has 100 characters
+	for (uint i = 0; i < array.Count(); i++)
+	{
+		res.append(array[i]);
+	}
+
+	return res;
 }
 
