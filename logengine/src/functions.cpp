@@ -345,7 +345,7 @@ bool EqualNCase(const std::string& str1, const std::string& str2)
 //#else
 
 	//for (; *s1 != '\0' && *s2 != '\0'; s1++, s2++)
-	for (int i = 0; i < str1.length() && i < str2.length(); i++)
+	for (unsigned int i = 0; i < str1.length() && i < str2.length(); i++)
 		if (toupper(static_cast<unsigned char>(str1[i])) != toupper(static_cast<unsigned char>(str2[i])))
 			return false;
 
