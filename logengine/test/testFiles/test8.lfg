@@ -6,9 +6,9 @@ BackupType = None
 
 ApplicationName = ExampleApp
 
-Version = 1.1.1.1
+Version = E.E.E.E
 
-LogFileName = ExampleApp.log
+LogFileName = logs/ExampleApp.log
 
 # This text is written to the file when LogEngine is initializing. 
 StartAppLine  = \n%APPNAME% %APPVERSION% startup.\nLog is started at %DATETIME%.

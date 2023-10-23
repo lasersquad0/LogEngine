@@ -62,7 +62,7 @@ private:
 		TLogBackupType GetBackupType(const Properties& Props, const TLogBackupType defaultValue);
 		
 		TLogBackupType BackupType;
-		std::string FileName;
+		std::string LogFileName;
 		std::string ApplicationName;
 		std::string Version;
 		uint MaxLogSize;
@@ -151,7 +151,7 @@ public:
 
 	TLogBackupType GetBackupType(void)	   const { return FProperties.BackupType; }
 	uint		   GetMaxLogSize(void)	   const { return FProperties.MaxLogSize; }
-	std::string	   GetLogFileName(void)	   const { return FProperties.FileName; }
+	std::string	   GetLogFileName(void)	   const { return FProperties.LogFileName; }
 	std::string	   GetAppName(void)		   const { return FProperties.ApplicationName; }
 	std::string	   GetVersionInfo(void)	   const { return FProperties.Version; }
 	uint		   GetLogDetailLevel(void) const { return FProperties.DetailLevel; } 

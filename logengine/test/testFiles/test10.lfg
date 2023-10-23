@@ -2,7 +2,7 @@
 
 DetailLevel = 4
 
-MaxLogSize = 1
+MaxLogSize = 2
 
 BackupType =
 

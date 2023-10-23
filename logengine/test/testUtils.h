@@ -16,7 +16,8 @@ class LogEngineUtilsTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( testStringReplace3 );  
   CPPUNIT_TEST( testStringReplace4 );  
   CPPUNIT_TEST( testStringReplace5 );  
-  CPPUNIT_TEST( testStringReplace6 );  
+  CPPUNIT_TEST( testStringReplace6 );
+  CPPUNIT_TEST( testStringReplace7 );
   CPPUNIT_TEST( testExtractFileName1 );  
   CPPUNIT_TEST( testExtractFileName2 );  
   CPPUNIT_TEST( testExtractFileName3 );  
@@ -24,7 +25,6 @@ class LogEngineUtilsTest : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( testIntToStr1 );  
   CPPUNIT_TEST( testIntToStr2 );  
   //CPPUNIT_TEST( testIntToStr3 );  
-
 
   CPPUNIT_TEST_SUITE_END();
 public:

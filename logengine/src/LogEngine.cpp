@@ -137,10 +137,13 @@ void TLogEngine::LogEngineProperties::Fill(const Properties& Props)
 {
 	BackupType = GetBackupType(Props, DefaultBackupType);
 
-	// if FileName is not specified then construct from ApplicationName
-	FileName = Props.getString("LogFileName");
-	if (FileName.empty())
-		FileName = Props.getString("ApplicationName", DefaultLogFileName) + LogExt;
+	// if LogFileName is not specified then construct from ApplicationName
+	LogFileName = Props.getString("LogFileName");
+	if (LogFileName.empty())
+		LogFileName = Props.getString("ApplicationName", DefaultLogFileName) + LogExt;
+	else
+		if (ExtractFileName(LogFileName).find('.') == std::string::npos) 
+			LogFileName += LogExt; 
 
 	ApplicationName = Props.getString("ApplicationName", DefaultAppName);
 	Version         = Props.getString("Version", "0.0.0.0");
@@ -296,7 +299,7 @@ void TLogEngine::Start(void)
 	
 	resetStatistics();
 
-	FLogStream = new TFileStream(FProperties.FileName, fmWrite);
+	FLogStream = new TFileStream(FProperties.LogFileName, fmWrite);
 	FLogStream->Seek(0, smFromEnd);
 	FInitialFileSize = FLogStream->Length();
 	FStarted = true;
@@ -637,7 +640,7 @@ void TLogEngine::SetLogFileName(const std::string& newFileName)
 	if (FStarted)
 		throw LogException("Cannot change log filename when LogEngine is started. Stop LogEngne before changing log filename.");
 
-	FProperties.FileName = newFileName;
+	FProperties.LogFileName = newFileName;
 }
 
 std::string TLogEngine::generateBackupName(void)
@@ -646,10 +649,10 @@ std::string TLogEngine::generateBackupName(void)
 	switch(FProperties.BackupType)
 	{
 		case lbTimeStamp:
-			s = StripFileExt(FProperties.FileName) + "(" + FormatCurrDateTime("%d-%m-%Y %H.%M.%S") + ")" + LogExt;
+			s = StripFileExt(FProperties.LogFileName) + "(" + FormatCurrDateTime("%d-%m-%Y %H.%M.%S") + ")" + LogExt;
 			break;
 		case lbSingle:
-			s = StripFileExt(FProperties.FileName) + LogExt + BackupExt;
+			s = StripFileExt(FProperties.LogFileName) + LogExt + BackupExt;
 			break;
 		default:
 			throw LogException("Wrong Backup Type.");
@@ -668,16 +671,16 @@ void TLogEngine::truncLogFile(void)
 
 	if (FProperties.BackupType == lbNone)
 	{
-		remove(FProperties.FileName.c_str()); // for lbNone we remove existing log file and start it from beginning
+		remove(FProperties.LogFileName.c_str()); // for lbNone we remove existing log file and start it from beginning
 	}
 	else
 	{
 		std::string newName = generateBackupName();
 		remove(newName.c_str());
-		rename(FProperties.FileName.c_str(), newName.c_str());
+		rename(FProperties.LogFileName.c_str(), newName.c_str());
 	}
 
-	FLogStream = new TFileStream(FProperties.FileName, fmWrite);
+	FLogStream = new TFileStream(FProperties.LogFileName, fmWrite);
 	FInitialFileSize = FLogStream->Length();
 	FFileBytesWritten = 0;
 

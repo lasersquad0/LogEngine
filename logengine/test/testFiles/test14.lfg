@@ -6,9 +6,9 @@ BackupType = Nones
 
 ApplicationName = BadLFGFileApp
 
-Version = t.t.t.t
+Version = d.d.d.d
 
-LogFileName = BadLFGLog.log
+LogFileName = logs/BadLFGLog.log
 
 # This text is written to the file when LogEngine is initializing. 
 StartAppLine  = %APPNAME%  ${TMP}  %APPVERSION% ${COMPUTERNAME} startup.\nLog is started at %DATETIME%.

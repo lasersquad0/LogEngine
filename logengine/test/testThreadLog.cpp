@@ -1,19 +1,10 @@
 
-//#ifdef HAVE_CONFIG_H
-//#include "config.h"
-//#endif
-
-//#ifdef HAVE_UNISTD_H
-//#include <unistd.h>
-//#endif
-
 #include <chrono>
 #include <thread>
 #include "Shared.h"
 #include "functions.h"
 #include "LogEngine.h"
 #include "testThreadLog.h"
-//#include "debug_support.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION( LogEngineThreadLogTest );
 
@@ -143,8 +134,6 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 //#endif
 	
 	CloseLogEngine();
-
-	//printf("PASSED\n");
 }
 
 
@@ -249,3 +238,4 @@ void LogEngineThreadLogTest::testNONThreadLogMeasureTime1()
 
 	CloseLogEngine();
 }
+

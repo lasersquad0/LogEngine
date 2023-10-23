@@ -101,8 +101,6 @@ void Properties::save(std::ostream& out)
 
 int Properties::getInt(const std::string& property, int defaultValue /*=0*/) const
 {
-	//CompareNCase cmp;
-
 	if(!IfExists(property))
 		return defaultValue;
 	
@@ -115,8 +113,6 @@ int Properties::getInt(const std::string& property, int defaultValue /*=0*/) con
 
 ulong Properties::getUInt(const std::string& property, ulong defaultValue /*=0*/) const
 {
-	//CompareNCase cmp;
-
 	if (!IfExists(property))
 		return defaultValue;
 
@@ -131,8 +127,6 @@ ulong Properties::getUInt(const std::string& property, ulong defaultValue /*=0*/
 
 bool Properties::getBool(const std::string& property, bool defaultValue /*=false*/) const
 {
-	//CompareNCase cmp;
-
 	if(!IfExists(property))
 		return defaultValue;
 	
@@ -141,11 +135,8 @@ bool Properties::getBool(const std::string& property, bool defaultValue /*=false
 	return (EqualNCase(value, "true") || EqualNCase(value, "1") || EqualNCase(value, "yes"));
 }
 
-std::string Properties::getString(const std::string& property, 
-								  const char* defaultValue /*=""*/) const 
+std::string Properties::getString(const std::string& property, const char* defaultValue /*=""*/) const 
 {
-	//CompareNCase cmp;
-
 	if(!IfExists(property))
 		return defaultValue;
 	

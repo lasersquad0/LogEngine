@@ -7,11 +7,8 @@
 #include "Shared.h"
 #include "LogEngine.h"
 #include "testLog.h"
-//#include <cppunit/portability/Stream.h>
-//#include "debug_support.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION( LogEngineLogTest );
-
 
 void LogEngineLogTest::setUp ()
 {
@@ -26,13 +23,11 @@ void LogEngineLogTest::tearDown ()
 
 void LogEngineLogTest::testLog1()
 {
-	//printf("mytestLog1 ... ");
-
 	// preparing parameters
 	Properties prop;
 	prop.SetValue("BackupType", "None");
 	prop.SetValue("DetailLevel", "DefaultDetailLevel"); 
-	prop.SetValue("FileName", LOG_FILES_FOLDER "testLog1.log");
+	prop.SetValue("LogFileName", LOG_FILES_FOLDER "testLog1.log");
 	prop.SetValue("MaxLogSize", "100");
 	prop.SetValue("ApplicationName", "LogEngine tests");
 	prop.SetValue("Version", "1.1.1");
@@ -54,14 +49,10 @@ void LogEngineLogTest::testLog1()
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("testLog1string"), log->FormatStr("testLog1string"));
 
 	CloseLogEngine();
-
-	//printf("myPASSED\n");
 }
 	
 void LogEngineLogTest::testLog2()
 {
-	//printf("mytestLog2 ... ");
-
 	Properties prop;
 	
 	InitLogEngine(prop);
@@ -81,15 +72,11 @@ void LogEngineLogTest::testLog2()
 	CPPUNIT_ASSERT_EQUAL(std::string("testLog2string"), log->FormatStr("testLog2string"));
 	
 	CloseLogEngine();
-
-	//printf("myPASSED\n");
 }
 
 
 void LogEngineLogTest::testLog3()
 {
-	//printf("testLog3 ... ");
-
 	Properties prop;
 
 	InitLogEngine(prop);
@@ -107,15 +94,11 @@ void LogEngineLogTest::testLog3()
 	}
 
 	CloseLogEngine();
-
-	//printf("PASSED\n");
 }
 
 
 void LogEngineLogTest::testLog4()
 {
-	//printf("testLog4 ... ");
-
 	InitLogEngine();
 		
 	CPPUNIT_ASSERT_EQUAL(std::string("#testLog4 errorrrrrrrrrrrrrrrrrr"), cutLog(getLogEngine()->FormatError("testLog4 errorrrrrrrrrrrrrrrrrr")));
@@ -126,13 +109,10 @@ void LogEngineLogTest::testLog4()
 	getLogEngine()->Stop();
 
 	CloseLogEngine();
-	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLog5()
 {
-	//printf("testLog5 ... ");
-
 	InitLogEngine();
 	TLogEngine* log = getLogEngine();
 
@@ -142,14 +122,10 @@ void LogEngineLogTest::testLog5()
 	log->WriteStrFmt    (0, "testLog5 stringsssssssssssssssss %7d", 4);
 
 	CloseLogEngine();
-
-	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLog6()
 {
-	//printf("testLog6 ... ");
-
 	InitLogEngine();
 	TLogEngine* log = getLogEngine();
 
@@ -159,14 +135,10 @@ void LogEngineLogTest::testLog6()
 	log->WriteStrFmt    (0, "testLog6 44444444444444444 %s", "555555");
 
 	CloseLogEngine();
-
-	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogStartStop()
 {
-	//printf("testLogStartStop ... ");
-
 	InitLogEngine();
 	TLogEngine* log = getLogEngine();
 
@@ -185,26 +157,24 @@ void LogEngineLogTest::testLogStartStop()
 	log->Stop();
 	log->Stop();
 
-	try
-	{
-		getLogEngine()->WriteError("write after Stop()!");
-		CPPUNIT_ASSERT_MESSAGE("write after Stop()!", false);
-	}
-	catch(LogException& /*ex*/)
-	{
-	}
+	CPPUNIT_ASSERT_THROW(getLogEngine()->WriteError("write after LogEngine.Stop()!"), LogException);
+
+	//try
+	//{
+	//	getLogEngine()->WriteError("write after Stop()!");
+	//	CPPUNIT_ASSERT_MESSAGE("write after Stop()!", false);
+	//}
+	//catch(LogException& /*ex*/)
+	//{
+	//}
 
 	CloseLogEngine();
-
-	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogInitClose()
 {
-	//printf("testLogInitClose ... ");
-
 	Properties prop;
-	prop.SetValue("FileName", LOG_FILES_FOLDER "testLogInitClose.log");
+	prop.SetValue("LogFileName", LOG_FILES_FOLDER "testLogInitClose.log");
 	
 	InitLogEngine();
 	InitLogEngine(prop);
@@ -229,20 +199,15 @@ void LogEngineLogTest::testLogInitClose()
 	CloseLogEngine();
 	CloseLogEngine();
 	CloseLogEngine();
-	
-	
-	//printf("PASSED\n");
 }
 
 
 void LogEngineLogTest::testLogPlaceholders()
 {
-//	printf("testLogPlaceholders ... ");
-	
 	// preparing parameters
 	Properties prop;
-	prop.SetValue("ApplicationName", LOG_FILES_FOLDER "LogEngine_tests");
-	prop.SetValue("Version", "1.1.1");
+	prop.SetValue("LogFileName", LOG_FILES_FOLDER "LogEngine_tests");
+	prop.SetValue("Version", "2.2.2");
 	prop.SetValue("ErrorLine", "%MSG% %APPNAME% %APPVERSION% %OS% %OSVERSION% %DETAILLEVEL%");
 	prop.SetValue("WarningLine", "%DETAILLEVEL% %OS% %OSVERSION% %APPNAME% %APPVERSION% %MSG%");
 	prop.SetValue("InfoLine", "%OS% %MSG% %APPNAME% %OSVERSION% %DETAILLEVEL% %APPVERSION%");
@@ -251,43 +216,48 @@ void LogEngineLogTest::testLogPlaceholders()
 	TLogEngine *log = getLogEngine();
 	
 	std::string s = log->FormatError("aaa", 6);
-	CPPUNIT_ASSERT_EQUAL(std::string("#aaa LogEngine_tests 1.1.1 <OS> 5.1 build 2600 6"), log->FormatError("aaa", 6));
-	CPPUNIT_ASSERT_EQUAL(std::string("!6 <OS> 5.1 build 2600 LogEngine_tests 1.1.1 aaa"), log->FormatWarning("aaa", 6));
-	CPPUNIT_ASSERT_EQUAL(std::string(" <OS> aaa LogEngine_tests 5.1 build 2600 6 1.1.1"), log->FormatInfo("aaa", 6));
+	CPPUNIT_ASSERT_EQUAL(std::string("#aaa LogEngine_tests 2.2.2 <OS> 5.1 build 2600 6"), log->FormatError("aaa", 6));
+	CPPUNIT_ASSERT_EQUAL(std::string("!6 <OS> 5.1 build 2600 LogEngine_tests 2.2.2 aaa"), log->FormatWarning("aaa", 6));
+	CPPUNIT_ASSERT_EQUAL(std::string(" <OS> aaa LogEngine_tests 5.1 build 2600 6 2.2.2"), log->FormatInfo("aaa", 6));
 	CPPUNIT_ASSERT_EQUAL(std::string("aaa"), log->FormatStr("aaa", 6));
-	
-	//printf("PASSED\n");
 }
 
+// TODO
 void LogEngineLogTest::testLogDetailLevel()
 {
-	//printf("testLogDetailLevel ... ");
-	
 	InitLogEngine(TEST_FILES_FOLDER "test9.lfg");
 	TLogEngine* log = getLogEngine();
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetLogDetailLevel());
-	
+	CPPUNIT_ASSERT_EQUAL(1u, log->GetMaxLogSize());
+	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
+	CPPUNIT_ASSERT_EQUAL(std::string("NONAME.log"), log->GetLogFileName());
+	CPPUNIT_ASSERT_EQUAL(std::string("0.0.0.0"), log->GetVersionInfo());
+
 	InitLogEngine(TEST_FILES_FOLDER "test10.lfg");
 	log = getLogEngine();
 	CPPUNIT_ASSERT_EQUAL(4u, log->GetLogDetailLevel());
-	
+	CPPUNIT_ASSERT_EQUAL(2u, log->GetMaxLogSize());
+	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
+	CPPUNIT_ASSERT_EQUAL(std::string("NONAME.log"), log->GetLogFileName());
+	CPPUNIT_ASSERT_EQUAL(std::string("0.0.0.0"), log->GetVersionInfo());
+
 	InitLogEngine(TEST_FILES_FOLDER "test11.lfg");
 	log = getLogEngine();
 	CPPUNIT_ASSERT_EQUAL(7u, log->GetLogDetailLevel());
-	
-	//printf("PASSED\n");
+	CPPUNIT_ASSERT_EQUAL(1000u, log->GetMaxLogSize());
+	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
+	CPPUNIT_ASSERT_EQUAL(std::string("NONAME.log"), log->GetLogFileName());
+	CPPUNIT_ASSERT_EQUAL(std::string("0"), log->GetVersionInfo());
 }
 
 void LogEngineLogTest::testLogBackupTypeNone()
 {
-	//printf("testLogBackupTypeNone1 ...  ");
-	
 	std::string fileName = LOG_FILES_FOLDER "a3.log";
 
 	// preparing parameters
 	Properties prop;
 	prop.SetValue("ApplicationName", "testLogBackupTypeNone()");
-	prop.SetValue("Version", "1.1.1");
+	prop.SetValue("version", "3.3.3");
 	prop.SetValue("backuptype", "None");
 	prop.SetValue("maxlogsize", "1");
 	prop.SetValue("logfilename", fileName);
@@ -306,6 +276,10 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	InitLogEngine(prop);
 	TLogEngine* log = getLogEngine();
 
+	CPPUNIT_ASSERT_EQUAL(fileName, log->GetLogFileName());
+	CPPUNIT_ASSERT_EQUAL(1u, log->GetMaxLogSize());
+	CPPUNIT_ASSERT_EQUAL(std::string("3.3.3"), log->GetVersionInfo());
+
 	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
 	CPPUNIT_ASSERT_EQUAL(79ul, log->GetBytesWritten());
 	CPPUNIT_ASSERT_EQUAL(79ul, log->GetTotalBytesWritten());
@@ -323,7 +297,7 @@ void LogEngineLogTest::testLogBackupTypeNone()
 
 	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, log->GetBytesWritten());
 	
-	log->WriteInfo("L");
+	log->WriteInfo("L"); // file will be truncated and re-written from beginning (because BackupType=lbNone)
 	CPPUNIT_ASSERT_EQUAL(14ul, log->GetBytesWritten());
 	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size + 14ul, log->GetTotalBytesWritten());
 
@@ -333,8 +307,6 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	CPPUNIT_ASSERT_EQUAL(1u, log->GetMessageCount(lmInfo));
 
 	CloseLogEngine();
-	
-	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogBackupTypeSingle()
@@ -343,7 +315,7 @@ void LogEngineLogTest::testLogBackupTypeSingle()
 	// preparing parameters
 	Properties prop;
 	prop.SetValue("ApplicationName", "LogEngine_tests");
-	prop.SetValue("Version", "1.1.1");
+	prop.SetValue("Version", "5.5.5");
 	prop.SetValue("backuptype", "single");
 	prop.SetValue("maxlogsize", "1");
 	prop.SetValue("logfilename", logfname);
@@ -374,14 +346,10 @@ void LogEngineLogTest::testLogBackupTypeSingle()
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmInfo));
 	
 	CloseLogEngine();
-	
-	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogFullPath()
 {
-	//printf("testLogFullPath ... ");
-
 	InitLogEngine(TEST_FILES_FOLDER "test12.lfg");
 	TLogEngine* log = getLogEngine();
 
@@ -393,14 +361,10 @@ void LogEngineLogTest::testLogFullPath()
 	CPPUNIT_ASSERT_EQUAL(std::string("c:\\temp\\ExampleApp11.log"), log->GetLogFileName());	
 
 	CloseLogEngine();
-	
-	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogMacro()
 {
-	//printf("testLogMacro ... ");
-
 	InitLogEngine();
 
 	LOG_ERROR("dfdfdf");
@@ -412,57 +376,51 @@ void LogEngineLogTest::testLogMacro()
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmWarning));
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmInfo));
 	CloseLogEngine();
-
-	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testLogEmptyFileName()
 {
-	//printf("testLogEmptyFileName ... ");
-
 	// preparing parameters
 	Properties prop;
 	prop.SetValue("BackupType", "None");
 	prop.SetValue("DetailLevel", "DefaultDetailLevel"); 
 	prop.SetValue("MaxLogSize", "100");
-	prop.SetValue("ApplicationName", "LogEngine tests");
-	prop.SetValue("Version", "1.1.1");
-
-	InitLogEngine(prop);
-
-	TLogEngine *log = getLogEngine();
-
-	std::string s = log->GetLogFileName();
-	CPPUNIT_ASSERT_EQUAL(std::string("LogEngine tests.log"), s);
-
-	CloseLogEngine();
-
-	//printf("PASSED\n");
-}
-
-void LogEngineLogTest::testLogAppName()
-{
-	//printf("testLogAppName ... ");
-
-	// preparing parameters
-	Properties prop;
-	prop.SetValue("BackupType", "None");
-	prop.SetValue("ApplicationName", "AAAAAAAA");
-	prop.SetValue("Version", "1.0.555");
-	prop.SetValue("DetailLevel", "0");
+	prop.SetValue("ApplicationName", "logs/LogEngine tests");
+	prop.SetValue("Version", "4.4.4");
 
 	InitLogEngine(prop);
 
 	TLogEngine *log = getLogEngine();
 
 	std::string s = log->GetAppName();
-	CPPUNIT_ASSERT_EQUAL(std::string("AAAAAAAA"), s);
+	CPPUNIT_ASSERT_EQUAL(std::string("logs/LogEngine tests"), s);
+	s = log->GetLogFileName();
+	CPPUNIT_ASSERT_EQUAL(std::string("logs/LogEngine tests.log"), s);
+
+	CloseLogEngine();
+}
+
+void LogEngineLogTest::testLogAppName()
+{
+	// preparing parameters
+	Properties prop;
+	prop.SetValue("BackupType", "None");
+	prop.SetValue("ApplicationName", "logs/AAAAAAAA");
+	prop.SetValue("Version", "1.0.555");
+	prop.SetValue("DetailLevel", "0");
+
+	InitLogEngine(prop);
+	
+	TLogEngine *log = getLogEngine();
+
+	std::string s = log->GetAppName();
+	CPPUNIT_ASSERT_EQUAL(std::string("logs/AAAAAAAA"), s);
+	s = log->GetLogFileName();
+	CPPUNIT_ASSERT_EQUAL(std::string("logs/AAAAAAAA.log"), s);
 
 	log->Stop();
 	log->Start();
 	CloseLogEngine();
-
-	//printf("PASSED\n");
 }
 
 void LogEngineLogTest::testWrong_LFG_File()
@@ -491,7 +449,7 @@ void LogEngineLogTest::testWrong_LFG_File()
 
 void LogEngineLogTest::testBadLFGFile()
 {
-#ifdef WIN32 // '\n' is not alowed in Windoes filenames, but allowed in Linux filenames
+#ifdef WIN32 // '\n' is not alowed in Windows filenames, but allowed in Linux filenames
 	CPPUNIT_ASSERT_THROW( InitLogEngine(TEST_FILES_FOLDER "test13.lfg"), IOException );
 #else
 	InitLogEngine(TEST_FILES_FOLDER "test13.lfg"); // just make sure that no exception is thrown in contrast to Windows
@@ -507,9 +465,9 @@ void LogEngineLogTest::testBadLFGFile2()
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetLogDetailLevel());
 	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
 	CPPUNIT_ASSERT_EQUAL(1000u, log->GetMaxLogSize());
-	CPPUNIT_ASSERT_EQUAL(std::string("t.t.t.t"), log->GetVersionInfo());
+	CPPUNIT_ASSERT_EQUAL(std::string("d.d.d.d"), log->GetVersionInfo());
 	CPPUNIT_ASSERT_EQUAL(std::string("BadLFGFileApp"), log->GetAppName());
-	CPPUNIT_ASSERT_EQUAL(std::string("BadLFGLog.log"), log->GetLogFileName());
+	CPPUNIT_ASSERT_EQUAL(std::string("logs/BadLFGLog.log"), log->GetLogFileName());
 
 	CloseLogEngine();
 }

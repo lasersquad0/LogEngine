@@ -1,8 +1,8 @@
 
 
 
-
-MaxLogSize = 1
+Version=0
+MaxLogSize = 1000
 
 BackupType =
 
