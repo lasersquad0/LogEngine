@@ -286,8 +286,8 @@ private:
 	void	Reverse() override { THArray<T>::Reverse(); }
 	void	Reverse(uint endIndex) override { THArray<T>::Reverse(endIndex); }
 	//uint	AddValue(const T& Value, const Compare<T>& Cmp) override { THArray<T>::AddValue(Value, Cmp); };
-	int		IndexOf(const T& Value, const Compare<T>& Cmp) const override { return THArray<T>::IndexOfFrom(Value, 0, Cmp); }
-	int		IndexOfFrom(const T& Value, const uint Start, const Compare<T>& Cmp) const override { return THArray<T>::IndexOfFrom(Value, Start, Cmp); }
+	int		IndexOf(const T& Value, const Compare<T>& C) const override { return THArray<T>::IndexOfFrom(Value, 0, C); }
+	int		IndexOfFrom(const T& Value, const uint Start, const Compare<T>& C) const override { return THArray<T>::IndexOfFrom(Value, Start, C); }
 	int		InternalIndexOfFrom(const T& Value, const uint Start) const;
 public:
 	inline uint AddValue(const T& Value);
