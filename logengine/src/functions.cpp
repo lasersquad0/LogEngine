@@ -367,9 +367,9 @@ int CompareNCase(const std::string& str1, const std::string& str2)
 	if (str2.length() == 0) // non-empty string is larger any empty one
 		return 1;
 
-#ifdef HAVE_STRCASECMP
-	return strcasecmp(s1, s2);
-#else
+//#ifdef HAVE_STRCASECMP
+//	return strcasecmp(s1, s2);
+//#else
 	for (int i = 0; i < str1.length() && str2.length(); i++)
 	{
 		int upper1 = toupper(static_cast<unsigned char>(str1[i]));
@@ -387,7 +387,7 @@ int CompareNCase(const std::string& str1, const std::string& str2)
 		return -1;
 	else 
 		return 0;
-#endif
+//#endif
 }
 
 bool isUInt(std::string & value)
