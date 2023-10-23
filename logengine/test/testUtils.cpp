@@ -18,31 +18,31 @@ void LogEngineUtilsTest::tearDown ()
 void LogEngineUtilsTest::testStringReplace1()
 {
 	std::string s = StringReplace("", "", "");
-	CPPUNIT_ASSERT_EQUAL(0u, s.size());
+	CPPUNIT_ASSERT_EQUAL((size_t)0, s.size());
 }
 
 void LogEngineUtilsTest::testStringReplace2()
 {
 	std::string s = StringReplace("", "a", "b");
-	CPPUNIT_ASSERT_EQUAL(0u, s.size());
+	CPPUNIT_ASSERT_EQUAL((size_t)0, s.size());
 }
 
 void LogEngineUtilsTest::testStringReplace3()
 {
 	std::string s = StringReplace("", "zzz", "bbb");
-	CPPUNIT_ASSERT_EQUAL(0u, s.size());
+	CPPUNIT_ASSERT_EQUAL((size_t)0, s.size());
 }
 
 void LogEngineUtilsTest::testStringReplace4()
 {
 	std::string s = StringReplace("", "zzz", "");
-	CPPUNIT_ASSERT_EQUAL(0u, s.size());
+	CPPUNIT_ASSERT_EQUAL((size_t)0, s.size());
 }
 
 void LogEngineUtilsTest::testStringReplace5()
 {
 	std::string s = StringReplace("", "", "bbbb");
-	CPPUNIT_ASSERT_EQUAL(0u, s.size());
+	CPPUNIT_ASSERT_EQUAL((size_t)0, s.size());
 }
 
 void LogEngineUtilsTest::testStringReplace6()
