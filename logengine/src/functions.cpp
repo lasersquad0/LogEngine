@@ -340,9 +340,9 @@ bool EqualNCase(const std::string& str1, const std::string& str2)
 	if ((str1.length() > 0) && (str2.length() == 0))
 		return false;
 
-#ifdef HAVE_STRCASECMP
-	return strcasecmp(s1, s2) == 0;
-#else
+//#ifdef HAVE_STRCASECMP
+//	return strcasecmp(s1, s2) == 0;
+//#else
 
 	//for (; *s1 != '\0' && *s2 != '\0'; s1++, s2++)
 	for (int i = 0; i < str1.length() && i < str2.length(); i++)
@@ -353,7 +353,7 @@ bool EqualNCase(const std::string& str1, const std::string& str2)
 		return true;
 	else
 		return false;
-#endif
+//#endif
 }
 
 int CompareNCase(const std::string& str1, const std::string& str2)
