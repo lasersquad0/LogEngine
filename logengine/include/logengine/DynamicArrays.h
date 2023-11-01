@@ -99,7 +99,7 @@ protected:
 	uint	FCapacity;
 	uint	FItemSize;
 	void	*FMemory;
-	void	Error(const uint Value, /*const uint vmin,*/ const int vmax) const;
+	void	Error(const uint Value, /*const uint vmin,*/ const uint vmax) const;
 	void	Grow();
 	void	GrowTo(const uint Count);
 	void	*CalcAddr(const uint num) const;
@@ -119,7 +119,7 @@ public:
 	void		InsertMany(const uint Index, const void *pValue, const uint Count);
 	void		Update(const uint Index, const void *pValue);
 	void		UpdateMany(const uint Index, const void *pValue, const uint Count);
-	inline void*GetAddr(const uint num) const { Error(num, FCount - 1); return CalcAddr(num); }
+	inline void*GetAddr(const uint num) const { Error(num, FCount); return CalcAddr(num); }
 	virtual	void Delete(const uint Index);
 	void		Get(const uint num, void *pValue) const;
 	void*		GetPointer(const uint num) const { return GetAddr(num); }
@@ -213,7 +213,7 @@ protected:
 	uint 	FCount;
 	uint 	FCapacity;
 	T*		FMemory;
-	void	Error(const uint Value, /*const uint vmin,*/ const int vmax) const;
+	void	Error(const uint Value, /*const uint vmin,*/ const uint vmax) const;
 	uint	GetGrowDelta();
 	void	Grow();	/// Grow memory size allocated for elements
 public:
@@ -326,8 +326,12 @@ private:
 	Cmp FACompare;
 	//void replace(uint i1, uint i2);
 public:
+	using KeysType = THArraySorted<I>;
+	using ValuesType = THArray<V>;
+
 	THash() {};
-	THash(const THash<I,V,Cmp>& a);
+	THash(const THash<I, V, Cmp>& a); 
+	//THash(uint Capacity) { FAKeys.SetCapacity(Capacity); FAValues.SetCapacity(Capacity); };
 	//~THash();
 
 	bool operator==(const THash<I,V,Cmp>& a) const;
@@ -346,8 +350,8 @@ public:
 	void	SetValue(const I& Key, const V& Value);
 	V		GetValue(const I& Key) const;
 	//V		GetValue(const I& Key, const Compare<I>& cmp) const;
-	V*		GetValuePointer(const I& Key);
-	//V*		GetValuePointer(const I& Key, const Compare<I>& cmp);
+	V*		GetValuePointer(const I& Key) const;
+	//V*		GetValuePointer(const I& Key, const Compare<I>& cmp) const;
 	void	SetCapacity(const uint Value) { FAKeys.SetCapacity(Value); FAValues.SetCapacity(Value); }
 	//void	Sort();
 	//void	Reverse();
@@ -433,9 +437,9 @@ THArray<T>::THArray(std::initializer_list<T> list) :THArray()
 }
 
 template<class T>
-void THArray<T>::Error(const uint Value, /*const uint vmin, */ const int vmax) const
+void THArray<T>::Error(const uint Value, /*const uint vmin, */ const uint vmax) const
 {
-	if(/*(vmin > Value) ||*/ ((int)Value) > vmax)
+	if(/*(vmin > Value) ||*/ Value >= vmax)
 	{
 		char str[100];
 
@@ -609,21 +613,21 @@ void THArray<T>::ClearMem()
 template<class T>
 void THArray<T>::SetValue(const uint Index, const T& Value) 
 {
-	Error(Index, (int)FCount - 1);
+	Error(Index, FCount);
 	FMemory[Index] = Value;
 }
 
 template<class T>
 T THArray<T>::GetValue(const uint Index) const 
 {
-	Error(Index, (int)FCount - 1);
+	Error(Index, FCount);
 	return FMemory[Index];
 }
 
 template<class T>
 uint THArray<T>::InsertValue(const uint Index, const T& Value) 
 {
-	Error(Index, (int)FCount);
+	Error(Index, FCount + 1);
 	if (FCount >= FCapacity)
 		Grow();
 	for(uint i = FCount; i > Index; i--)
@@ -637,7 +641,7 @@ uint THArray<T>::InsertValue(const uint Index, const T& Value)
 template<class T>
 void THArray<T>::DeleteValue(const uint Index) 
 {
-	Error(Index, (int)FCount - 1);
+	Error(Index, FCount);
 	for(uint i = Index; i < FCount - 1; i++)
 		FMemory[i] = FMemory[i + 1];
 	FCount--;
@@ -646,7 +650,7 @@ void THArray<T>::DeleteValue(const uint Index)
 template<class T>
 inline T* THArray<T>::GetValuePointer(const uint Index) const
 {
-	Error(Index, (int)FCount - 1);
+	Error(Index, FCount);
 	return FMemory + Index;
 }
 
@@ -691,7 +695,7 @@ inline void THArray<T>::Push(const T& Value)
 template<class T>
 T	THArray<T>::Pop() 
 {
-	Error(0/*FCount - 1 */ , (int)FCount - 1); // just check that array is not empty
+	Error(0/*FCount - 1 */ , FCount); // just check that array is not empty
 	FCount--;
 	return FMemory[FCount];
 }
@@ -699,7 +703,7 @@ T	THArray<T>::Pop()
 template<class T>
 T	THArray<T>::PopFront()
 {
-	Error(0, (int)FCount - 1); // just check that array is not empty
+	Error(0, FCount); // just check that array is not empty
 	T tmp = FMemory[0];
 	DeleteValue(0);
 	return tmp;
@@ -708,8 +712,8 @@ T	THArray<T>::PopFront()
 template<class T>
 inline void THArray<T>::Swap(const uint Index1, const uint Index2)
 {
-	Error(Index1, (int)FCount - 1);
-	Error(Index2, (int)FCount - 1);
+	Error(Index1, FCount);
+	Error(Index2, FCount);
 
 	if(Index1 == Index2)
 		return;
@@ -975,7 +979,7 @@ V THash<I,V,Cmp>::GetValue(const I& Key) const
 //}
 	
 template <class I, class V, class Cmp>
-V* THash<I,V,Cmp>::GetValuePointer(const I& Key) 
+V* THash<I,V,Cmp>::GetValuePointer(const I& Key) const
 {
 	int n = FAKeys.IndexOf(Key);
     if (n < 0)

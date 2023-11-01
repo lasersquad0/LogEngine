@@ -38,9 +38,9 @@ THArrayRaw::THArrayRaw(uint ItemSize):THArrayRaw()
 	Sorted=a.Sorted;
 }*/
 
-void THArrayRaw::Error(const uint Value, /*const uint vmin,*/ const int vmax) const
+void THArrayRaw::Error(const uint Value, /*const uint vmin,*/ const uint vmax) const
 {
-	if(/*(vmin > Value) ||*/ (vmax < (int)Value))
+	if(/*(vmin > Value) ||*/ (vmax <= Value))
 	{
 		char str[512];
 #ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400
@@ -54,7 +54,7 @@ void THArrayRaw::Error(const uint Value, /*const uint vmin,*/ const int vmax) co
 
 void* THArrayRaw::CalcAddr(const uint num) const 
 {
-	return (unsigned char *)FMemory + num * FItemSize;
+	return (void*)((unsigned char *)FMemory + static_cast<size_t>(num) * FItemSize);
 }
 
 void THArrayRaw::SetItemSize(const uint Size)
@@ -69,9 +69,9 @@ void THArrayRaw::SetItemSize(const uint Size)
 
 void THArrayRaw::Delete(const uint num)
 {
-	Error(num, FCount - 1);
+	Error(num, FCount);
 	if (num < (FCount - 1)) // do not need to call memmove if we delete last item.
-		memmove(GetAddr(num), GetAddr(num + 1), (FCount - (num + 1)) * FItemSize);
+		memmove(GetAddr(num), GetAddr(num + 1), (FCount - (static_cast<size_t>(num) + 1)) * FItemSize);
 	FCount--;
 }
 
@@ -85,7 +85,7 @@ void THArrayRaw::ClearMem()
 
 void THArrayRaw::Get(const uint num, void *pValue) const
 {
-	Error(num, FCount - 1);
+	Error(num, FCount);
 	if (pValue != nullptr) 
 		memmove(pValue, CalcAddr(num), FItemSize);
 }
@@ -114,11 +114,11 @@ void THArrayRaw::AddMany(const void *pValue, const uint Count)
 
 uint THArrayRaw::Insert(const uint Index, const void *pValue)
 {
-	Error(Index, FCount);
+	Error(Index, FCount + 1);
 	if (FCount >= FCapacity) 
 		Grow();
 	FCount++;
-	memmove(CalcAddr(Index + 1), CalcAddr(Index), (FCount - Index - 1) * FItemSize);
+	memmove(CalcAddr(Index + 1), CalcAddr(Index), (FCount - static_cast<size_t>(Index) - 1) * FItemSize);
 	Update(Index, pValue);
     Sorted = false;
 	return Index;
@@ -126,19 +126,19 @@ uint THArrayRaw::Insert(const uint Index, const void *pValue)
 
 void THArrayRaw::InsertMany(const uint num, const void *pValue, const uint Count)
 {
-	Error(num, FCount);
+	Error(num, FCount + 1);
 	if ((FCount + Count) > FCapacity) 
 		GrowTo(FCount + Count);
 
 	FCount=FCount + Count;
-	memmove(CalcAddr(num + Count),CalcAddr(num),(FCount-num-Count)*FItemSize);
+	memmove(CalcAddr(num + Count), CalcAddr(num), (FCount - static_cast<size_t>(num) - Count) * FItemSize);
     Sorted = false;
 	UpdateMany(num, pValue, Count);
 }
 
 void THArrayRaw::Update(const uint num, const void *pValue)
 {
-	Error(num, FCount - 1);
+	Error(num, FCount);
 	if (pValue != nullptr) 
 		memmove(CalcAddr(num), pValue, FItemSize);
 	else
@@ -148,8 +148,8 @@ void THArrayRaw::Update(const uint num, const void *pValue)
 
 void THArrayRaw::UpdateMany(const uint num, const void *pValue, const uint Count)
 {
-	Error(num + Count, FCount);
-	memmove(GetAddr(num), pValue, FItemSize * Count);
+	Error(num + Count - 1, FCount);
+	memmove(GetAddr(num), pValue, FItemSize * static_cast<size_t>(Count));
     Sorted = false;
 }
 
@@ -199,7 +199,7 @@ void THArrayRaw::SetCapacity(const uint Value)
 {
 	if(Value > 0)
 	{
-		FMemory = realloc(FMemory, Value * FItemSize);
+		FMemory = realloc(FMemory, static_cast<size_t>(Value) * FItemSize);
 		FCapacity = Value;
 	} 
 	else  // Value == 0
@@ -216,7 +216,7 @@ void THArrayRaw::AddFillValues(const uint Count)
 {
     if ((FCount + Count) > FCapacity)
 		GrowTo(FCount + Count);
-    memset(CalcAddr(FCount), 0, Count * FItemSize);
+	memset(CalcAddr(FCount), 0, static_cast<size_t>(Count) * FItemSize);
     FCount = FCount + Count;
     Sorted = false;
 }
@@ -224,7 +224,7 @@ void THArrayRaw::AddFillValues(const uint Count)
 void THArrayRaw::Zero()
 {
     if (FCount > 0)
-        memset(FMemory, 0, FCount * FItemSize);
+        memset(FMemory, 0, static_cast<size_t>(FCount) * FItemSize);
 }
 
 void THArrayRaw::Hold()
@@ -234,8 +234,8 @@ void THArrayRaw::Hold()
 
 void THArrayRaw::Swap(const uint Index1, const uint Index2)
 {
-	Error(Index1, FCount - 1);
-	Error(Index2, FCount - 1);
+	Error(Index1, FCount);
+	Error(Index2, FCount);
 
 	if(Index1 == Index2)
 		return;
@@ -448,7 +448,7 @@ void StringToArray(const std::string& str, THArrayString& arr, const char Delim 
 std::string toString(const THArrayString& array)
 {
 	std::string res;
-	res.reserve(array.Count()*100); // to reduce number of memory re-allocations we assume that each string in array has 100 characters
+	res.reserve(static_cast<size_t>(100)*array.Count()); // to reduce number of memory re-allocations we assume that each string in array has 100 characters
 	for (uint i = 0; i < array.Count(); i++)
 	{
 		res.append(array[i]);
