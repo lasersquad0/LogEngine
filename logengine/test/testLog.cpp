@@ -4,6 +4,7 @@
 #endif 
 
 #include <thread>
+#include <direct.h>
 #include "Shared.h"
 #include "LogEngine.h"
 #include "testLog.h"
@@ -12,14 +13,13 @@ CPPUNIT_TEST_SUITE_REGISTRATION( LogEngineLogTest );
 
 void LogEngineLogTest::setUp ()
 {
-
+	mkdir(LOG_FILES_FOLDER);
 }
 
 void LogEngineLogTest::tearDown ()
 {
 	// free memory allocated in setUp, do other things
 }
-
 
 void LogEngineLogTest::testLog1()
 {
