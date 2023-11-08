@@ -1,7 +1,7 @@
 <h1>LogEngine --- The C++ Log Library </h1>
-https://github.com/lasersquad0/LogEngine2 <br>
+https://github.com/lasersquad0/LogEngine <br>
 Version 1.03 <br><br>
-
+lasersquad@gmail.com
 
 Last revision date November, 05, 2023.
 
@@ -9,52 +9,36 @@ Last revision date November, 05, 2023.
 TABLE OF CONTENTS
 ----------------
 Overview <br>
-Installation <br>
-Demonstration Programs <br>
+Installation and how to use <br>
 Compatibility <br>
-Source Files <br>
-Known problems <br>
-License Agreement <br>
-Copyright Notes <br>
-Contacts <br>
-History <br>
+Known issues <br>
+Changelog <br>
 
 Overview
 --------
 
 LogEngine is the C++ library for easy and flexible logging to files.
-The main features are: easy to use, small amount of source code.
+The main features are: easy to use, platform independent, small amount of source code.
 
 Bug reports are welcome. Please use the Github bug tracking
-system at https://github.com/lasersquad0/LogEngine2. 
+system at https://github.com/lasersquad0/LogEngine. 
 
 See testXXX.cpp files from test/ directory as an examples of using 
 logengine library.
 
-See test/testFiles/example.lfg - description of logengine parameters 
-file.
+See test/testFiles/example.lfg - for full description of logengine parameters file.
 
-Email to the current maintainer may be sent to
-lasersquad@gmail.com.
+Email to the current maintainer may be sent to lasersquad@gmail.com.
 
-Installation
-------------
+Installation and How to use
+---------------------------
 **Microsoft Windows** <br>
-Use MSVC projects from prj/msvcX/LogEngine/ to compile LogEngine.lib (or LogEngined.lib with Debug info).
+Use MSVC project from prj/MSVC/LogEngine/ to make LogEngine.lib (or LogEngined.lib for Debug configuration).
 
-See prj/msvcX/testLogEngine (or prj/Builder6/testLogEngine) for examples 
-of use LogEngine.
+See prj/MSVC/testLogEngine (or prj/Builder6/testLogEngine) for examples how to use LogEngine.
 
 **Other systems (Linux, etc)** <br>
 For other systems see INSTALL txt file for details.
-
-Demonstration Programs
-----------------------
-Unit tests .h and .cpp files for LogEngine can be found in test/ folder.
-These tests show you how to properly use LogEngine.
-
-To run them under Windows pls use MS Visual Studio project from here prj/msvcX/testLogEngine/ <br>
-To run tests under Linux - use appropriate Makefiule files located in test/ folder.
 
 Compatibility
 -------------
@@ -62,8 +46,13 @@ Compatibility
 LogEngine was recently tested on Windows 10, Windows 11, Ubuntu 22.04.2. <br>
 It does not require any specific libraties, and uses standard STL classes, so it should work on many other common Windows and unix systems.
 
-History
--------
+Known issues 
+------------
+
+No such issues at the moment
+
+Change log 
+----------
 [+] means "added"
 [-] means "removed"
 [*] means "fixed" or "modified"
@@ -71,12 +60,12 @@ History
 !!! Version 1.03 is released !!! <br>
 
 2023-11-05 <br>
-[*] Multithreading code now uses common thread STL functions instead of native ones. That made code much simpler.
-[+] Added more unit tests that helped us to catch up several bugs that are now fixed.
-[*] Code is more compatible with latest C++ language standards
-[*] Fixed a couple of compiler warnings (not all though)
-[*] Improved work with date/time functions
-[*] Code cleaning and refactorings
+[*] Multithreading code now uses common thread STL functions instead of native ones. That made code much simpler <br>
+[+] Added more unit tests that helped us to catch up several bugs that are now fixed <br>
+[*] Code is more compatible with latest C++ language standards <br>
+[*] Fixed a couple of compiler warnings (not all though) <br>
+[*] Improved work with date/time functions <br>
+[*] Code cleaning and refactorings <br>
 
 2007-02-25 <br>
 [+] Improved error handling during opening .lfg file. <br>
@@ -210,7 +199,4 @@ documentation manual? <br>
 [+] Added current thread ID into log line pattern. <br>
 [ * ] Some changes for linux support (not tested yet). <br>
 [ * ] LogEngine.cpp code was reformatted for better look. <br>
-
-
-
 
