@@ -1,9 +1,9 @@
 <h1>LogEngine --- The C++ Log Library </h1>
 https://github.com/lasersquad0/LogEngine2 <br>
-Version 1.02 <br><br>
+Version 1.03 <br><br>
 
 
-Last revision date September, 05, 2023.
+Last revision date November, 05, 2023.
 
 
 TABLE OF CONTENTS
@@ -67,6 +67,16 @@ History
 [+] means "added"
 [-] means "removed"
 [*] means "fixed" or "modified"
+
+!!! Version 1.03 is released !!! <br>
+
+2023-11-05 <br>
+[*] Multithreading code now uses common thread STL functions instead of native ones. That made code much simpler.
+[+] Added more unit tests that helped us to catch up several bugs that are now fixed.
+[*] Code is more compatible with latest C++ language standards
+[*] Fixed a couple of compiler warnings (not all though)
+[*] Improved work with date/time functions
+[*] Code cleaning and refactorings
 
 2007-02-25 <br>
 [+] Improved error handling during opening .lfg file. <br>
