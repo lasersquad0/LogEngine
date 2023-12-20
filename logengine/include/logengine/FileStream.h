@@ -15,6 +15,8 @@
 
 #include <string>
 #include <exception>
+#include "functions.h"
+
 
 #define IO_EXCEPTION_PREFIX "LogException : "
 
@@ -42,7 +44,7 @@ class TStream
 public:
 	virtual int Read(void *Buffer, size_t Size) = 0;
 	virtual int Write(const void *Buffer, const size_t Size) = 0;
-	virtual long Length() = 0;
+	virtual size_t Length() = 0;
 	virtual off_t Seek(const off_t Offset, const TSeekMode sMode) = 0;
 	virtual char ReadChar();
 	virtual std::string LoadPString(); 
@@ -56,18 +58,21 @@ public:
 	void operator >>(std::string& Value);
 };
 
-/*class TMemoryStream:public TStream
+class TMemoryStream : public TStream
 {
-    void *Data;
-    int  len;
+private:
+    uint8_t *FMemory;
+    size_t FCount;
+	size_t FRPos;
+	size_t FWPos;
 public:
     TMemoryStream();
     virtual ~TMemoryStream();
-    int Read(void *Buffer,int Size);
-    int Write(void *Buffer,int Size);
-	inline int Length() {return len;}
+    int Read(void *Buffer, size_t Size) override;
+    int Write(const void *Buffer, const size_t Size) override;
+	inline size_t Length() override { return FCount; }
 };
-*/
+
 
 class TFileStream:public TStream 
 {
@@ -78,19 +83,19 @@ private:
 public:
 	TFileStream(const std::string& FileName, const TFileMode fMode);
 	virtual ~TFileStream();
-	int Read(void *Buffer, size_t Size);
-	int Write(const void *Buffer, const size_t Size);
+	int Read(void *Buffer, size_t Size) override;
+	int Write(const void *Buffer, const size_t Size) override;
 	int WriteString(const std::string& str);
 	int WriteLn(const void *Buffer, const size_t Size);
 	int WriteCRLF(void);
-	off_t Length();
+	size_t Length() override;
 	void Flush();
 
 /* Moves the current position in the file.
  * When sMode=smFromEnd the current position moves _back_ (to the beginning).
  * Negative values of Offset parameter are allowed only when sMode=smFromCurrent.
  */
-	off_t Seek(const off_t Offset, const TSeekMode sMode);
+	off_t Seek(const off_t Offset, const TSeekMode sMode) override;
 
 };
 

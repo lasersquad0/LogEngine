@@ -3,9 +3,13 @@ TODO
 This file contains an imcomplete list of things to be done, not necessarily
 ordered by importance or urgence.
 
+* add configuration to write logs into stdout and stderr 
 
-* Add possibility to write logs into multiple files (multiple LogFileName 
-  directives in .lfg file)
+* Add possibility to write logs with << operator LOG(INFO) << "logstr1" << "logstr2"
+
+* add Async mode for writing logs. where logs are put into memory container and another thread performs actual routing and writing to file(s).
+
+* Add possibility to write logs into multiple files (multiple LogFileName directives in .lfg file)
 
 * Get the version number from current module (for Windows only)
 

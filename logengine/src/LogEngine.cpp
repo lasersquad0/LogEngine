@@ -21,9 +21,6 @@
 #include <pthread.h>
 #endif
 
-//#ifdef HAVE_PTHREAD_H
-//#include <pthread.h>
-//#endif
 #include <iostream>
  
 
@@ -52,11 +49,15 @@
 #define ClassNameMacro	  "%NAME%"
 #define ClassClassMacro	  "%CLASS%"
 
-const char LogTypeChars[5] = " #! ";
+//const char LogTypeChars[5] = " #! ";
 
 #define DefaultLogFileName    "NONAME"
-#define DefaultAppName        "noname"
-#define DefaultLinePattern    (TimeMacro "#" ThreadMacro " : " MessageMacro)
+#define DefaultAppName        "nonameapp"
+#define DefaultAppVersion     "0.0.0.0"
+#define DefaultLinePattern    TimeMacro " #" ThreadMacro ": " MessageMacro
+#define DefaultErrorPattern   "!" DefaultLinePattern
+#define DefaultWarningPattern "#" DefaultLinePattern
+#define DefaultInfoPattern    " " DefaultLinePattern
 #define DefaultStartAppLine   "\n%APPNAME% %APPVERSION% startup\nLog is started at %DATETIME%."
 #define DefaultStopAppLine    "%APPNAME% %APPVERSION% normal shutdown \nLog stopped at %DATETIME%.\n"
 #define DefaultSeparatorLine  "----------------------------------------------------------------"
@@ -142,12 +143,12 @@ void TLogEngine::LogEngineProperties::Fill(const Properties& Props)
 	if (LogFileName.empty())
 		LogFileName = Props.getString("ApplicationName", DefaultLogFileName) + LogExt;
 	else
-		if (ExtractFileName(LogFileName).find('.') == std::string::npos) 
+		if (ExtractFileName(LogFileName).find('.') == std::string::npos) // add an extension if absent
 			LogFileName += LogExt; 
 
 	ApplicationName = Props.getString("ApplicationName", DefaultAppName);
-	Version         = Props.getString("Version", "0.0.0.0");
-	MaxLogSize      = Props.getUInt("MaxLogSize", DefaultMaxLogSize); // if MaxLogSize=0 it means "no limit on log file size".
+	Version         = Props.getString("Version", DefaultAppVersion);
+	MaxLogSize      = Props.getUInt("MaxLogSize", DefaultMaxLogSize); // MaxLogSize is in kilobytes. if MaxLogSize=0 it means "no limit on log file size".
 	//MaxLogSize == 0 ? MaxLogSize = DefaultMaxLogSize : MaxLogSize = MaxLogSize;
 
 	//DetailLevel = Props.getUInt("DebugLevel", DefaultDetailLevel);
@@ -155,9 +156,9 @@ void TLogEngine::LogEngineProperties::Fill(const Properties& Props)
 	Threaded    = Props.getBool("Threaded", false);
 
 	SeparatorLine.ProcessPattern(Props.getString("SeparatorLine", DefaultSeparatorLine));
-	ErrorLine.ProcessPattern    (Props.getString("ErrorLine"    , DefaultLinePattern));
-	WarningLine.ProcessPattern  (Props.getString("WarningLine"  , DefaultLinePattern));
-	InfoLine.ProcessPattern     (Props.getString("InfoLine"     , DefaultLinePattern));
+	ErrorLine.ProcessPattern    (Props.getString("ErrorLine"    , DefaultErrorPattern));
+	WarningLine.ProcessPattern  (Props.getString("WarningLine"  , DefaultWarningPattern));
+	InfoLine.ProcessPattern     (Props.getString("InfoLine"     , DefaultInfoPattern));
 	StartAppLine.ProcessPattern (Props.getString("StartAppLine" , DefaultStartAppLine));
 	StopAppLine.ProcessPattern  (Props.getString("StopAppLine"  , DefaultStopAppLine));
 	//LongExceptionLine  = "Exception '%E%' in %CLASSNAME% [ %CLASS% ].";
@@ -169,30 +170,37 @@ void TLogEngine::LogEngineProperties::Fill(const Properties& Props)
 // TLogEngine
 //////////////////////////////////////////////////////////////////////
 
-TLogEngine::TLogEngine(void): LogQueue()
-{ 
-	FLogStream    = nullptr;
-	FStarted	  = false;
-	FFileBytesWritten   = 0;
-	FTotalBytesWritten  = 0;
-	FInitialFileSize    = 0;
-	FMessageCount[lmNone]    = 0;
-	FMessageCount[lmError]   = 0;
+void TLogEngine::initialInit()
+{
+	FLogStream = nullptr;
+	FStarted = false;
+	FFileBytesWritten = 0;
+	FTotalBytesWritten = 0;
+	FInitialFileSize = 0;
+	FMessageCount[lmNone] = 0;
+	FMessageCount[lmError] = 0;
 	FMessageCount[lmWarning] = 0;
-	FMessageCount[lmInfo]    = 0;
+	FMessageCount[lmInfo] = 0;
+}
+
+TLogEngine::TLogEngine(void)//: LogQueue()
+{ 
+	initialInit();
 
 	//hThread = THREAD_TYPE_INITIALIZER;
-
 	//INIT_CRITICAL_SECTION(CriticalSection);
 }
 
-TLogEngine::TLogEngine(const Properties& Props): TLogEngine()//, LogQueue()
+TLogEngine::TLogEngine(const Properties& Props): FProperties(Props) //, LogQueue()
 {
-	FProperties.Fill(Props);
+	initialInit();
+//	FProperties.Fill(Props);
 }
 
-TLogEngine::TLogEngine(const std::string& ConfigFileName): TLogEngine() // : LogQueue()
+TLogEngine::TLogEngine(const std::string& ConfigFileName)//: TLogEngine() // : LogQueue()
 {
+	initialInit();
+
 	Properties Props;
 	std::ifstream fin(ConfigFileName.c_str());
 
@@ -378,15 +386,15 @@ void TLogEngine::writeEvent(LogEvent* event)
 			FMessageCount[lmNone]++;
 			break;
 		case lmInfo:
-			internalWrite(LogTypeChars[lmInfo] + FProperties.InfoLine.format(*event));
+			internalWrite(/*LogTypeChars[lmInfo] + */FProperties.InfoLine.format(*event));
 			FMessageCount[lmInfo]++;
 			break;
 		case lmWarning:
-			internalWrite(LogTypeChars[lmWarning] + FProperties.WarningLine.format(*event));
+			internalWrite(/*LogTypeChars[lmWarning] + */ FProperties.WarningLine.format(*event));
 			FMessageCount[lmWarning]++;
 			break;
 		case lmError:
-			internalWrite(LogTypeChars[lmError] + FProperties.ErrorLine.format(*event));
+			internalWrite(/*LogTypeChars[lmError] + */ FProperties.ErrorLine.format(*event));
 			FMessageCount[lmError]++;
 			break;
 		default:
@@ -405,21 +413,21 @@ std::string TLogEngine::FormatInfo(const std::string& str, uint DetailLevel /*= 
 {
 	LogEvent event(str, lmInfo, GET_THREAD_ID(), GetCurrDateTime(), DetailLevel, this);
 	
-	return LogTypeChars[lmInfo] + FProperties.InfoLine.format(event);
+	return /*LogTypeChars[lmInfo] + */FProperties.InfoLine.format(event);
 }
 
 std::string TLogEngine::FormatWarning(const std::string& str, uint DetailLevel /*= 0*/)
 {
 	LogEvent event(str, lmWarning, GET_THREAD_ID(), GetCurrDateTime(), DetailLevel, this);
 	
-	return LogTypeChars[lmWarning] + FProperties.WarningLine.format(event);
+	return /*LogTypeChars[lmWarning] + */ FProperties.WarningLine.format(event);
 }
 
 std::string TLogEngine::FormatError(const std::string& str, uint DetailLevel /*= 0*/)
 {
 	LogEvent event(str, lmError, GET_THREAD_ID(), GetCurrDateTime(), DetailLevel, this);
 	
-	return LogTypeChars[lmError] + FProperties.ErrorLine.format(event);
+	return /*LogTypeChars[lmError] + */FProperties.ErrorLine.format(event);
 }
 
 void TLogEngine::WriteStr(const std::string& str, uint DetailLevel /*=0*/)
@@ -437,7 +445,7 @@ void TLogEngine::WriteStr(const std::string& str, uint DetailLevel /*=0*/)
 	}
 	else
 	{		
-		internalWrite(LogTypeChars[lmNone] + str);
+		internalWrite(/*LogTypeChars[lmNone] + */str);
 		FMessageCount[lmNone]++;
 	}
 }
@@ -689,7 +697,7 @@ void TLogEngine::truncLogFile(void)
 
 void TLogEngine::Flush()
 {
-	//TODO Add here wait while other thread purges all data tot he disk and then call FLogStream->Flush
+	//TODO Add here wait while other thread purges all data to the disk and then call FLogStream->Flush
 	FLogStream->Flush();
 }
 
@@ -765,15 +773,15 @@ TLogEngine* TLogEngine::getInstance()
 /* Global Functions                                                     */
 /************************************************************************/
 
-TLogEngine* getLogEngine(void)
-{
-	return TLogEngine::getInstance();
-}
-
-TLogEngine* getLogEngine(const Properties& Props)
-{
-	return TLogEngine::getInstance(Props);
-}
+//TLogEngine* getLogEngine(void)
+//{
+//	return TLogEngine::getInstance();
+//}
+//
+//TLogEngine* getLogEngine(const Properties& Props)
+//{
+//	return TLogEngine::getInstance(Props);
+//}
 
 void InitLogEngine(const Properties& Props)
 {

@@ -4,6 +4,9 @@
 #include <chrono>
 #include <mutex>
 
+typedef unsigned int uint;
+typedef unsigned long ulong;
+
 //heler definition to work with threads
 typedef std::lock_guard<std::recursive_mutex> mutexguard;
 #define GET_THREAD_ID() GetThreadID() 
@@ -35,6 +38,8 @@ bool StrToBool(std::string& Value);
 // extracts filename from path with filename
 std::string ExtractFileName(const std::string& FileName);
 
+std::string ExtractFileDir(const std::string& FileName);
+
 // excludes file extention from FileName
 std::string StripFileExt(const std::string& FileName);
 
@@ -62,7 +67,7 @@ std::string DateTimeToStr(time_t t);
 // deletes all \n symbol from string
 std::string DelCRLF(const std::string& S);
 
-// removes leading and trailing \n and \r symbols
+// removes leading and trailing \n and \r ch
 std::string trimSPCRLF(std::string S);
 
 // compares two strings case insensitive
@@ -74,4 +79,4 @@ int CompareNCase(const std::string& str1, const std::string& str2);
 // checks if string contains unsigned integer or not
 bool isUInt(std::string& value);
 
-size_t GetThreadID();
+uint GetThreadID();

@@ -149,6 +149,20 @@ std::string ExtractFileName(const std::string& FileName)
 	return FileName.substr(i+1);
 }
 
+// extracts file dir from path with filename
+std::string ExtractFileDir(const std::string& FileName)
+{
+	int i = (int)FileName.length();
+	while (i >= 0)
+	{
+		if ((FileName[i] == '\\') || (FileName[i] == '/'))
+			break;
+		i--;
+	}
+
+	return FileName.substr(0, i);
+}
+
 std::string StripFileExt(const std::string& FileName)
 {
 	int i = (int)FileName.length(); 
@@ -213,7 +227,9 @@ tm_point GetCurrTimePoint()
 struct tm GetCurrDateTime()
 {
 	const std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	return *std::localtime(&tt);	
+	struct tm t;
+	localtime_s(&t, &tt);
+	return t;
 }
 
 
@@ -238,7 +254,9 @@ std::string GetCurrTimeAsString(void)
 	const std::time_t tt = std::chrono::system_clock::to_time_t(stime);
 
     char ss[DATETIME_BUF];
-    std::strftime(ss, DATETIME_BUF, "%X", std::localtime(&tt));
+	struct tm t;
+	localtime_s(&t, &tt);
+    std::strftime(ss, DATETIME_BUF, "%X", &t);
 
 	char sss[20];
 #ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400    
@@ -273,15 +291,15 @@ std::string GetCurrDateTimeAsString(void)
 }
 
 // converts native datetime value into AString
-//std::string DateTimeToStr(time_t t)
-//{
-//	char ss[DATETIME_BUF];
-//	std::strftime(ss, DATETIME_BUF, "%c", std::localtime(&t));
-//
-//	//std::string s = ctime(&t);
-//	//s = DelCRLF(s);
-//	return ss;
-//}
+std::string DateTimeToStr(time_t t)
+{
+	struct tm ttm;
+	localtime_s(&ttm, &t);
+	char ss[50];
+	strftime(ss, 50, "%F %T", &ttm);
+
+	return ss;
+}
 
 // gets formatted current datetime
 std::string FormatCurrDateTime(const std::string& FormatStr)
@@ -400,7 +418,7 @@ bool isUInt(std::string & value)
 	return value.find_first_not_of("0123456789", start) == std::string::npos;
 }
 
-size_t GetThreadID()
+uint GetThreadID()
 {
 	std::stringstream ss;
 	ss << std::this_thread::get_id();

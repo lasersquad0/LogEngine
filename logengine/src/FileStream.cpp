@@ -106,36 +106,41 @@ std::string TStream::LoadPString()
 //  TMemoryStream Class
 //////////////////////////////////////////////////////////////////////
 
-/*TMemoryStream::TMemoryStream()
+TMemoryStream::TMemoryStream()
 {
-    Data=nullptr;
-    len=0;
+    FMemory = nullptr;
+    FCount = 0;
+	FRPos = 0;
+	FWPos = 0;
 }
 
 TMemoryStream::~TMemoryStream()
 {
-    free(Data);
+	delete [] FMemory;
 }
 
-int TMemoryStream::Read(void *Buffer,int Size)
+int TMemoryStream::Read(void *Buffer, size_t Size)
 {
-    if (Size<=0) return 0;
-    if (Size>len) Size=len;
-    memmove(Buffer,Data,Size);
-    memmove(Data,(byte *)Data+Size,len-Size);
-    len-=Size;
-    return Size;
+    if (Size == 0) return 0;
+
+    if (FRPos + Size > FCount) Size = FCount - FRPos;
+    memmove(Buffer, FMemory, Size);
+    memmove(FMemory, (char *)FMemory + Size, FCount - Size);
+    FRPos += Size;
+    return (int)Size;
 }
 
-int TMemoryStream::Write(void *Buffer,int Size)
+int TMemoryStream::Write(const void *Buffer, const size_t Size)
 {
-    if (Size<=0) return 0;
-    Data=realloc(Data,len+Size);
-    memmove((byte *)Data+len,Buffer,Size);
-    len+=Size;
-    return Size;
+    if (Size == 0) return 0;
+
+	if (FWPos + Size > FCount) 
+		FMemory = (uint8_t*)realloc(FMemory, FCount + Size - FWPos);
+    memmove((char *)FMemory + FWPos, Buffer, Size);
+    FWPos += Size;
+    return (int)Size;
 }
-*/
+
 
 //////////////////////////////////////////////////////////////////////
 //  TFileStream Class
@@ -178,12 +183,11 @@ TFileStream::TFileStream(const std::string& FileName, const TFileMode fMode)
 		
 		throw IOException(s.c_str());
 	}
-	
 }
 
 TFileStream::~TFileStream()
 {
-	close(hf);
+	_close(hf);
 	hf = 0;
 }
 
@@ -192,7 +196,7 @@ int TFileStream::Read(void *Buffer, size_t Size)
 	if(FFileMode == fmWrite)
 		throw IOException("File opened in write-only mode. Can't read!");
 	
-	int c = read(hf, Buffer, Size);
+	int c = _read(hf, Buffer, (uint)Size);
 	
 	if(c == -1)
 	{
@@ -214,7 +218,7 @@ int TFileStream::Write(const void *Buffer, const size_t Size)
 	if(FFileMode == fmRead)
 		throw IOException("File opened in read-only mode. Can't write!");
 
-	int c = write(hf, Buffer, Size);
+	int c = _write(hf, Buffer, (uint)Size);
 	
 	if(c == -1)
 	{
@@ -254,7 +258,7 @@ off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
 	throw IOException("Invalid Seek() mode.");
 }
 
-off_t TFileStream::Length() 
+size_t TFileStream::Length() 
 {
 	struct stat st;
 	/*int g=Seek(0,smFromCurrent);

@@ -143,6 +143,7 @@ std::string Properties::getString(const std::string& property, const char* defau
 	return GetValue(property);
 }
 
+//#define _CRT_SECURE_NO_WARNINGS
 void Properties::_substituteVariables(std::string& value) 
 {
 	std::string result;
@@ -182,6 +183,7 @@ void Properties::_substituteVariables(std::string& value)
 			}
 			else 
 			{
+#pragma warning(suppress : 4996)
 				char* val = getenv(key.c_str());
 				if (val)
 				{
@@ -203,4 +205,5 @@ void Properties::_substituteVariables(std::string& value)
 	
 	value = result;
 }
-//}
+
+//#undef _CRT_SECURE_NO_WARNINGS

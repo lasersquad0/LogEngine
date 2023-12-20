@@ -14,15 +14,15 @@
 #include <algorithm>
 #include "functions.h"
 
-/// Class to compare classes by operators =, <, >
+/// Class to compare other classes by operators ==, <, >
+// Actually it uses only two operators for comparing: == and >. It means that comparing classes need to implement only two compare operators. 
 template<class C>
 class Compare
 {
 public:
-    // returns True when object a is equal b
-	virtual bool eq(const C& a, const C& b) const { return a == b; };
-	virtual bool lt(const C& a, const C& b) const { return b > a;  }; 
-	virtual bool mt(const C& a, const C& b) const { return a > b;  }; 
+	virtual bool eq(const C& a, const C& b) const { return a == b; }; // returns True when object a is equal b
+	virtual bool lt(const C& a, const C& b) const { return b > a;  }; // lt=less than
+	virtual bool mt(const C& a, const C& b) const { return a > b;  }; // mt=more than
 	virtual ~Compare() {};
 };
 

@@ -7,14 +7,11 @@
 
 #include <exception> 
 #include <string>
-#include "functions.h"
+//#include "functions.h"
 #include "Compare.h"
 
-#define valuemin(v1,v2) (((v1)<=(v2))?(v1):(v2))
-#define valuemax(v1,v2) (((v1)>=(v2))?(v1):(v2))
-
-#define uint unsigned int
-#define ulong unsigned long
+#define valuemin(v1,v2) (((v1)<(v2))?(v1):(v2))
+#define valuemax(v1,v2) (((v1)>(v2))?(v1):(v2))
 
 #define DA_EXCEPTION_PREFIX "THArrayException : "
 /*!
@@ -276,8 +273,7 @@ public:
 //	virtual	   ~THArray() { ClearMem(); }
 private:
 	void	SetValue(const uint Index, const T& Value) = delete;
-	uint	InsertValue(const uint Index, const T& Value) override { return THArray<T>::InsertValue(Index, Value); };
-	uint	Insert(const uint Index, const void* Value)   override { return THArray<T>::Insert(Index, Value);      };
+	uint	Insert(const uint Index, const void* Value)   override { return THArray<T>::Insert(Index, Value); };
 	void	AddFillValues(const uint Num) override { THArray<T>::AddFillValues(Num); }
 	void	Push(const T& Value) override { THArray<T>::Push(Value); }
 	T		Pop()	   override { return THArray<T>::Pop(); }
@@ -288,9 +284,11 @@ private:
 	//uint	AddValue(const T& Value, const Compare<T>& Cmp) override { THArray<T>::AddValue(Value, Cmp); };
 	int		IndexOf(const T& Value, const Compare<T>& C) const override { return THArray<T>::IndexOfFrom(Value, 0, C); }
 	int		IndexOfFrom(const T& Value, const uint Start, const Compare<T>& C) const override { return THArray<T>::IndexOfFrom(Value, Start, C); }
+protected:
+	uint	InsertValue(const uint Index, const T& Value) override { return THArray<T>::InsertValue(Index, Value); };
 	int		InternalIndexOfFrom(const T& Value, const uint Start) const;
 public:
-	inline uint AddValue(const T& Value);
+	uint	AddValue(const T& Value);
 	int		IndexOfFrom(const T& Value, const uint Start) const override; // { return THArray<T>::IndexOfFrom(Value, Start); }
 	int		IndexOf(const T& Value) const override { return this->IndexOfFrom(Value, 0); }
 	
@@ -726,7 +724,7 @@ inline void THArray<T>::Swap(const uint Index1, const uint Index2)
 template <class T>
 bool THArray<T>::operator>(const THArray<T>& a) const
 {
-	for (uint i = 0; i < std::min(FCount, a.Count()); i++)
+	for (uint i = 0; i < valuemin(FCount, a.Count()); i++)
 	{
 		if (FMemory[i] > a[i])
 			return true;

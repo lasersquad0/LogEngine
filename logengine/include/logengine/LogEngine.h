@@ -24,7 +24,7 @@ enum TLogBackupType { lbNone, lbTimeStamp, lbSingle };
 //enum TLogMessageType {lmError, lmWarning, lmInfo};
 
 #define DefaultDetailLevel 0  // see  example.cfg for more details
-#define DefaultMaxLogSize  1000 // in kilobytes
+#define DefaultMaxLogSize  1000 // size in kilobytes here 
 #define DefaultBackupType  lbNone
 
 //typedef SynchronizedQueue<LogEvent*> LogEventQueue;
@@ -86,7 +86,7 @@ private:
 	bool FStarted;
 	ulong FFileBytesWritten;
 	ulong FTotalBytesWritten;
-	off_t FInitialFileSize;
+	ulong FInitialFileSize;
 	uint FMessageCount[4];
 	//FMessageTime[3];
 	//FStartupTime;
@@ -105,7 +105,7 @@ protected:
 	TLogEngine(const std::string& ConfigFileName);
 	virtual ~TLogEngine();
 	
-
+	void initialInit();
 	void initThread();
 	void truncLogFile(void);
 	void internalWrite(const std::string& msg);
@@ -175,8 +175,8 @@ struct LogEngineThreadInfo
 };
 
 
-TLogEngine* getLogEngine();
-TLogEngine* getLogEngine(const Properties& Props);
+//TLogEngine* getLogEngine();
+//TLogEngine* getLogEngine(const Properties& Props);
 void InitLogEngine(const Properties& Props);
 void InitLogEngine(const std::string& ConfigFileName);
 void InitLogEngine();
@@ -184,7 +184,7 @@ void CloseLogEngine();
 
 inline void LOG_ERROR(const std::string& mess, int DetailLevel = DefaultDetailLevel)
 {
-	TLogEngine* log = getLogEngine(); 
+	TLogEngine* log = TLogEngine::getInstance();
     if(log)
 		log->WriteError(mess, DetailLevel);
 }
@@ -192,7 +192,7 @@ inline void LOG_ERROR(const std::string& mess, int DetailLevel = DefaultDetailLe
 	
 inline void LOG_INFO(const std::string& mess, int DetailLevel = DefaultDetailLevel)
 {
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 	if(log)
 		log->WriteInfo(mess, DetailLevel);
 }
@@ -200,14 +200,14 @@ inline void LOG_INFO(const std::string& mess, int DetailLevel = DefaultDetailLev
 
 inline void LOG_WARN(const std::string& mess, int DetailLevel = DefaultDetailLevel)
 {
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 	if(log)
 		log->WriteWarning(mess, DetailLevel);
 }
 
 inline void LOG_STR(const std::string& mess, int DetailLevel = DefaultDetailLevel)
 {
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 	if(log)
 		log->WriteStr(mess, DetailLevel);
 }
