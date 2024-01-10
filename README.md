@@ -5,23 +5,14 @@ lasersquad@gmail.com
 
 Last revision date November, 05, 2023.
 
-
-TABLE OF CONTENTS
-----------------
-Overview <br>
-Installation and how to use <br>
-Compatibility <br>
-Known issues <br>
-Changelog <br>
-
 Overview
 --------
 
-LogEngine is the C++ library for easy and flexible logging to files.
+LogEngine is the simple C++ library for easy and flexible logging to files.
 The main features are: easy to use, platform independent, small amount of source code.
 
 Bug reports are welcome. Please use the Github bug tracking
-system at https://github.com/lasersquad0/LogEngine. 
+system at [https://github.com/lasersquad0/LogEngine](https://github.com/lasersquad0/LogEngine/issues). 
 
 See testXXX.cpp files from test/ directory as an examples of using 
 logengine library.
@@ -33,12 +24,20 @@ Email to the current maintainer may be sent to lasersquad@gmail.com.
 Installation and How to use
 ---------------------------
 **Microsoft Windows** <br>
-Use MSVC project from prj/MSVC/LogEngine/ to make LogEngine.lib (or LogEngined.lib for Debug configuration).
+Use MSVC project from prj/MSVC/LogEngine/ to build LogEngine.lib (for Debug configuration - LogEngined.lib).
 
 See prj/MSVC/testLogEngine (or prj/Builder6/testLogEngine) for examples how to use LogEngine.
 
 **Other systems (Linux, etc)** <br>
 For other systems see INSTALL txt file for details.
+
+Features
+-------------
+* Feature-rich formatting including 10 predefined placeholders (%APPNAME%, %THREAD%, %TIME% and others)
+* Multi/Single threaded logging.
+* Rotating log files
+* Log filtering - log levels can be modified at runtime as well as compile time.
+
 
 Compatibility
 -------------
