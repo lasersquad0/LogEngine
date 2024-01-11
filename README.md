@@ -12,7 +12,7 @@ LogEngine is the simple C++ library for easy and flexible logging to files.
 The main features are: easy to use, platform independent, small amount of source code.
 
 Bug reports are welcome. Please use the Github bug tracking
-system at [https://github.com/lasersquad0/LogEngine](https://github.com/lasersquad0/LogEngine/issues). 
+system at https://github.com/lasersquad0/LogEngine/issues. 
 
 See testXXX.cpp files from test/ directory as an examples of using 
 logengine library.
@@ -37,7 +37,7 @@ Features
 * Multi/Single threaded logging.
 * Rotating log files
 * Log filtering - log levels can be modified at runtime as well as compile time.
-
+* Collecting log statistics
 
 Compatibility
 -------------
