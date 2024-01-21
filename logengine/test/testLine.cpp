@@ -11,9 +11,13 @@ struct tm getTime()
 	timeb tm;
 	tm.millitm = 111;
 	tm.time = 444;
+#ifdef WIN32
 	struct tm tmt;
 	localtime_s(&tmt, &tm.time);
 	return tmt;
+#else
+	return *localtime( &tm.time);
+#endif	
 }
 
 
