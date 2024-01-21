@@ -33,18 +33,18 @@ void LogEngineLogTest::testLog1()
 	prop.SetValue("Version", "1.1.1");
 
 	InitLogEngine(prop);
-	TLogEngine *log = getLogEngine();
+	TLogEngine *log = TLogEngine::getInstance();
 
 	std::string s;
 	
 	s = log->FormatError("testLog1error");
-	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("#testLog1error"), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("!testLog1error"), cutLog(s));
 
 	s = log->FormatInfo("testLog1info");
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string(" testLog1info"), cutLog(s));
 
 	s = log->FormatWarning("testLog1warning");
-	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("!testLog1warning"), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("#testLog1warning"), cutLog(s));
 
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(s, std::string("testLog1string"), log->FormatStr("testLog1string"));
 
@@ -56,31 +56,30 @@ void LogEngineLogTest::testLog2()
 	Properties prop;
 	
 	InitLogEngine(prop);
-	TLogEngine *log = getLogEngine();
+	TLogEngine *log = TLogEngine::getInstance();
 	
 	std::string s;
 	
 	s = log->FormatError("testLog2error");
-	CPPUNIT_ASSERT_EQUAL(std::string("#testLog2error"), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL(std::string("!testLog2error"), cutLog(s));
 
 	s = log->FormatInfo("testLog2info");
 	CPPUNIT_ASSERT_EQUAL(std::string(" testLog2info"), cutLog(s));
 
 	s = log->FormatWarning("testLog2warning");
-	CPPUNIT_ASSERT_EQUAL(std::string("!testLog2warning"), cutLog(s));
+	CPPUNIT_ASSERT_EQUAL(std::string("#testLog2warning"), cutLog(s));
 
 	CPPUNIT_ASSERT_EQUAL(std::string("testLog2string"), log->FormatStr("testLog2string"));
 	
 	CloseLogEngine();
 }
 
-
 void LogEngineLogTest::testLog3()
 {
 	Properties prop;
 
 	InitLogEngine(prop);
-	TLogEngine *log = getLogEngine();
+	TLogEngine *log = TLogEngine::getInstance();
 	
 	log->Stop();
 
@@ -101,12 +100,12 @@ void LogEngineLogTest::testLog4()
 {
 	InitLogEngine();
 		
-	CPPUNIT_ASSERT_EQUAL(std::string("#testLog4 errorrrrrrrrrrrrrrrrrr"), cutLog(getLogEngine()->FormatError("testLog4 errorrrrrrrrrrrrrrrrrr")));
-	CPPUNIT_ASSERT_EQUAL(std::string(" testLog4 infoooooooooooooo"), cutLog(getLogEngine()->FormatInfo("testLog4 infoooooooooooooo")));
-	CPPUNIT_ASSERT_EQUAL(std::string("!testLog4 warningggggggggggggggggg"), cutLog(getLogEngine()->FormatWarning("testLog4 warningggggggggggggggggg")));
-	CPPUNIT_ASSERT_EQUAL(std::string("testLog4 stringsssssssssssssssss"), getLogEngine()->FormatStr("testLog4 stringsssssssssssssssss"));
+	CPPUNIT_ASSERT_EQUAL(std::string("!testLog4 errorrrrrrrrrrrrrrrrrr"), cutLog(TLogEngine::getInstance()->FormatError("testLog4 errorrrrrrrrrrrrrrrrrr")));
+	CPPUNIT_ASSERT_EQUAL(std::string(" testLog4 infoooooooooooooo"), cutLog(TLogEngine::getInstance()->FormatInfo("testLog4 infoooooooooooooo")));
+	CPPUNIT_ASSERT_EQUAL(std::string("#testLog4 warningggggggggggggggggg"), cutLog(TLogEngine::getInstance()->FormatWarning("testLog4 warningggggggggggggggggg")));
+	CPPUNIT_ASSERT_EQUAL(std::string("testLog4 stringsssssssssssssssss"), TLogEngine::getInstance()->FormatStr("testLog4 stringsssssssssssssssss"));
 	
-	getLogEngine()->Stop();
+	TLogEngine::getInstance()->Stop();
 
 	CloseLogEngine();
 }
@@ -114,7 +113,7 @@ void LogEngineLogTest::testLog4()
 void LogEngineLogTest::testLog5()
 {
 	InitLogEngine();
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 
 	log->WriteErrorFmt  (0, "testLog5 errorrrrrrrrrrrrrrrrrr %7d", 1);
 	log->WriteInfoFmt   (0, "testLog5 infoooooooooooooo %7d", 2);
@@ -127,7 +126,7 @@ void LogEngineLogTest::testLog5()
 void LogEngineLogTest::testLog6()
 {
 	InitLogEngine();
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 
 	log->WriteErrorFmt  (0, "testLog6 11111111111111111 %s", "222222");
 	log->WriteInfoFmt   (0, "testLog6 22222222222222222 %s", "333333");
@@ -140,7 +139,7 @@ void LogEngineLogTest::testLog6()
 void LogEngineLogTest::testLogStartStop()
 {
 	InitLogEngine();
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 
 	CPPUNIT_ASSERT(log->IsStarted());
 	log->Start();
@@ -157,7 +156,7 @@ void LogEngineLogTest::testLogStartStop()
 	log->Stop();
 	log->Stop();
 
-	CPPUNIT_ASSERT_THROW(getLogEngine()->WriteError("write after LogEngine.Stop()!"), LogException);
+	CPPUNIT_ASSERT_THROW(TLogEngine::getInstance()->WriteError("write after LogEngine.Stop()!"), LogException);
 
 	//try
 	//{
@@ -180,8 +179,8 @@ void LogEngineLogTest::testLogInitClose()
 	InitLogEngine(prop);
 	InitLogEngine();
 	
-	TLogEngine* log1 = getLogEngine();
-	TLogEngine* log2 = getLogEngine();
+	TLogEngine* log1 = TLogEngine::getInstance();
+	TLogEngine* log2 = TLogEngine::getInstance();
 	
 	CPPUNIT_ASSERT(log1 == log2);
 	
@@ -208,17 +207,17 @@ void LogEngineLogTest::testLogPlaceholders()
 	Properties prop;
 	prop.SetValue("LogFileName", LOG_FILES_FOLDER "LogEngine_tests");
 	prop.SetValue("Version", "2.2.2");
-	prop.SetValue("ErrorLine", "%MSG% %APPNAME% %APPVERSION% %OS% %OSVERSION% %DETAILLEVEL%");
-	prop.SetValue("WarningLine", "%DETAILLEVEL% %OS% %OSVERSION% %APPNAME% %APPVERSION% %MSG%");
-	prop.SetValue("InfoLine", "%OS% %MSG% %APPNAME% %OSVERSION% %DETAILLEVEL% %APPVERSION%");
+	prop.SetValue("ErrorLine",  "%MSG% %APPNAME% %APPVERSION% %OS% %OSVERSION% %DETAILLEVEL%");
+	prop.SetValue("WarningLine","%DETAILLEVEL% %OS% %OSVERSION% %APPNAME% %APPVERSION% %MSG%");
+	prop.SetValue("InfoLine",   "%OS% %MSG% %APPNAME% %OSVERSION% %DETAILLEVEL% %APPVERSION%");
 	
 	InitLogEngine(prop);
-	TLogEngine *log = getLogEngine();
+	TLogEngine *log = TLogEngine::getInstance();
 	
 	std::string s = log->FormatError("aaa", 6);
-	CPPUNIT_ASSERT_EQUAL(std::string("#aaa LogEngine_tests 2.2.2 <OS> 5.1 build 2600 6"), log->FormatError("aaa", 6));
-	CPPUNIT_ASSERT_EQUAL(std::string("!6 <OS> 5.1 build 2600 LogEngine_tests 2.2.2 aaa"), log->FormatWarning("aaa", 6));
-	CPPUNIT_ASSERT_EQUAL(std::string(" <OS> aaa LogEngine_tests 5.1 build 2600 6 2.2.2"), log->FormatInfo("aaa", 6));
+	CPPUNIT_ASSERT_EQUAL(std::string("aaa nonameapp 2.2.2 6.3 SP 0.0 4 10.0.22621.2506 6"), log->FormatError("aaa", 6));
+	CPPUNIT_ASSERT_EQUAL(std::string("6 6.3 SP 0.0 4 10.0.22621.2506 nonameapp 2.2.2 aaa"), log->FormatWarning("aaa", 6));
+	CPPUNIT_ASSERT_EQUAL(std::string("6.3 SP 0.0 4 aaa nonameapp 10.0.22621.2506 6 2.2.2"), log->FormatInfo("aaa", 6));
 	CPPUNIT_ASSERT_EQUAL(std::string("aaa"), log->FormatStr("aaa", 6));
 }
 
@@ -226,7 +225,7 @@ void LogEngineLogTest::testLogPlaceholders()
 void LogEngineLogTest::testLogDetailLevel()
 {
 	InitLogEngine(TEST_FILES_FOLDER "test9.lfg");
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetLogDetailLevel());
 	CPPUNIT_ASSERT_EQUAL(1u, log->GetMaxLogSize());
 	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
@@ -234,7 +233,7 @@ void LogEngineLogTest::testLogDetailLevel()
 	CPPUNIT_ASSERT_EQUAL(std::string("0.0.0.0"), log->GetVersionInfo());
 
 	InitLogEngine(TEST_FILES_FOLDER "test10.lfg");
-	log = getLogEngine();
+	log = TLogEngine::getInstance();
 	CPPUNIT_ASSERT_EQUAL(4u, log->GetLogDetailLevel());
 	CPPUNIT_ASSERT_EQUAL(2u, log->GetMaxLogSize());
 	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
@@ -242,7 +241,7 @@ void LogEngineLogTest::testLogDetailLevel()
 	CPPUNIT_ASSERT_EQUAL(std::string("0.0.0.0"), log->GetVersionInfo());
 
 	InitLogEngine(TEST_FILES_FOLDER "test11.lfg");
-	log = getLogEngine();
+	log = TLogEngine::getInstance();
 	CPPUNIT_ASSERT_EQUAL(7u, log->GetLogDetailLevel());
 	CPPUNIT_ASSERT_EQUAL(1000u, log->GetMaxLogSize());
 	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
@@ -274,7 +273,7 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	}
 
 	InitLogEngine(prop);
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 
 	CPPUNIT_ASSERT_EQUAL(fileName, log->GetLogFileName());
 	CPPUNIT_ASSERT_EQUAL(1u, log->GetMaxLogSize());
@@ -298,10 +297,10 @@ void LogEngineLogTest::testLogBackupTypeNone()
 	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, log->GetBytesWritten());
 	
 	log->WriteInfo("L"); // file will be truncated and re-written from beginning (because BackupType=lbNone)
-	CPPUNIT_ASSERT_EQUAL(14ul, log->GetBytesWritten());
-	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size + 14ul, log->GetTotalBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(13ul, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size + 13ul, log->GetTotalBytesWritten());
 
-	CPPUNIT_ASSERT_EQUAL(42u, log->GetMessageCount(lmError));
+	CPPUNIT_ASSERT_EQUAL(43u, log->GetMessageCount(lmError));
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmNone));
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmWarning));
 	CPPUNIT_ASSERT_EQUAL(1u, log->GetMessageCount(lmInfo));
@@ -324,7 +323,7 @@ void LogEngineLogTest::testLogBackupTypeSingle()
 	remove(logfname.c_str());
 
 	InitLogEngine(prop);
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 	
 	CPPUNIT_ASSERT_EQUAL(lbSingle, log->GetBackupType());
 	
@@ -340,7 +339,7 @@ void LogEngineLogTest::testLogBackupTypeSingle()
 	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, log->GetBytesWritten());
 	CPPUNIT_ASSERT_EQUAL((ulong)st.st_size, log->GetTotalBytesWritten());
 
-	CPPUNIT_ASSERT_EQUAL(42u, log->GetMessageCount(lmError));
+	CPPUNIT_ASSERT_EQUAL(44u, log->GetMessageCount(lmError));
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmNone));
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmWarning));
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmInfo));
@@ -351,7 +350,7 @@ void LogEngineLogTest::testLogBackupTypeSingle()
 void LogEngineLogTest::testLogFullPath()
 {
 	InitLogEngine(TEST_FILES_FOLDER "test12.lfg");
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 
 	CPPUNIT_ASSERT_EQUAL(11u, log->GetLogDetailLevel());
 	CPPUNIT_ASSERT_EQUAL(lbTimeStamp, log->GetBackupType());
@@ -370,7 +369,7 @@ void LogEngineLogTest::testLogMacro()
 	LOG_ERROR("dfdfdf");
 	LOG_ERROR("dfdfdf");
 
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 	CPPUNIT_ASSERT_EQUAL(2u, log->GetMessageCount(lmError));
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmNone));
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmWarning));
@@ -390,7 +389,7 @@ void LogEngineLogTest::testLogEmptyFileName()
 
 	InitLogEngine(prop);
 
-	TLogEngine *log = getLogEngine();
+	TLogEngine *log = TLogEngine::getInstance();
 
 	std::string s = log->GetAppName();
 	CPPUNIT_ASSERT_EQUAL(std::string("logs/LogEngine tests"), s);
@@ -411,7 +410,7 @@ void LogEngineLogTest::testLogAppName()
 
 	InitLogEngine(prop);
 	
-	TLogEngine *log = getLogEngine();
+	TLogEngine *log = TLogEngine::getInstance();
 
 	std::string s = log->GetAppName();
 	CPPUNIT_ASSERT_EQUAL(std::string("logs/AAAAAAAA"), s);
@@ -460,7 +459,7 @@ void LogEngineLogTest::testBadLFGFile()
 void LogEngineLogTest::testBadLFGFile2()
 {
 	InitLogEngine(TEST_FILES_FOLDER "test14.lfg");
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetLogDetailLevel());
 	CPPUNIT_ASSERT_EQUAL(lbNone, log->GetBackupType());
@@ -483,40 +482,40 @@ void LogEngineLogTest::testLogRotation1()
 	props.SetValue("MaxLogSize", "1"); // 1 Kilobyte
 	
 	InitLogEngine(props);
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmNone));
 
-	ulong StartMsgLen = 64;
+	ulong StartMsgLen = 67;
 	ulong MaxLogSize = 1024;
 	CPPUNIT_ASSERT_EQUAL(StartMsgLen, log->GetBytesWritten());
 	CPPUNIT_ASSERT_EQUAL(StartMsgLen, log->GetTotalBytesWritten());
 
 	std::string str;
-	str.resize(MaxLogSize - StartMsgLen - 2, 'M'); // we deduc 2 because WriteStr writes str AND 'CRLF' - 3 bytes in total
+	str.resize(MaxLogSize - StartMsgLen - 1, 'M'); // we deduc 2 because WriteStr writes str AND 'CRLF' - 3 bytes in total
 	log->WriteStr(str); 
 	
 	CPPUNIT_ASSERT_EQUAL(MaxLogSize, log->GetBytesWritten());
 	CPPUNIT_ASSERT_EQUAL(MaxLogSize, log->GetTotalBytesWritten());
 	log->WriteStr("F"); // 3 bytes written
-	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 3, log->GetBytesWritten());
-	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 3, log->GetTotalBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 2, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 2, log->GetTotalBytesWritten());
 	
 	log->WriteStr("A"); // 3 bytes written
-	CPPUNIT_ASSERT_EQUAL(3ul, log->GetBytesWritten());
-	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 6, log->GetTotalBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(2ul, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 4, log->GetTotalBytesWritten());
 
 // wait to make sure that next backup file will have different name.
 	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 	str.resize(MaxLogSize + 1, 'M');
 	log->WriteStr(str);
-	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 6, log->GetBytesWritten());
-	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 6 + MaxLogSize + 3, log->GetTotalBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 4, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 4 + MaxLogSize + 2, log->GetTotalBytesWritten());
 
 	log->WriteStr("G");
-	CPPUNIT_ASSERT_EQUAL(3ul, log->GetBytesWritten());
-	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 6 + MaxLogSize + 6, log->GetTotalBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(2ul, log->GetBytesWritten());
+	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 6 + MaxLogSize + 2, log->GetTotalBytesWritten());
 
 	CPPUNIT_ASSERT_EQUAL(5u, log->GetMessageCount(lmNone));
 	CPPUNIT_ASSERT_EQUAL(0u, log->GetMessageCount(lmError));

@@ -59,12 +59,14 @@ public:
     void testLogRotation1();
 };
 
-inline std::string cutLog(std::string str)
+inline std::string cutLog(std::string str) // cut off time and thread information (which is not same time from time)
 {
-    //return str.replace(1, 17, "").c_str(); // cut off time and thread information (which is not same time from time)
     size_t pos = str.find_first_of('#', 1);
-    pos = str.find_first_of(':', pos +  1);
-    return str.erase((size_t)1, pos+1).c_str();
+    pos = str.find_first_of(':', pos + 1);
+
+    if (pos == std::string::npos) return str;
+
+    return DelCRLF(str.erase((size_t)1, pos + 1));
 }
 
 #endif // _LOG_TESTS_HEADER_

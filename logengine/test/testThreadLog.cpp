@@ -58,7 +58,7 @@ void LogEngineThreadLogTest::testCallLogFromManyThreads()
 	prop.SetValue("ApplicationName", "testCallLogFromManyThreads");
 	InitLogEngine(prop);
 
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 	
 	log->Start();
 	log->WriteInfo("begin creating threads");
@@ -144,7 +144,7 @@ void LogEngineThreadLogTest::testThreadLog1()
 	prop.SetValue("Threaded", "trUe");
 	InitLogEngine(prop);
 
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 
 	std::string str("main thread ID: "); 
 	str += IntToStr((uint)GET_THREAD_ID());
@@ -170,7 +170,7 @@ void LogEngineThreadLogTest::testThreadLogMeasureTime1()
 	remove(fileName.c_str());
 
 	InitLogEngine(prop);
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 
 	auto start1 = std::chrono::high_resolution_clock::now();
 	
@@ -223,7 +223,7 @@ void LogEngineThreadLogTest::testNONThreadLogMeasureTime1()
 	prop.SetValue("Threaded", "false");
 
 	InitLogEngine(prop);
-	TLogEngine* log = getLogEngine();
+	TLogEngine* log = TLogEngine::getInstance();
 
 	auto start1 = std::chrono::high_resolution_clock::now();
 

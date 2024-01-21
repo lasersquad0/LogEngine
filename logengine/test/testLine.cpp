@@ -11,7 +11,9 @@ struct tm getTime()
 	timeb tm;
 	tm.millitm = 111;
 	tm.time = 444;
-	return *std::localtime(&tm.time);
+	struct tm tmt;
+	localtime_s(&tmt, &tm.time);
+	return tmt;
 }
 
 
@@ -184,5 +186,5 @@ void LogEngineLineTest::testLine15()
 	LogEvent event("message", lmError, 1, tp, 5, nullptr);
 	
 	std::string res = line.format(event);
-	CPPUNIT_ASSERT_EQUAL(std::string("testLine15 5.1 build 2600"), res);
+	CPPUNIT_ASSERT_EQUAL(std::string("testLine15 10.0.22621.2506"), res);
 }
