@@ -104,6 +104,7 @@ class OSHolder : public Holder
 public:
 	std::string format(LogEvent&)
 	{
+#ifdef WIN32
 		DWORD OSMajorVer = 6, OSMinorVer = 3, SPMajorVer = 0, SPMinorVer = 0;
 		DWORD result;
 
@@ -111,6 +112,10 @@ public:
 			return "Error getting OS info";
 		else
 			return IntToStr(OSMajorVer) + "." + IntToStr(OSMinorVer) + " SP " + IntToStr(SPMajorVer) + "." + IntToStr(SPMinorVer) + " " + IntToStr(result);
+#else
+		return "<OS>";
+#endif
+
 	}
 };
 
