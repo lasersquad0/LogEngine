@@ -107,6 +107,18 @@ std::string IntToStr(unsigned int Value)
 	return buf;
 }
 
+// function for convert long Value to string
+std::string IntToStr(unsigned long Value)
+{
+	char buf[CONV_BUF];
+#ifdef WIN32 
+	sprintf_s(buf, CONV_BUF, "%lu", Value);
+#else
+	sprintf(buf, "%lu", Value);
+#endif
+	return buf;
+}
+
 // function for convert double Value to string
 std::string FloatToStr(double Value)
 {
@@ -160,7 +172,7 @@ std::string ExtractFileDir(const std::string& FileName)
 		i--;
 	}
 
-	return FileName.substr(0, i);
+	return FileName.substr(0, i+1);
 }
 
 std::string StripFileExt(const std::string& FileName)
@@ -290,13 +302,22 @@ std::string GetCurrDateTimeAsString(void)
 	return ss;
 }
 
-// converts native datetime value into AString
+// converts native datetime value into string
 std::string DateTimeToStr(time_t t)
 {
 	struct tm ttm;
 	localtime_s(&ttm, &t);
-	char ss[50];
-	strftime(ss, 50, "%F %T", &ttm);
+	char ss[DATETIME_BUF];
+	strftime(ss, DATETIME_BUF, "%F %T", &ttm);
+
+	return ss;
+}
+
+// converts native datetime value into string
+std::string DateTimeToStr(struct tm& t)
+{
+	char ss[DATETIME_BUF];
+	strftime(ss, DATETIME_BUF, "%F %T", &t);
 
 	return ss;
 }
@@ -388,7 +409,7 @@ int CompareNCase(const std::string& str1, const std::string& str2)
 //#ifdef HAVE_STRCASECMP
 //	return strcasecmp(s1, s2);
 //#else
-	for (int i = 0; i < str1.length() && str2.length(); i++)
+	for (uint i = 0; i < str1.length() && str2.length(); i++)
 	{
 		int upper1 = toupper(static_cast<unsigned char>(str1[i]));
 		int upper2 = toupper(static_cast<unsigned char>(str2[i]));

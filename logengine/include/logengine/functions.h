@@ -1,4 +1,8 @@
 
+#ifndef _FUNCTIONS_H_
+#define _FUNCTIONS_H_
+
+
 #include <time.h>
 #include <string>
 #include <chrono>
@@ -25,6 +29,7 @@ std::string IntToStr(int Value, int FieldSize);
 std::string IntToStr(unsigned int Value, int FieldSize);
 std::string IntToStr(int Value);
 std::string IntToStr(unsigned int Value);
+std::string IntToStr(unsigned long Value);
 
 // function to convert double value to string
 std::string FloatToStr(double Value);
@@ -63,6 +68,7 @@ std::string FormatCurrDateTime(const std::string& FormatStr);
 
 // converts native datetime value into std::string
 std::string DateTimeToStr(time_t t);
+std::string DateTimeToStr(struct tm& t);
 
 // deletes all \n symbol from string
 std::string DelCRLF(const std::string& S);
@@ -80,3 +86,5 @@ int CompareNCase(const std::string& str1, const std::string& str2);
 bool isUInt(std::string& value);
 
 uint GetThreadID();
+
+#endif //_FUNCTIONS_H_ 
