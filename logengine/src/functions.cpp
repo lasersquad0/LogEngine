@@ -244,7 +244,7 @@ struct tm GetCurrDateTime()
 	localtime_s(&t, &tt);
 	return t;
 #else
-	return localtime(&tt);
+	return *localtime(&tt);
 #endif
 }
 
