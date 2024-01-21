@@ -148,6 +148,18 @@ int TMemoryStream::Write(const void *Buffer, const size_t Size)
 //  TFileStream Class
 //////////////////////////////////////////////////////////////////////
 
+#ifdef WIN32
+#define mylseek _lseek
+#define myread _read
+#define mywrite _write
+#define myclose _close
+#else
+#define mylseek lseek
+#define myread read
+#define mywrite write
+#define myclose close
+#endif
+
 TFileStream::TFileStream(const string& FileName, const TFileMode fMode)
 {
 	FFileName = FileName;
@@ -189,7 +201,7 @@ TFileStream::TFileStream(const string& FileName, const TFileMode fMode)
 
 TFileStream::~TFileStream()
 {
-	_close(hf);
+	myclose(hf);
 	hf = 0;
 }
 
@@ -198,7 +210,7 @@ int TFileStream::Read(void *Buffer, size_t Size)
 	if(FFileMode == fmWrite)
 		throw IOException("File opened in write-only mode. Can't read!");
 	
-	int c = _read(hf, Buffer, (uint)Size);
+	int c = myread(hf, Buffer, (uint)Size);
 	
 	if(c == -1)
 	{
@@ -225,7 +237,7 @@ int TFileStream::Write(const void *Buffer, const size_t Size)
 	if(FFileMode == fmRead)
 		throw IOException("File opened in read-only mode. Can't write!");
 
-	int c = _write(hf, Buffer, (uint)Size);
+	int c = mywrite(hf, Buffer, (uint)Size);
 	
 	if(c == -1)
 	{
@@ -247,11 +259,6 @@ int TFileStream::WriteLn(const void *Buffer, const size_t Size)
 //	return Write((void*)str.data(), str.length()/*strlen(str.data())*/);
 //}
 
-#ifdef WIN32
-#define mylseek _lseek
-#else
-#define mylseek lseek
-#endif
 
 off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
 {
@@ -268,17 +275,8 @@ off_t TFileStream::Seek(off_t Offset, TSeekMode sMode)
 size_t TFileStream::Length() 
 {
 	struct stat st;
-	/*int g=Seek(0,smFromCurrent);
-	
-	Seek(0,smFromEnd);
-	int r=Seek(0,smFromCurrent);*/
-	
 	fstat(hf, &st);
 	return st.st_size;
-
-	//Seek(g,smFromBegin);
-
-	//return r;
 };
 
 void TFileStream::Flush()
