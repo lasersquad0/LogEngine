@@ -274,7 +274,7 @@ std::string GetCurrTimeAsString(void)
 #ifdef WIN32
 	localtime_s(&t, &tt);
 #else
-	struct tm* lt = localtime_s(&tt);
+	struct tm* lt = localtime(&tt);
 	t = *lt;
 #endif
     std::strftime(ss, DATETIME_BUF, "%X", &t);
