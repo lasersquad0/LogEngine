@@ -20,6 +20,7 @@
 #include "Line.h"
 #include "SynchronizedQueue.h"
 
+
 enum TLogBackupType { lbNone, lbTimeStamp, lbSingle };
 //enum TLogMessageType {lmError, lmWarning, lmInfo};
 
@@ -49,7 +50,7 @@ private:
 class TLogEngine  
 {
 
-friend class Line;
+//friend class Line;
 
 private:
 	class LogEngineProperties

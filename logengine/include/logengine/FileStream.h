@@ -81,11 +81,11 @@ private:
 	TFileMode FFileMode;
 	int hf;  // file handle
 public:
-	TFileStream(const std::string& FileName, const TFileMode fMode);
+	TFileStream(const std::string& FileName, const TFileMode fMode = fmWrite);
 	virtual ~TFileStream();
 	int Read(void *Buffer, size_t Size) override;
 	int Write(const void *Buffer, const size_t Size) override;
-	int WriteString(const std::string& str);
+	int Write(const std::string& str);
 	int WriteLn(const void *Buffer, const size_t Size);
 	int WriteCRLF(void);
 	size_t Length() override;

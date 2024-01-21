@@ -19,13 +19,15 @@
 
 #include "FileStream.h"
 
+using namespace std;
+
 //////////////////////////////////////////////////////////////////////
 //  IOException Class
 //////////////////////////////////////////////////////////////////////
 
 //const char* IOException::what() const throw()
 //{
-//	std::string s = "LogException : " + Text;
+//	string s = "LogException : " + Text;
 //
 //	char * err = (char*)malloc(s.size() + 1); //on extra byte for terminator
 //	if(err) // don't want to include <string.h>
@@ -74,9 +76,9 @@ void TStream::operator <<(const char *Value)
 	Write(Value, strlen(Value));
 	Write((void*)"\r\n", 2u);
 }
-void TStream::operator <<(std::string& Value) 
+void TStream::operator <<(string& Value) 
 {
-	Write((void*)Value.data(),Value.length());
+	Write((void*)Value.data(), Value.length());
 	Write((void*)"\r\n", 2u);
 }
 char TStream::ReadChar() 
@@ -85,16 +87,16 @@ char TStream::ReadChar()
 	Read(&c, sizeof(c));
 	return c;
 }
-void TStream::operator >>(std::string& Value) 
+void TStream::operator >>(string& Value) 
 {
 	char c; 
 	Value.clear(); // 16.08.23 change
 	while ((c=ReadChar()) != '\n') Value+=c;
 	ReadChar();
 }
-std::string TStream::LoadPString() 
+string TStream::LoadPString() 
 {
-	std::string res;
+	string res;
 	int i;
 	*this >> i;
 	res.resize(i);
@@ -146,13 +148,13 @@ int TMemoryStream::Write(const void *Buffer, const size_t Size)
 //  TFileStream Class
 //////////////////////////////////////////////////////////////////////
 
-TFileStream::TFileStream(const std::string& FileName, const TFileMode fMode)
+TFileStream::TFileStream(const string& FileName, const TFileMode fMode)
 {
 	FFileName = FileName;
 	FFileMode = fMode;
 	hf = 0;
 	
-#ifdef WIN32
+#if defined(WIN32) && !defined(__BORLANDC__)
 	errno_t res = 0;
 	switch (fMode)
 	{ 
@@ -173,7 +175,7 @@ TFileStream::TFileStream(const std::string& FileName, const TFileMode fMode)
 
 	if(hf == -1)
 	{
-		std::string s;
+		string s;
 		if(res == EINVAL) 
 			s = "Wrong file name '" + FileName + "'!";
 		else if (res == EACCES) 
@@ -200,7 +202,7 @@ int TFileStream::Read(void *Buffer, size_t Size)
 	
 	if(c == -1)
 	{
-		std::string s = "Cannot read from file '" + FFileName + "'! May be file closed?";
+		string s = "Cannot read from file '" + FFileName + "'! May be file closed?";
 		throw IOException(s.c_str());
 	}
 
@@ -213,6 +215,11 @@ int TFileStream::WriteCRLF(void)
 	return Write(temp, strlen(temp));
 }
 
+int TFileStream::Write(const string& str)
+{
+	return Write(str.data(), str.length());
+}
+
 int TFileStream::Write(const void *Buffer, const size_t Size)
 {
 	if(FFileMode == fmRead)
@@ -222,7 +229,7 @@ int TFileStream::Write(const void *Buffer, const size_t Size)
 	
 	if(c == -1)
 	{
-		std::string s = "Cannot write to file '" + FFileName + "'! May be disk full?";	
+		string s = "Cannot write to file '" + FFileName + "'! May be disk full?";	
 		throw IOException(s.c_str());
 	}
 
@@ -235,10 +242,10 @@ int TFileStream::WriteLn(const void *Buffer, const size_t Size)
 	return WriteCRLF() + c; // TODO why do we sum up two return values???
 }
 
-int TFileStream::WriteString(const std::string& str)
-{
-	return Write((void*)str.data(), str.length()/*strlen(str.data())*/);
-}
+//int TFileStream::WriteString(const string& str)
+//{
+//	return Write((void*)str.data(), str.length()/*strlen(str.data())*/);
+//}
 
 #ifdef WIN32
 #define mylseek _lseek

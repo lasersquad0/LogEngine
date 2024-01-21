@@ -364,7 +364,7 @@ void TLogEngine::internalWrite(const std::string& msg)
 	if(FProperties.MaxLogSize > 0 && getFileLength() > FProperties.MaxLogSize * 1024)
 		truncLogFile();
 
-	int written = FLogStream->WriteString(msg);
+	int written = FLogStream->Write(msg);
 	written += FLogStream->WriteCRLF();
 
 	FFileBytesWritten += written;
@@ -768,6 +768,7 @@ TLogEngine* TLogEngine::getInstance()
 
 	return loginstance;
 }
+
 
 /************************************************************************/
 /* Global Functions                                                     */

@@ -29,13 +29,13 @@ void Properties::load(std::istream& in)
 	
 	std::string fullLine, command;
 	std::string leftSide, rightSide;
-	char line[256];
+	char linebuf[512]; // assume that we do not have lines greate than 512 symbols
 	std::string::size_type length;   
     
     //std::ios_base::iostate state = in.rdstate();
-    while (in.getline(line, 512)) //state & std::ios_base::failbit != std::ios_base::failbit)
+    while (in.getline(linebuf, 512)) //state & std::ios_base::failbit != std::ios_base::failbit)
 	{
-		fullLine = line;
+		fullLine = linebuf;
 		
 		/* if the line contains a # then it is a comment
 		if we find it anywhere other than at the beginning, we assume 
@@ -55,12 +55,12 @@ void Properties::load(std::istream& in)
 				std::string trimmed = trim(fullLine);
 				if(trimmed.length() > 0)
 				{
-					if(trimmed[0] == '#')
+					if(trimmed[0] == '#') //if only spaces (0 or more) before # then this line is a comment. bypass it
 						continue;
 				}
 				else
 				{
-					continue;
+					continue; // looks like it will never go here
 				}
 				
 				command = fullLine; //.substr(0, length);
@@ -82,11 +82,11 @@ void Properties::load(std::istream& in)
 		}
 		else
 		{
-			continue;
+			continue; // bypass all lines not containing '='
 		}
 		
 		// add to the map of properties
-		SetValue(trimSPCRLF(leftSide), trimSPCRLF(rightSide)); // DelCRLF is required here for Linux since its \n and \r differ from Windows.
+		SetValue(trimSPCRLF(leftSide), trimSPCRLF(rightSide)); // trimSPCRLF is required here for Linux since its \n and \r differ from Windows.
 	}    
 }
 
@@ -143,7 +143,6 @@ std::string Properties::getString(const std::string& property, const char* defau
 	return GetValue(property);
 }
 
-//#define _CRT_SECURE_NO_WARNINGS
 void Properties::_substituteVariables(std::string& value) 
 {
 	std::string result;
@@ -206,4 +205,4 @@ void Properties::_substituteVariables(std::string& value)
 	value = result;
 }
 
-//#undef _CRT_SECURE_NO_WARNINGS
+
