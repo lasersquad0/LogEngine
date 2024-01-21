@@ -239,9 +239,13 @@ tm_point GetCurrTimePoint()
 struct tm GetCurrDateTime()
 {
 	const std::time_t tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+#ifdef WIN32
 	struct tm t;
 	localtime_s(&t, &tt);
 	return t;
+#else
+	return localtime(&tt);
+#endif
 }
 
 
@@ -267,7 +271,12 @@ std::string GetCurrTimeAsString(void)
 
     char ss[DATETIME_BUF];
 	struct tm t;
+#ifdef WIN32
 	localtime_s(&t, &tt);
+#else
+	struct tm* lt = localtime_s(&tt);
+	t = *lt;
+#endif
     std::strftime(ss, DATETIME_BUF, "%X", &t);
 
 	char sss[20];
@@ -306,7 +315,13 @@ std::string GetCurrDateTimeAsString(void)
 std::string DateTimeToStr(time_t t)
 {
 	struct tm ttm;
+#ifdef WIN32
 	localtime_s(&ttm, &t);
+#else
+	struct tm* lt;
+	lt = localtime(&t);
+	ttm = *lt;
+#endif
 	char ss[DATETIME_BUF];
 	strftime(ss, DATETIME_BUF, "%F %T", &ttm);
 
