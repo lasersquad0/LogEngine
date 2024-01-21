@@ -7,7 +7,6 @@
 
 #include <exception> 
 #include <string>
-//#include "functions.h"
 #include "Compare.h"
 
 #define valuemin(v1,v2) (((v1)<(v2))?(v1):(v2))
@@ -81,12 +80,10 @@ public:
 #endif
 
 
-/*! \brief 11111111111111 1223 3444543
- *
- * Class for storing and manipulating raw data types i.e. data which do 
- * not have explicit type or the type can be changed dynamically. All that
- * THArrayRaw need to know is ItemSize of stored data. Very useful to 
- * store fields from database table.
+/*! \brief Class for storing and manipulating raw data types
+ * i.e. data which do not have explicit type or the type can be changed dynamically. 
+ * All that THArrayRaw need to know is ItemSize of stored data. 
+ * Very useful to store fields from database table.
  */
 class THArrayRaw
 {
@@ -218,7 +215,7 @@ public:
 	THArray(std::initializer_list<T> list);
 	THArray(const THArray<T>& a);
 	virtual	   ~THArray() { ClearMem(); }
-	inline  T operator [](const uint Index) const { return GetValue(Index); };
+	inline T& operator[](const uint Index) const { return GetValue(Index); };
 	THArray<T>& operator=(const THArray<T>& a); // copy constructor
 	bool operator==(const THArray<T>& a) const;
 	bool operator>(const THArray<T>& a) const;
@@ -233,19 +230,19 @@ public:
 	void		Zero();
 	void		GrowTo(const uint ToCount);
 	void		SetCapacity(const uint Value);
-
 	void		SetValue(const uint Index, const T& Value);
-	T			GetValue(const uint Index) const;
+	T&			GetValue(const uint Index) const;
 	virtual uint InsertValue(const uint Index, const T& Value);
 	virtual uint Insert(const uint Index, const void* Value) { return InsertValue(Index, *((T*)Value)); }
 	virtual void DeleteValue(const uint Index);
 	virtual uint AddValue(const T& Value)  { return InsertValue(FCount, Value); }
-	virtual uint Add(const void *pValue)           { return AddValue(*(T*)pValue);      }
+	virtual uint Add(const void *pValue)   { return AddValue(*(T*)pValue);      }
 	inline	 T* GetValuePointer(const uint Index) const;
-	virtual int IndexOf(const T& Value, const Compare<T>& cmp) const { return IndexOfFrom(Value, 0, cmp); }
-	virtual int IndexOf(const T& Value) const                        { return IndexOfFrom(Value, 0);      }
+	//virtual int IndexOf(const T& Value, const Compare<T>& cmp) const { return IndexOfFrom(Value, 0, cmp); }
+	template<class Cmp> int IndexOf(const T& Value) const { return IndexOfFrom<Cmp>(Value, 0); }
+	template<class Cmp> int	IndexOfFrom(const T& Value, const uint Start) const;
+	virtual int IndexOf(const T& Value) const { return IndexOfFrom(Value, 0); }
 	virtual int	IndexOfFrom(const T& Value, const uint Start) const;
-	virtual int	IndexOfFrom(const T& Value, const uint Start, const Compare<T>& cmp) const;
 	void		AddFillValues(const uint Num);
 	virtual inline void Push(const T& Value);
 	virtual inline T    Pop();
@@ -282,13 +279,13 @@ private:
 	void	Reverse() override { THArray<T>::Reverse(); }
 	void	Reverse(uint endIndex) override { THArray<T>::Reverse(endIndex); }
 	//uint	AddValue(const T& Value, const Compare<T>& Cmp) override { THArray<T>::AddValue(Value, Cmp); };
-	int		IndexOf(const T& Value, const Compare<T>& C) const override { return THArray<T>::IndexOfFrom(Value, 0, C); }
-	int		IndexOfFrom(const T& Value, const uint Start, const Compare<T>& C) const override { return THArray<T>::IndexOfFrom(Value, Start, C); }
+	//int		IndexOf(const T& Value, const Compare<T>& C) const override { return THArray<T>::IndexOfFrom(Value, 0, C); }
+	//int		IndexOfFrom(const T& Value, const uint Start, const Compare<T>& C) const override { return THArray<T>::IndexOfFrom(Value, Start, C); }
 protected:
 	uint	InsertValue(const uint Index, const T& Value) override { return THArray<T>::InsertValue(Index, Value); };
 	int		InternalIndexOfFrom(const T& Value, const uint Start) const;
 public:
-	uint	AddValue(const T& Value);
+	uint	AddValue(const T& Value) override;
 	int		IndexOfFrom(const T& Value, const uint Start) const override; // { return THArray<T>::IndexOfFrom(Value, Start); }
 	int		IndexOf(const T& Value) const override { return this->IndexOfFrom(Value, 0); }
 	
@@ -298,24 +295,27 @@ public:
 //////////////////////////////////////////////////////////////////////
 //  THArrayAuto Class Interface
 //////////////////////////////////////////////////////////////////////
-
-/*template<class T>
+/**
+* This class never generates an exceptions like "Index out of bounds."
+* When out of bounds index being requested (read of write), array just extended to the size that covers requested index. 
+* new space is filled by empty values T(). 
+*/
+template<class T>
 class THArrayAuto:public THArray<T>
 {
 protected:
-	void	HaveValue(const int Index);
+	void	EnsureValue(const int Index);
 public:
-    inline T operator [](const int Index);
-    void    SetValue(const int Index,const T& Value);
-    T		GetValue(const int Index);
-    inline  T *GetValuePointer(const int Index);
-};*/
+    void    SetValue(const int Index, const T& Value) override; 
+    T&		GetValue(const int Index) override;
+    inline  T* GetValuePointer(const int Index) override;
+};
 
 //////////////////////////////////////////////////////////////////////
 //  THash Class Interface
 //////////////////////////////////////////////////////////////////////
 
-template <class I,class V, class Cmp = Compare<I> >
+template <class I, class V, class Cmp = Compare<I> >
 class THash
 {
 private:
@@ -334,22 +334,23 @@ public:
 
 	bool operator==(const THash<I,V,Cmp>& a) const;
 	bool operator> (const THash<I,V,Cmp>& a) const;
+	V& operator[](const I& key) const { return GetValue(key); };
 
-	I		GetKey(uint Index) const { return FAKeys.GetValue(Index); }
+	I&		GetKey(uint Index) const { return FAKeys.GetValue(Index); }
 	void	Clear()				{ FAKeys.Clear(); FAValues.Clear(); }
 	void	ClearMem()			{ FAKeys.ClearMem(); FAValues.ClearMem(); };
 	uint	Count() const		{ return FAKeys.Count();}
-	THArraySorted<I>* GetKeys() { return &FAKeys;  }
-	THArray<V>* GetValues()		{ return &FAValues;}
+	THArraySorted<I>& GetKeys() { return FAKeys;  }
+	THArray<V>& GetValues()		{ return FAValues;}
 	bool	IfExists(const I& Key) const;
 	//bool	IfExists(const I& Key, const Compare<I>& cmp) const;
 	void	Delete(const I& Key);
 	//void	Delete(const I& K, const Compare<I>& cmp);
 	void	SetValue(const I& Key, const V& Value);
-	V		GetValue(const I& Key) const;
+	V&		GetValue(const I& Key) const;
 	//V		GetValue(const I& Key, const Compare<I>& cmp) const;
 	V*		GetValuePointer(const I& Key) const;
-	//V*		GetValuePointer(const I& Key, const Compare<I>& cmp) const;
+	//V*	GetValuePointer(const I& Key, const Compare<I>& cmp) const;
 	void	SetCapacity(const uint Value) { FAKeys.SetCapacity(Value); FAValues.SetCapacity(Value); }
 	//void	Sort();
 	//void	Reverse();
@@ -367,25 +368,25 @@ class THash2
 {
 protected:
 	THash<I1, THash<I2, V> > hash;
-	int FCount = 0;
-	int InternalGetCount();
+	uint FCount = 0;
+	uint InternalGetCount();
 public:
 	//THash2<I1,I2,V>& operator=(const THash2<I1,I2,V>& a);
 	void Clear() { hash.Clear(); FCount = 0; }
 	void SetValue(const I1& Key1, const THash<I2, V>& Value);
 	void SetValue(const I1& Key1, const I2& Key2, const V& Value);
-	V	 GetValue(const I1& Key1, const I2& Key2);
-	THash<I2,V> GetValue(const I1& Key1) { return hash.GetValue(Key1); }
+	V&	 GetValue(const I1& Key1, const I2& Key2);
+	THash<I2,V>& GetValue(const I1& Key1) { return hash.GetValue(Key1); }
 	void Delete(const I1& Key1, const I2& Key2);
 	void Delete(const I1& Key1);
 	bool IfExists(const I1& Key1, const I2& Key2);
 	bool IfExists(const I1& Key1) { return hash.IfExists(Key1);	}
-	inline int Count()            { return FCount; /*hash.Count();*/ };
-	I1	 GetKey(uint Index)       { return hash.GetKey(Index);  };
+	inline uint Count()           { return FCount; /*hash.Count();*/ };
+	I1&	 GetKey(uint Index)       { return hash.GetKey(Index);  };
 	V*	 GetValuePointer(const I1& Key1, const I2& Key2) { return hash.GetValuePointer(Key1)->GetValuePointer(Key2); }
 	THash<I2,V>* GetValuePointer(const I1& Key1) { return hash.GetValuePointer(Key1); }
-	THArray<I1>* GetAIndexes()		    { return hash.GetKeys(); };
-	THArray<THash<I2,V> >* GetAValues() { return hash.GetValues(); };
+	THArray<I1>& GetAIndexes()		    { return hash.GetKeys(); };
+	THArray<THash<I2,V> >& GetAValues() { return hash.GetValues(); };
 
 //	void Minus(THash2<I1, I2, V>& in);
 
@@ -410,7 +411,6 @@ std::string toString(const THArrayString& array);
 template<class T>
 THArray<T>::THArray()  
 {
-	//Sorted    = false;
 	FCount    = 0;
 	FCapacity = 0;
 	FMemory   = nullptr;
@@ -424,7 +424,6 @@ THArray<T>::THArray(const THArray<T>& a):THArray()
 		FMemory[i] = a.FMemory[i];
 
 	FCount = a.FCount;
-	//Sorted = a.Sorted;
 }
 
 template<class T>
@@ -538,7 +537,6 @@ void THArray<T>::Reverse()
 	if(FCount < 2) 
 		return;
 
-	//Sorted = false;
 	for(uint i = 0; i < FCount/2; i++)
 	{
 		Swap(i, FCount - 1 - i);
@@ -560,7 +558,6 @@ void THArray<T>::Reverse(uint endIndex)
 	if (endIndex >= FCount)
 		endIndex = FCount - 1;
 
-	//Sorted = false;
 	for(uint i = 0; i < (endIndex + 1)/2; i++)
 	{
 		Swap(i, endIndex - i);
@@ -578,7 +575,6 @@ THArray<T>& THArray<T>::operator=(const THArray<T>& a)
 		FMemory[i] = a.FMemory[i];
 	
 	FCount = a.FCount;
-	//Sorted = a.Sorted;
 
 	return *this;
 }
@@ -616,7 +612,7 @@ void THArray<T>::SetValue(const uint Index, const T& Value)
 }
 
 template<class T>
-T THArray<T>::GetValue(const uint Index) const 
+T& THArray<T>::GetValue(const uint Index) const 
 {
 	Error(Index, FCount);
 	return FMemory[Index];
@@ -653,12 +649,14 @@ inline T* THArray<T>::GetValuePointer(const uint Index) const
 }
 
 template<class T>
-int THArray<T>::IndexOfFrom(const T& Value, const uint Start, const Compare<T>& cmp) const 
+template<class Cmp>
+int THArray<T>::IndexOfFrom(const T& Value, const uint Start) const 
 {
+	Cmp cmp;
 	for(uint i = Start; i < FCount; i++)
 	{
-		T v = FMemory[i];
-		if(cmp.eq(v, (const T&)Value))
+		T& v = FMemory[i];
+		if(cmp.eq((const T&)v, Value))
 			return i;
 	}
 	return NPOS;
@@ -681,7 +679,6 @@ void THArray<T>::AddFillValues(const uint Num)
 	for (uint i = FCount; i < FCount + Num; i++)
 		FMemory[i] = T();
     FCount = FCount + Num;
-	//Sorted = false;
 }
 
 template<class T>
@@ -813,41 +810,33 @@ int THArraySorted<T, Cmp>::InternalIndexOfFrom(const T& Value, const uint Start)
 //  THArrayAuto Class Implementation
 //////////////////////////////////////////////////////////////////////
 
-/*template<class T>
-void THArrayAuto<T>::HaveValue(const int Index) 
-{
-	if (Index>=FCount) AddFillValues(Index-FCount+1);
-}
-
 template<class T>
-inline T THArrayAuto<T>::operator [](const int Index)
+void THArrayAuto<T>::EnsureValue(const int Index) 
 {
-	return GetValue(Index);
+	if (Index >= this->FCount) AddFillValues(Index - this->FCount + 1);
 }
 
 template<class T>
 void THArrayAuto<T>::SetValue(const int Index,const T& Value) 
 {
-	HaveValue(Index);
-	SetValue(Index,Value);
+	EnsureValue(Index);
+	SetValue(Index, Value);
 }
 
 template<class T>
-T THArrayAuto<T>::GetValue(const int Index) 
+T& THArrayAuto<T>::GetValue(const int Index) 
 {
-	if (Index>=FCount)
-		return T();
-	else
-		return THArray<T>::GetValue(Index);
+	EnsureValue(Index);
+	return THArray<T>::GetValue(Index);
 }
 
 template<class T>
-inline  T *THArrayAuto<T>::GetValuePointer(const int Index) 
+inline T* THArrayAuto<T>::GetValuePointer(const int Index) 
 {
-	HaveValue(Index);
+	EnsureValue(Index);
 	return THArray<T>::GetValuePointer(Index);
 }
-*/
+
 
 //////////////////////////////////////////////////////////////////////
 //  THash Class Implementation
@@ -863,16 +852,16 @@ THash<I,V,Cmp>::THash(const THash<I,V,Cmp>& a)
 }
 
 template <class I, class V, class Cmp>
-bool THash<I,V,Cmp>::operator==(const THash<I,V,Cmp>& a) const
+bool THash<I,V,Cmp>::operator==(const THash<I, V, Cmp>& a) const
 {
 	return (FAKeys == a.FAKeys) && (FAValues == a.FAValues);// && (FACompare == a.FACompare);
 }
 
-//template <class I, class V>
-//bool THash<I, V>::operator>(const THash<I, V>& a) const
-//{
-//	return (FAKeys > a.FAKeys) && (FAValues > a.FAValues);// && (a.FACompare == b.FACompare);
-//}
+template <class I, class V, class Cmp>
+bool THash<I, V, Cmp>::operator>(const THash<I, V, Cmp>& a) const
+{
+	return (FAKeys > a.FAKeys) && (FAValues > a.FAValues);// && (a.FACompare == b.FACompare);
+}
 
 /*
 template <class I, class V>
@@ -957,12 +946,12 @@ void THash<I,V,Cmp>::SetValue(const I& Key, const V& Value)
 }
 
 template <class I, class V, class Cmp>
-V THash<I,V,Cmp>::GetValue(const I& Key) const
+V& THash<I,V,Cmp>::GetValue(const I& Key) const
 {
 	int n = FAKeys.IndexOf(Key);
 	if(n < 0)
 		throw THArrayException("THash<I,V>::GetValue(Key) : Key not found !");
-		//return V();
+		
 	return FAValues[n];
 }
 
@@ -1043,11 +1032,11 @@ THash2<I1,I2,V>& THash2<I1,I2,V>::operator=(const THash2<I1,I2,V>& a)
 */
 
 template <class I1, class I2, class V>
-int THash2<I1, I2, V>::InternalGetCount()
+uint THash2<I1, I2, V>::InternalGetCount()
 {
-	int result = 0;
+	uint result = 0;
 	THArray<I1>* ind = GetAIndexes();
-	for (int i = 0; i < ind->Count(); i++)
+	for (uint i = 0; i < ind->Count(); i++)
 	{
 		I1 a = ind->GetValue(i);
 		THash<I2, V> val = hash.GetValue(a);
@@ -1102,7 +1091,7 @@ void THash2<I1,I2,V>::SetValue(const I1& Key1, const I2& Key2, const V& Value)
 }
 
 template <class I1, class I2, class V>
-V THash2<I1,I2,V>::GetValue(const I1& Key1, const I2& Key2)
+V& THash2<I1,I2,V>::GetValue(const I1& Key1, const I2& Key2)
 {
 	THash<I2,V>* h = hash.GetValuePointer(Key1);
 	if(h == nullptr)

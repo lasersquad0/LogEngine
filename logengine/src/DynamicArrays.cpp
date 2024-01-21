@@ -1,7 +1,7 @@
 /*
  * DynamicArrays.cpp
  *
- * Copyright 2003, Dynamic Arrays Project. All rights reserved.
+ * Copyright 2023, Dynamic Arrays Project. All rights reserved.
  *
  * See the COPYING file for the terms of usage and distribution.
  */
