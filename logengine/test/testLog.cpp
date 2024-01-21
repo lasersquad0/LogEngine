@@ -1,10 +1,12 @@
 
-#ifndef WIN32
+#ifdef WIN32
+#include <direct.h>
+#else
 #include <unistd.h>
 #endif 
 
 #include <thread>
-#include <direct.h>
+
 #include "Shared.h"
 #include "LogEngine.h"
 #include "testLog.h"
