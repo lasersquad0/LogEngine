@@ -14,8 +14,9 @@
 //#endif // _MSC_VER > 1000
 
 #include <vector>
+#include <sstream>
 #include <chrono>
-#include <iomanip>
+#include <cassert>
 #include "functions.h"
 #include "DynamicArrays.h"
 #include "LogEvent.h"
@@ -23,7 +24,6 @@
 #ifdef WIN32
 #include <windows.h>
 #endif
-
 
 class Holder
 {
@@ -91,63 +91,66 @@ public:
 	std::string format(LogEvent& event);
 };
 
-#ifdef WIN32
-#pragma warning(push)
-#pragma warning(disable : 4100)
-#endif
-
 class LiteralHolder : public Holder
 {
 private:
 	std::string value;
 public:
 	LiteralHolder(std::string value) { this->value = value; }
-	std::string format(LogEvent& event) { return value; }
+	std::string format(LogEvent&) { return value; }
 };
-
-class OSHolder: public Holder
+class OSHolder : public Holder
 {
 public:
-
-	std::string format(LogEvent& event)
+	std::string format(LogEvent&)
 	{
+		DWORD OSMajorVer = 6, OSMinorVer = 3, SPMajorVer = 0, SPMinorVer = 0;
+		DWORD result;
 
-		return "<OS>"; 
-
+		if (0 == GetProductInfo(OSMajorVer, OSMinorVer, SPMajorVer, SPMinorVer, &result))
+			return "Error getting OS info";
+		else
+			return IntToStr(OSMajorVer) + "." + IntToStr(OSMinorVer) + " SP " + IntToStr(SPMajorVer) + "." + IntToStr(SPMinorVer) + " " + IntToStr(result);
 	}
 };
 
-class OSVersionHolder: public Holder
+class OSVersionHolder : public Holder
 {
 public:
-	std::string format(LogEvent& event)
+	std::string format(LogEvent&) //TODO may be cache OSVersion info??? to void calling GetProjectInfo() too offten
 	{
 #ifdef WIN32
-		OSVERSIONINFO ver;
-		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-		
-		DWORD OSMajorVer = 0, OSMinorVer = 0, SPMajorVer = 0, SPMinorVer = 0;
-		DWORD result;
-		GetProductInfo(OSMajorVer, OSMinorVer, SPMajorVer, SPMinorVer, &result);
+		const auto system = L"kernel32.dll";
+		DWORD dummy;
+		const auto cbInfo = ::GetFileVersionInfoSizeExW(FILE_VER_GET_NEUTRAL, system, &dummy);
+		std::vector<char> buffer(cbInfo);
+		::GetFileVersionInfoExW(FILE_VER_GET_NEUTRAL, system, dummy, (DWORD)buffer.size(), &buffer[0]);
+		void* p = nullptr;
+		UINT size = 0;
+		::VerQueryValueW(buffer.data(), L"\\", &p, &size);
+		assert(size >= sizeof(VS_FIXEDFILEINFO));
+		assert(p != nullptr);
+		auto pFixed = static_cast<const VS_FIXEDFILEINFO*>(p);
 
-		//GetVersionEx(&ver);
-		
-		return "<need to be implemented>";//IntToStr(ver.dwMajorVersion) + "." + IntToStr(ver.dwMinorVersion) + " build " + IntToStr(ver.dwBuildNumber);
+		std::ostringstream o;
+		o << HIWORD(pFixed->dwFileVersionMS) << '.'
+			<< LOWORD(pFixed->dwFileVersionMS) << '.'
+			<< HIWORD(pFixed->dwFileVersionLS) << '.'
+			<< LOWORD(pFixed->dwFileVersionLS);
+
+		return o.str();
 #else
 		return "<OSVERSION>";
 #endif
 	}
 };
 
-#ifdef WIN32
-#pragma warning(pop)
-#endif
-
 class DetailLevelHolder: public Holder
 {
 public:
 	std::string format(LogEvent& event){ return IntToStr(event.m_detailLevel); }
 };
+
 
 class Line
 {
