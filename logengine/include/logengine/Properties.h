@@ -6,8 +6,8 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef _PROPERTIES_H_
-#define _PROPERTIES_H_
+#ifndef PROPERTIES_H
+#define PROPERTIES_H
 
 #include <string>
 #include "DynamicArrays.h"
@@ -35,5 +35,5 @@ protected:
 };
 //}
 
-#endif // _PROPERTIES_H_
+#endif // PROPERTIES_H
 

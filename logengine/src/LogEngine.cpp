@@ -96,7 +96,7 @@ LogException& LogException::operator=(const LogException& ex)
 	return *this;
 }
 
-const char* LogException::what() const throw()
+const char* LogException::what() const //throw()
 {
 	static std::string s ="[LogException] " + Text;
 	return s.c_str();

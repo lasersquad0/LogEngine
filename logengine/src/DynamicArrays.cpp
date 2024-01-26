@@ -15,7 +15,7 @@
 
 THArrayRaw::THArrayRaw()
 {
-    Sorted    = false;
+	//Sorted    = false;
     FCount    = 0;
     FCapacity = 0;
     FItemSize = 1;
@@ -92,13 +92,13 @@ void THArrayRaw::Get(const uint num, void *pValue) const
 
 uint THArrayRaw::Add(const void *pValue)
 {
-    Sorted = false;
+	//Sorted = false;
 	return Insert(FCount, pValue);
 }
 
 void THArrayRaw::AddMany(const void *pValue, const uint Count)
 {
-    Sorted = false;
+	//Sorted = false;
 	if (Count == 0) 
 	{ 
 		char str[512];
@@ -120,7 +120,7 @@ uint THArrayRaw::Insert(const uint Index, const void *pValue)
 	FCount++;
 	memmove(CalcAddr(Index + 1), CalcAddr(Index), (FCount - static_cast<size_t>(Index) - 1) * FItemSize);
 	Update(Index, pValue);
-    Sorted = false;
+	//Sorted = false;
 	return Index;
 }
 
@@ -132,7 +132,7 @@ void THArrayRaw::InsertMany(const uint num, const void *pValue, const uint Count
 
 	FCount=FCount + Count;
 	memmove(CalcAddr(num + Count), CalcAddr(num), (FCount - static_cast<size_t>(num) - Count) * FItemSize);
-    Sorted = false;
+	//Sorted = false;
 	UpdateMany(num, pValue, Count);
 }
 
@@ -143,14 +143,14 @@ void THArrayRaw::Update(const uint num, const void *pValue)
 		memmove(CalcAddr(num), pValue, FItemSize);
 	else
 		memset(CalcAddr(num), 0, FItemSize);
-    Sorted = false;
+	//Sorted = false;
 }
 
 void THArrayRaw::UpdateMany(const uint num, const void *pValue, const uint Count)
 {
 	Error(num + Count - 1, FCount);
 	memmove(GetAddr(num), pValue, FItemSize * static_cast<size_t>(Count));
-    Sorted = false;
+	//Sorted = false;
 }
 
 void THArrayRaw::Grow()
@@ -218,7 +218,7 @@ void THArrayRaw::AddFillValues(const uint Count)
 		GrowTo(FCount + Count);
 	memset(CalcAddr(FCount), 0, static_cast<size_t>(Count) * FItemSize);
     FCount = FCount + Count;
-    Sorted = false;
+	//Sorted = false;
 }
 
 void THArrayRaw::Zero()
@@ -300,7 +300,7 @@ uint THArrayStringFix::AddChars(const void *pValue, const uint len)
 	i = valuemin(len, data.GetItemSize());
 
 #ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400  // less than VS2005
-    strncpy_s(b, i, (char*)pValue, i);
+	strncpy_s(b, i, (const char*)pValue, i);
 #else
     strncpy(b, (char *)pValue, i);    
 #endif

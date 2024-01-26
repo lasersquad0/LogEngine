@@ -6,8 +6,8 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef _FILESTREAM_H_
-#define _FILESTREAM_H_
+#ifndef FILESTREAM_H
+#define FILESTREAM_H
 
 #ifndef WIN32 // required for Linux
 #include <string.h>
@@ -17,11 +17,10 @@
 #include <exception>
 #include "functions.h"
 
-
 #define IO_EXCEPTION_PREFIX "LogException : "
 
-enum TFileMode {fmRead, fmWrite, fmReadWrite};
-enum TSeekMode {smFromBegin, smFromEnd, smFromCurrent};
+enum TFileMode { fmRead, fmWrite, fmReadWrite };
+enum TSeekMode { smFromBegin, smFromEnd, smFromCurrent };
 
 class IOException : public std::exception
 {
@@ -29,9 +28,10 @@ public:
 	IOException(const char * Message)       { Text = Message; whatText = IO_EXCEPTION_PREFIX + std::string(Message); }
 	IOException(const std::string& Message) { Text = Message; whatText = IO_EXCEPTION_PREFIX + Message; }
 	IOException(const IOException& ex)      { Text = ex.Text; whatText = ex.whatText; }
-	virtual ~IOException() noexcept {};
+	virtual ~IOException() noexcept {}
 	IOException& operator=(const IOException& rhs);
-	virtual const char* what() const throw(){ return whatText.c_str(); }
+	virtual const char* what() const { return whatText.c_str(); }
+
 	//std::string GetError(void);
 private:
 	std::string Text;
@@ -100,6 +100,4 @@ public:
 };
 
 
-
-
-#endif //_FILESTREAM_H_
+#endif //FILESTREAM_H

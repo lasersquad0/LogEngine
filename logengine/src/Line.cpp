@@ -31,11 +31,11 @@ std::string AppVersionHolder::format(LogEvent& event)
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-Line::Line(const Line& line)
+Line::Line(Line& line)
 {
    holders = line.holders;
    // move ownership of holder pointers to new Line object
-   ((Line&)(line)).holders.Clear();
+   line.holders.Clear();
 }
 
 Line::Line(std::string pattern)
@@ -43,11 +43,11 @@ Line::Line(std::string pattern)
 	parsePattern(pattern);
 }
 
-Line& Line::operator=(const Line& line)
+Line& Line::operator=(Line& line)
 {
 	holders = line.holders;
     // move ownership of holder pointers to new Line object
-    ((Line&)(line)).holders.Clear();
+	line.holders.Clear();
 	return *this;
 }
 

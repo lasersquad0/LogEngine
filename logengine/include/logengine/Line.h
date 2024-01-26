@@ -6,8 +6,8 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#if !defined(_LINE_H_)
-#define _LINE_H_
+#if !defined(LINE_H)
+#define LINE_H
 
 //#if _MSC_VER > 1000
 //#pragma once
@@ -29,7 +29,7 @@ class Holder
 {
 public:
 	virtual std::string format(LogEvent& event) = 0;
-	virtual ~Holder() {};
+	virtual ~Holder() {}
 };
 
 #define STRFTIME_SIZE 100
@@ -42,7 +42,7 @@ public:
         char ss[STRFTIME_SIZE];
         std::strftime(ss, STRFTIME_SIZE, "%d-%b-%Y", &event.m_time);
         return ss;
-	};
+	}
 };
 
 class TimeHolder: public Holder
@@ -53,7 +53,7 @@ public:
 		char ss[STRFTIME_SIZE];
         std::strftime(ss, STRFTIME_SIZE, "%X", &event.m_time);
         return ss;
-	};
+	}
 };
 
 class DateTimeHolder: public Holder
@@ -64,7 +64,7 @@ public:
         char ss[STRFTIME_SIZE];
         std::strftime(ss, STRFTIME_SIZE, "%d-%b-%Y %X", &event.m_time);
         return ss;
-	};
+	}
 };
 
 class MessageHolder: public Holder
@@ -96,7 +96,7 @@ class LiteralHolder : public Holder
 private:
 	std::string value;
 public:
-	LiteralHolder(std::string value) { this->value = value; }
+	LiteralHolder(std::string& v) { this->value = v; }
 	std::string format(LogEvent&) { return value; }
 };
 class OSHolder : public Holder
@@ -167,8 +167,8 @@ protected:
 	void clearHolders();
 public:
 	Line(){}
-    Line(const Line& line); 
-    Line& operator=(const Line& line);
+	Line(Line& line);
+    Line& operator=(Line& line);
 	Line(std::string pattern);
 	//Line& operator=(const std::string pattern);
 	virtual ~Line();
@@ -179,4 +179,4 @@ public:
 };
 
 
-#endif // _LINE_H_
+#endif // LINE_H

@@ -6,8 +6,8 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef _SYNCHRONIZED_QUEUE_H_
-#define _SYNCHRONIZED_QUEUE_H_
+#ifndef SYNCHRONIZED_QUEUE_H
+#define SYNCHRONIZED_QUEUE_H
 
 #include <mutex>
 #include <condition_variable>
@@ -152,5 +152,5 @@ void SynchronizedQueue<T>::PushElement(T in_element)
 
 
 
-#endif //_SYNCHRONIZED_QUEUE_H_
+#endif //SYNCHRONIZED_QUEUE_H
 

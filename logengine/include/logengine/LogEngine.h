@@ -6,8 +6,8 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef _LOG_ENGINE_H_
-#define _LOG_ENGINE_H_
+#ifndef LOG_ENGINE_H
+#define LOG_ENGINE_H
 
 #include <exception>
 #include <string>
@@ -40,7 +40,7 @@ public:
 	LogException(const LogException& ex) { Text = ex.Text; }
 	virtual ~LogException() noexcept{ /*nothing to do */ }
 	LogException& operator=(const LogException& rhs);
-	virtual const char *what() const throw();
+	virtual const char *what() const; // throw();
 	//std::string GetError(void);
 private:
 	std::string Text;
@@ -83,12 +83,12 @@ private:
 
 	LogEngineProperties FProperties;
 	
-	TFileStream* FLogStream; 
-	bool FStarted;
+	TFileStream* FLogStream;
 	ulong FFileBytesWritten;
 	ulong FTotalBytesWritten;
 	ulong FInitialFileSize;
 	uint FMessageCount[4];
+	bool FStarted;
 	//FMessageTime[3];
 	//FStartupTime;
 
@@ -183,7 +183,7 @@ void InitLogEngine(const std::string& ConfigFileName);
 void InitLogEngine();
 void CloseLogEngine();
 
-inline void LOG_ERROR(const std::string& mess, int DetailLevel = DefaultDetailLevel)
+inline void LOG_ERROR(const std::string& mess, uint DetailLevel = DefaultDetailLevel)
 {
 	TLogEngine* log = TLogEngine::getInstance();
     if(log)
@@ -191,7 +191,7 @@ inline void LOG_ERROR(const std::string& mess, int DetailLevel = DefaultDetailLe
 }
 
 	
-inline void LOG_INFO(const std::string& mess, int DetailLevel = DefaultDetailLevel)
+inline void LOG_INFO(const std::string& mess, uint DetailLevel = DefaultDetailLevel)
 {
 	TLogEngine* log = TLogEngine::getInstance();
 	if(log)
@@ -199,14 +199,14 @@ inline void LOG_INFO(const std::string& mess, int DetailLevel = DefaultDetailLev
 }
 
 
-inline void LOG_WARN(const std::string& mess, int DetailLevel = DefaultDetailLevel)
+inline void LOG_WARN(const std::string& mess, uint DetailLevel = DefaultDetailLevel)
 {
 	TLogEngine* log = TLogEngine::getInstance();
 	if(log)
 		log->WriteWarning(mess, DetailLevel);
 }
 
-inline void LOG_STR(const std::string& mess, int DetailLevel = DefaultDetailLevel)
+inline void LOG_STR(const std::string& mess, uint DetailLevel = DefaultDetailLevel)
 {
 	TLogEngine* log = TLogEngine::getInstance();
 	if(log)
@@ -214,4 +214,4 @@ inline void LOG_STR(const std::string& mess, int DetailLevel = DefaultDetailLeve
 }
 
 	
-#endif //_LOG_ENGINE_H_
+#endif //LOG_ENGINE_H

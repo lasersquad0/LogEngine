@@ -1,6 +1,6 @@
 
-#ifndef _FUNCTIONS_H_
-#define _FUNCTIONS_H_
+#ifndef FUNCTIONS_H
+#define FUNCTIONS_H
 
 
 #include <time.h>
@@ -87,4 +87,4 @@ bool isUInt(std::string& value);
 
 uint GetThreadID();
 
-#endif //_FUNCTIONS_H_ 
+#endif //FUNCTIONS_H

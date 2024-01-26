@@ -6,8 +6,8 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#if !defined(_LOGEVENT_H_)
-#define _LOGEVENT_H_
+#if !defined(LOGEVENT_H)
+#define LOGEVENT_H
 
 #include <string>
 #include <sys/timeb.h>
@@ -31,13 +31,13 @@ public:
 	LogEvent() : m_logEngine(nullptr), m_msgType(lmNone), m_threadID(0), m_time{0}, m_detailLevel(0), m_message() {}
 
 	LogEvent(const std::string& message, TLogMessageType msgType, unsigned int threadID, struct tm time, unsigned int detailLevel, TLogEngine* log)
-		: m_message(message), m_msgType(msgType), m_threadID(threadID), m_time(time), m_detailLevel(detailLevel), m_logEngine(log) {}
+		:  m_logEngine(log), m_msgType(msgType), m_threadID(threadID), m_time(time), m_detailLevel(detailLevel), m_message(message) {}
 
 	LogEvent(const std::string& message, TLogMessageType msgType, unsigned int threadID, struct tm time, unsigned int detailLevel)
-		: m_message(message), m_msgType(msgType), m_threadID(threadID), m_time(time), m_detailLevel(detailLevel), m_logEngine(nullptr) {}
+		: m_logEngine(nullptr), m_msgType(msgType), m_threadID(threadID), m_time(time), m_detailLevel(detailLevel), m_message(message) {}
 
-	virtual ~LogEvent() {};
-	
+	virtual ~LogEvent() {}
+
 };
 
-#endif //_LOGEVENT_H_
+#endif //LOGEVENT_H

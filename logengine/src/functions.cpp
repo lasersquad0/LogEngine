@@ -30,7 +30,7 @@ double round(const double Value,const int Precision)
 	double temp = Value * p;
 
 	double ttt = temp - (int)temp;
-	if (ttt == 0) 
+	if (ttt == 0)
 		return temp/p;
 	
 	if (ttt >= 0.5 && Value > 0)
@@ -177,7 +177,7 @@ std::string ExtractFileDir(const std::string& FileName)
 
 std::string StripFileExt(const std::string& FileName)
 {
-	int i = (int)FileName.length(); 
+	int i = (int)FileName.length();
 
 	if(i == 0)
 		return "";
@@ -458,7 +458,7 @@ uint GetThreadID()
 {
 	std::stringstream ss;
 	ss << std::this_thread::get_id();
-	int thrID;
+	uint thrID;
 	ss >> thrID;
 	return thrID;
 }
