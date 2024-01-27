@@ -141,7 +141,7 @@ class THArrayBase
 {
 public:
 	static const int NPOS = -1;  // return value that usually mean "item is not found", this value returned by functions like IndexOf()
-	virtual ~THArrayBase() {} // to eliminate warning C5204
+	virtual ~THArrayBase() {} 
 	virtual uint	Add(const void*) = 0;
 	//virtual	void	AddMany(const void* Values) = 0; not implememnted
 	virtual void	AddFillValues(const uint Num) = 0;
