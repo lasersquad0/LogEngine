@@ -38,7 +38,7 @@ public:
     LogException(const char* formatstr, ...);
 	LogException(const std::string& Message) { Text = Message; }
 	LogException(const LogException& ex) { Text = ex.Text; }
-	virtual ~LogException() noexcept{ /*nothing to do */ }
+	~LogException() noexcept override { /*nothing to do */ }
 	LogException& operator=(const LogException& rhs);
 	const char *what() const noexcept override; // throw();
 	//std::string GetError(void);

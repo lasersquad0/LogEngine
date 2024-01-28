@@ -28,7 +28,7 @@ public:
 	IOException(const char * Message)       { Text = Message; whatText = IO_EXCEPTION_PREFIX + std::string(Message); }
 	IOException(const std::string& Message) { Text = Message; whatText = IO_EXCEPTION_PREFIX + Message; }
 	IOException(const IOException& ex)      { Text = ex.Text; whatText = ex.whatText; }
-	virtual ~IOException() noexcept {}
+	~IOException() noexcept override {}
 	IOException& operator=(const IOException& rhs);
 	const char* what() const noexcept override { return whatText.c_str(); }
 
