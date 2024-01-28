@@ -1,10 +1,6 @@
 #ifndef DYNAMIC_ARRAYS_H
 #define DYNAMIC_ARRAYS_H
 
-//#ifndef WIN32 // assume it is Linux
-//#include <string.h>
-//#endif
-
 #include <exception> 
 #include <string>
 #include "Compare.h"
