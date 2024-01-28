@@ -6,9 +6,9 @@
  * See the COPYING file for the terms of usage and distribution.
  */
 
-#ifndef WIN32 // required for Linux
-#include <string.h>
-#endif
+//#ifndef WIN32 // required for Linux
+//#include <string.h>
+//#endif
 
 #include <sstream>
 #include <thread>
@@ -111,7 +111,7 @@ std::string IntToStr(uint Value)
 std::string IntToStr(ulong Value)
 {
 	char buf[CONV_BUF];
-#ifdef WIN32 
+#ifdef WIN32
 	sprintf_s(buf, CONV_BUF, "%lu", Value);
 #else
 	sprintf(buf, "%lu", Value);
@@ -124,7 +124,7 @@ std::string FloatToStr(double Value)
 {
 	char buf[50];
 
-#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400    
+#ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
 	sprintf_s(buf, 50, "%f", Value);
 #else
     sprintf(buf, "%f", Value);    
@@ -280,7 +280,7 @@ std::string GetCurrTimeAsString(void)
     std::strftime(ss, DATETIME_BUF, "%X", &t);
 
 	char sss[20];
-#ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400    
+#ifdef WIN32 //__STDC_SECURE_LIB__ //_MSC_VER < 1400
 	sprintf_s(sss, 20, ".%03lld", millis);
 #else
     sprintf(sss, ".%03lld", millis);    
