@@ -12,9 +12,12 @@
 #include <sstream>
 #include <string>
 #include <chrono>
+#include <stdarg.h>
 #include <LogEngine.h>
 #include <functions.h>
 #include <LogEvent.h>
+
+
 
 //#ifndef WIN32 //HAVE_STDARG_H assume we have Linux here
 //#include <stdarg.h>
