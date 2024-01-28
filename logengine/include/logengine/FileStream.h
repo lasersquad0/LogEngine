@@ -9,9 +9,9 @@
 #ifndef FILESTREAM_H
 #define FILESTREAM_H
 
-#ifndef WIN32 // required for Linux
-#include <string.h>
-#endif
+//#ifndef WIN32 // required for Linux
+//#include <string.h>
+//#endif
 
 #include <string>
 #include <exception>
