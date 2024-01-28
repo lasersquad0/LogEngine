@@ -26,10 +26,10 @@ double round(const double Value,const int Precision);
 
 // function for convert int Value to string
 std::string IntToStr(int Value, int FieldSize);
-std::string IntToStr(unsigned int Value, int FieldSize);
+std::string IntToStr(uint Value, int FieldSize);
 std::string IntToStr(int Value);
-std::string IntToStr(unsigned int Value);
-std::string IntToStr(unsigned long Value);
+std::string IntToStr(uint Value);
+std::string IntToStr(ulong Value);
 
 // function to convert double value to string
 std::string FloatToStr(double Value);
@@ -49,7 +49,7 @@ std::string ExtractFileDir(const std::string& FileName);
 std::string StripFileExt(const std::string& FileName);
 
 // replaces in string S all occurrences of OldPattern by NewPattern
-std::string StringReplace(const std::string& S,const std::string& OldPattern,const std::string& NewPattern);
+std::string StringReplace(const std::string& S, const std::string& OldPattern, const std::string& NewPattern);
 
 // converts date to string representation
 //std::string DateToString(int Date);
@@ -77,7 +77,7 @@ std::string DelCRLF(const std::string& S);
 std::string trimSPCRLF(std::string S);
 
 // compares two strings case insensitive
-bool EqualNCase(const std::string& str1,const std::string& str2);
+bool EqualNCase(const std::string& str1, const std::string& str2);
 
 // compares two strings case insensitive
 int CompareNCase(const std::string& str1, const std::string& str2);

@@ -66,8 +66,8 @@ std::string IntToStr(int Value, int FieldSize)
 	return buf;
 }
 
-// function for convert int Value to string
-std::string IntToStr(unsigned int Value, int FieldSize)
+// function for convert uint Value to string with FieldSize presizion
+std::string IntToStr(uint Value, int FieldSize)
 {
 	char buf[CONV_BUF];
 	char buf2[CONV_BUF];
@@ -95,8 +95,8 @@ std::string IntToStr(int Value)
 	return buf;
 }
 
-// function for convert int Value to string
-std::string IntToStr(unsigned int Value)
+// function for convert uint Value to string
+std::string IntToStr(uint Value)
 {
 	char buf[CONV_BUF];
 #ifdef WIN32 // __STDC_SECURE_LIB__ //_MSC_VER < 1400
@@ -107,8 +107,8 @@ std::string IntToStr(unsigned int Value)
 	return buf;
 }
 
-// function for convert long Value to string
-std::string IntToStr(unsigned long Value)
+// function for convert ulong Value to string
+std::string IntToStr(ulong Value)
 {
 	char buf[CONV_BUF];
 #ifdef WIN32 
