@@ -16,10 +16,10 @@
 #include <functions.h>
 #include <LogEvent.h>
 
-#ifndef WIN32 //HAVE_STDARG_H assume we have Linux here
-#include <stdarg.h>
-#include <pthread.h>
-#endif
+//#ifndef WIN32 //HAVE_STDARG_H assume we have Linux here
+//#include <stdarg.h>
+//#include <pthread.h>
+//#endif
 
 #include <iostream>
  

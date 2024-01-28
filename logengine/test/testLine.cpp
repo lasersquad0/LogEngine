@@ -1,4 +1,5 @@
 
+#include <time.h>
 #include "Shared.h"
 #include "testLine.h"
 #include "Line.h"
@@ -8,15 +9,16 @@ CPPUNIT_TEST_SUITE_REGISTRATION( LogEngineLineTest );
 
 struct tm getTime()
 {
+
 	timeb tm;
 	tm.millitm = 111;
 	tm.time = 444;
-#ifdef WIN32
+#if defined WIN32 && !defined __BORLANDC__
 	struct tm tmt;
 	localtime_s(&tmt, &tm.time);
 	return tmt;
 #else
-	return *localtime( &tm.time);
+	return *localtime( (time_t*)(&tm.time));
 #endif	
 }
 

@@ -512,7 +512,7 @@ void LogEngineLogTest::testLogRotation1()
 	CPPUNIT_ASSERT_EQUAL(MaxLogSize + 4, log->GetTotalBytesWritten());
 
 // wait to make sure that next backup file will have different name.
-	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+	//std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 	str.resize(MaxLogSize + 1, 'M');
 	log->WriteStr(str);
