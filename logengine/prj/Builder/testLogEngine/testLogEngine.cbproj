@@ -65,13 +65,13 @@
         <_TCHARMapping>char</_TCHARMapping>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <ILINK_LibraryPath>..\..\..\test\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <Defines>WIN32;$(Defines)</Defines>
         <ILINK_AllWarnings>true</ILINK_AllWarnings>
         <ILINK_SelectedWarnings>false</ILINK_SelectedWarnings>
         <BCC_wcln>true</BCC_wcln>
         <BCC_wdef>true</BCC_wdef>
         <BCC_wnod>true</BCC_wnod>
+        <ILINK_LibraryPath>..\..\..\test\;..\..\..\lib;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <BCC_wexc>true</BCC_wexc>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
