@@ -40,7 +40,7 @@ public:
 	LogException(const LogException& ex) { Text = ex.Text; }
 	virtual ~LogException() noexcept{ /*nothing to do */ }
 	LogException& operator=(const LogException& rhs);
-	virtual const char *what() const; // throw();
+	const char *what() const noexcept override; // throw();
 	//std::string GetError(void);
 private:
 	std::string Text;
