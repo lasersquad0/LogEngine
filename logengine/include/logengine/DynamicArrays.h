@@ -20,10 +20,10 @@ public:
 	THArrayException(const char* Message)        { Text = Message; whatText = DA_EXCEPTION_PREFIX + std::string(Message); }
 	THArrayException(const std::string& Message) { Text = Message; whatText = DA_EXCEPTION_PREFIX + Message;}
 	THArrayException(const THArrayException& ex) { Text = ex.Text; whatText = ex.whatText; }
-	virtual ~THArrayException() noexcept {} //throw () { };
+	~THArrayException() noexcept override {} //throw () { };
 	THArrayException& operator=(const THArrayException& rhs) { Text = rhs.Text; whatText = rhs.whatText; return *this; }
-	virtual std::string getErrorMessage() const				 { return whatText; }
-	const char* what() const noexcept { return whatText.c_str(); } //throw();
+	virtual std::string getErrorMessage() const	{ return whatText; }
+	const char* what() const noexcept override  { return whatText.c_str(); } //throw();
 protected:
 	THArrayException() {}
 private:
@@ -326,7 +326,7 @@ public:
 
 	THash() {}
 	THash(const THash<I, V, Cmp>& a); 
-	//THash(uint Capacity) { FAKeys.SetCapacity(Capacity); FAValues.SetCapacity(Capacity); };
+	//THash(uint Capacity) { FAKeys.SetCapacity(Capacity); FAValues.SetCapacity(Capacity); }
 	//~THash();
 
 	bool operator==(const THash<I,V,Cmp>& a) const;
@@ -749,7 +749,7 @@ template <class T, class Cmp>
 uint THArraySorted<T,Cmp>::AddValue(const T& Value)
 {
 	int index = this->InternalIndexOfFrom(Value, 0);
-	uint index2 = index < 0 ? static_cast<uint>(-(index+1)) : static_cast<uint>(index);
+	uint index2 = index < 0 ? static_cast<uint>(-(index + 1)) : static_cast<uint>(index);
 	this->InsertValue(index2, Value);
 
 	return index2;
