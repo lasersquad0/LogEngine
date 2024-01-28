@@ -23,32 +23,6 @@
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////
-//  IOException Class
-//////////////////////////////////////////////////////////////////////
-
-//const char* IOException::what() const throw()
-//{
-//	string s = "LogException : " + Text;
-//
-//	char * err = (char*)malloc(s.size() + 1); //on extra byte for terminator
-//	if(err) // don't want to include <string.h>
-//	{
-//		for(unsigned int i = 0; i < s.size(); i++)
-//			err[i] = s[i];
-//		err[s.size()] = '\0';
-//	}
-//	return err;
-//}
-
-IOException& IOException::operator=(const IOException& ex)
-{
-	Text = ex.Text;
-	whatText = ex.whatText;
-	return *this;
-}
-
-
-//////////////////////////////////////////////////////////////////////
 //  TStream Class
 //////////////////////////////////////////////////////////////////////
 
@@ -247,6 +221,12 @@ int TFileStream::Write(const void *Buffer, const size_t Size)
 	}
 
 	return c;
+}
+
+int TFileStream::WriteLn(const string& str)
+{
+	int c = Write(str);
+	return WriteCRLF() + c;
 }
 
 int TFileStream::WriteLn(const void *Buffer, const size_t Size)

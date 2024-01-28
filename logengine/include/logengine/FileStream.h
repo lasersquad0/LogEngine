@@ -9,10 +9,6 @@
 #ifndef FILESTREAM_H
 #define FILESTREAM_H
 
-//#ifndef WIN32 // required for Linux
-//#include <string.h>
-//#endif
-
 #include <string>
 #include <exception>
 #include "functions.h"
@@ -29,7 +25,7 @@ public:
 	IOException(const std::string& Message) { Text = Message; whatText = IO_EXCEPTION_PREFIX + Message; }
 	IOException(const IOException& ex)      { Text = ex.Text; whatText = ex.whatText; }
 	~IOException() noexcept override {}
-	IOException& operator=(const IOException& rhs);
+	IOException& operator=(const IOException& ex) {	Text = ex.Text; whatText = ex.whatText;	return *this; }
 	const char* what() const noexcept override { return whatText.c_str(); }
 
 	//std::string GetError(void);
@@ -86,6 +82,7 @@ public:
 	int Read(void *Buffer, size_t Size) override;
 	int Write(const void *Buffer, const size_t Size) override;
 	int Write(const std::string& str);
+	int WriteLn(const std::string& str);
 	int WriteLn(const void *Buffer, const size_t Size);
 	int WriteCRLF(void);
 	size_t Length() override;
