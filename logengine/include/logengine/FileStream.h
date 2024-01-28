@@ -30,7 +30,7 @@ public:
 	IOException(const IOException& ex)      { Text = ex.Text; whatText = ex.whatText; }
 	virtual ~IOException() noexcept {}
 	IOException& operator=(const IOException& rhs);
-	virtual const char* what() const { return whatText.c_str(); }
+	const char* what() const override { return whatText.c_str(); }
 
 	//std::string GetError(void);
 private:
