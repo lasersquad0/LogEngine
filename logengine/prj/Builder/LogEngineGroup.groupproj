@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{B729CD17-2209-401D-941F-3DF5A3802D68}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="LogEngine\LogEngineLIB.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="testLogEngine\testLogEngine.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="LogEngineLIB">
+        <MSBuild Projects="LogEngine\LogEngineLIB.cbproj"/>
+    </Target>
+    <Target Name="LogEngineLIB:Clean">
+        <MSBuild Projects="LogEngine\LogEngineLIB.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="LogEngineLIB:Make">
+        <MSBuild Projects="LogEngine\LogEngineLIB.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="testLogEngine">
+        <MSBuild Projects="testLogEngine\testLogEngine.cbproj"/>
+    </Target>
+    <Target Name="testLogEngine:Clean">
+        <MSBuild Projects="testLogEngine\testLogEngine.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="testLogEngine:Make">
+        <MSBuild Projects="testLogEngine\testLogEngine.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="LogEngineLIB;testLogEngine"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="LogEngineLIB:Clean;testLogEngine:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="LogEngineLIB:Make;testLogEngine:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
